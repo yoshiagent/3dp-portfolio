@@ -381,6 +381,37 @@ PROJECTS = [
                   (TT + "build_battery_box_technic.py", "建模腳本（容器＋上蓋）")] + TT_SRC,
     },
     {
+        "id": "technic-cube-2x2",
+        "title": "2×2×2 Technic 立體方塊（含沉頭）",
+        "en": "2×2×2 Technic Cube with Counterbores",
+        "date": "2026-11-15",
+        "kind": "own",
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
+        "summary": "三個方向都能插 Technic 銷的 2×2×2 立方塊，每個孔兩端都有沉頭，六個面都可以和其他零件貼平連接。",
+        "specs": [("外形", "15.8 × 15.8 × 15.8 mm（2 × 2 × 2 格）"), ("孔", "三向各 2 × 2，共 12 個貫穿孔"),
+                  ("孔徑", "4.94 mm，孔距 8 mm"), ("沉頭", "Ø6.2 × 0.8 mm，共 24 個")],
+        "sections": [
+            ("設計", [
+                "邊長 2 格減 0.2 mm，和其他 Technic 零件的高度規則一致，疊放時上下貼齊",
+                "X、Y、Z 三個方向各 4 個貫穿孔，孔位在 ±4 mm 的 8 mm 格上，三向的孔在內部 8 個點交叉",
+                "每個孔兩端都有沉頭，銷的凸緣能沉進去，任何一面接零件都能貼平",
+            ]),
+            ("建模細節", [
+                "所有尺寸都在 Params 試算表：邊長、孔距、孔徑、沉頭直徑與深度",
+                "沉頭多挖 0.02 mm：剛好 0.8 mm 時，相鄰兩面的沉頭會擦邊相切，匯出網格會有破面",
+                "直向孔用 LinearPattern 陣列；橫向孔用陣列時 FreeCAD 1.1 只切出碎片，所以逐一建立，共 29 個特徵",
+            ]),
+            ("列印", [
+                "任何一面朝下都可以印，不需要支撐",
+                "橫向孔頂部有一小段懸空，孔徑不到 5 mm 靠橋接即可；銷太緊時把 pin_d 微調大一點",
+            ]),
+        ],
+        "images": [("render", TT + "technic_cube_2x2.FCStd"), ("file", TT + "preview/technic_cube_2x2_preview.png")],
+        "files": [(TT + "technic_cube_2x2.FCStd", "FreeCAD 參數化模型"),
+                  (TT + "out/technic_cube_2x2.3mf", "3MF"),
+                  (TT + "build_cube_technic.py", "建模腳本")] + TT_SRC,
+    },
+    {
         "id": "hello-kitty-keyring",
         "title": "Hello Kitty Mini 鑰匙圈改裝",
         "en": "Keyring Loop Added to a Figure",
