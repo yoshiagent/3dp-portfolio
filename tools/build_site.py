@@ -177,6 +177,9 @@ table.files .sz { color: var(--muted); white-space: nowrap; font-size: .85rem; }
 .none { color: var(--muted); }
 .pager { display: flex; justify-content: space-between; gap: 12px; margin: 36px 0 12px; flex-wrap: wrap; }
 .pager a { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; max-width: 48%; }
+.topnav { background: #0b1524; border-bottom: 1px solid var(--line); font-size: .9rem; }
+.topnav .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; padding-top: 9px; padding-bottom: 9px; }
+.topnav .sep { color: var(--line); }
 code { background: #07111e; color: #7dd3fc; border: 1px solid rgba(59,130,246,.3); border-radius: 5px;
   padding: 0 5px; font-family: ui-monospace, Consolas, monospace; font-size: .88em; word-break: break-all; }
 a.badge.tool { color: var(--fg); }
@@ -225,6 +228,11 @@ def page(title, body, depth):
 <link rel="stylesheet" href="{up}assets/style.css">
 </head>
 <body>
+<nav class="topnav"><div class="wrap">
+<a href="https://yoshiagent.github.io/MechanicalAI/">← MechanicalAI</a>
+<span class="sep">｜</span><a href="{up}index.html">3D 列印作品集</a>
+<span class="sep">｜</span><a href="{up}software.html">使用的設計軟體</a>
+</div></nav>
 {body}
 </body>
 </html>
