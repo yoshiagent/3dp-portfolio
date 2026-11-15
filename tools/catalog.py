@@ -55,7 +55,7 @@ PROJECTS = [
         "en": "Planetary Gear Teaching Model",
         "date": "2026-10-23",
         "kind": "own",
-        "tools": ["OpenSCAD", "Bambu Studio"],
+        "tools": ["OpenSCAD", "build123d", "Bambu Studio"],
         "summary": "可手搖示範的行星齒輪組：太陽輪、三個行星輪、內齒圈、行星架、底座與搖柄，從簡化齒形原型一路改到漸開線 v2.1。",
         "specs": [("v2 齒數", "太陽 24／行星 18／內齒圈 60"), ("模數", "1.25（v1 為 1）"),
                   ("減速比", "1 + 60/24 = **3.5**"), ("齒形", "20° 漸開線（v2 起）")],
@@ -135,7 +135,7 @@ PROJECTS = [
         "en": "TT Motor Cradle, Parametric Rebuild",
         "date": "2026-11-08",
         "kind": "derived",
-        "tools": ["FreeCAD PartDesign", "Python"],
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
         "summary": "把 Jim Larsen 減速器底座裡的 TT 馬達座量測出來，用 FreeCAD 參數化重建，拿掉減速齒輪塔，成為後續 Technic 系列的共同核心。",
         "credit": "原設計：Jim Larsen「20 to 1 Reduction Gear for the Bambu TT Motor」（MakerWorld，Standard Digital File License）。本頁只提供重建後的參數化模型。",
         "specs": [("外形", "51.7 × 30.9 × 24 mm"), ("底板厚", "2.65 mm"), ("側牆厚", "4.07 mm"),
@@ -165,7 +165,7 @@ PROJECTS = [
         "en": "TT Motor Technic Mount & Axle Coupler",
         "date": "2026-11-09",
         "kind": "own",
-        "tools": ["FreeCAD PartDesign", "Python"],
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
         "summary": "在 TT 馬達座兩側加上 LEGO Technic 銷孔牆，再配一個把 TT 馬達軸轉成 LEGO 十字軸的聯軸器，以及挑選十字孔間隙用的試片。",
         "specs": [("孔距／孔徑", "8 mm／4.9 mm"), ("沉頭", "Ø6.2 × 0.8 mm"), ("寬度", "5 格 Technic"),
                   ("十字孔間隙", "每邊 0.075 mm（白色 PLA）")],
@@ -200,7 +200,7 @@ PROJECTS = [
         "en": "TT Motor 5×10 Technic Frame",
         "date": "2026-11-09",
         "kind": "derived",
-        "tools": ["FreeCAD PartDesign", "Python"],
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
         "summary": "以一個 CC0 授權的 5×10 Technic 馬達外框為基礎重建，改用自家馬達座的固定方式，並做出三種開孔版本。",
         "credit": "原設計：「tt-motor-technic_adp」by user_2023809266（MakerWorld，CC0）。CC0 允許自由再散布，原檔一併附上。",
         "specs": [("外形", "79.4 × 39.4 × 23.8 mm"), ("格數", "10 × 5 × 3 Technic"), ("輸出軸", "x = 12、y = 0，落在孔格上"),
@@ -240,7 +240,7 @@ PROJECTS = [
         "en": "3×AAA Battery Box Technic Frame",
         "date": "2026-11-12",
         "kind": "own",
-        "tools": ["FreeCAD PartDesign", "Python"],
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
         "summary": "讓 3 顆 AAA 電池盒從後方滑入、自動扣住的 Technic 框，沿用 TT 馬達外框 SideTop 的開孔方式。",
         "specs": [("外形", "79.4 × 55.4 × 23.8 mm"), ("電池盒實測", "63 × 37 × 16 mm"), ("底板", "3 mm"),
                   ("固定", "兩條唇＋底板彈片")],
@@ -267,7 +267,7 @@ PROJECTS = [
         "en": "Half-Size Breadboard Technic Tray",
         "date": "2026-11-13",
         "kind": "own",
-        "tools": ["FreeCAD PartDesign", "Python"],
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
         "summary": "把 400 孔半尺寸麵包板嵌進 Technic 框，上、下、四周都能用銷接到 LEGO Technic 結構上。",
         "specs": [("外形", "103.4 × 71.4 × 15.8 mm"), ("格數", "13 × 9 × 2 Technic"), ("麵包板實測", "85 × 55.8 × 8.5 mm"),
                   ("銷孔", "117 垂直＋80 側面")],
@@ -301,7 +301,7 @@ PROJECTS = [
         "en": "3×AAA Battery Technic Container & Lid",
         "date": "2026-11-14",
         "kind": "own",
-        "tools": ["FreeCAD PartDesign", "Python"],
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
         "summary": "仿麵包板底座做的上方開放電池盒容器，另配一片滿佈 Technic 孔的平面上蓋，上蓋縮小讓開關與出線露出。",
         "specs": [("容器", "79.4 × 55.4 × 23.8 mm（10 × 7 × 3 格）"), ("上蓋", "55.4 × 55.4 × 7.8 mm（7 × 7 × 1 格）"),
                   ("電池盒實測", "63 × 37 × 16 mm"), ("底板墊高", "2 mm")],
@@ -392,3 +392,130 @@ PROJECTS = [
 ]
 
 KINDS = {"own": "自製設計", "derived": "改作／重建", "third": "他人作品（參考）"}
+
+# 本機安裝的設計軟體（2026-11-15 由 Windows 已安裝程式清單與 pip list 查得）。
+# tools：作品頁上的工具標籤名稱，會連到這裡對應的軟體。
+SOFTWARE = [
+    {
+        "id": "freecad",
+        "name": "FreeCAD",
+        "version": "1.1.4",
+        "role": "參數化 3D 建模（主力）",
+        "url": "https://www.freecad.org/",
+        "where": "%LOCALAPPDATA%\\Programs\\FreeCAD 1.1（只安裝給目前使用者）",
+        "tools": ["FreeCAD", "FreeCAD PartDesign", "FreeCAD 腳本"],
+        "summary": "開源的參數化 CAD（Computer-Aided Design）。TT 馬達系列、電池盒、麵包板底座、差速器曲柄都用它建模，FCStd 就是它的檔案格式。",
+        "sections": [
+            ("本站的建模方式", [
+                "PartDesign 工作台：一個實體（Body）由加料／減料的方塊、圓柱特徵（Feature）依序堆出來",
+                "所有尺寸放在 **Params 試算表**（Spreadsheet）：A 欄中文說明、B 欄數值或公式並設別名，每個特徵用運算式（Expression）綁定，改一格就整個模型更新",
+                "重複的孔用 **LinearPattern（線性陣列）**；1.1 版一個陣列就能做兩個方向的格子",
+            ]),
+            ("用腳本建模", [
+                "**freecadcmd.exe**：不開視窗的命令列版本，執行 Python 建模腳本、存 FCStd、匯出 STEP／STL",
+                "命令列存的檔沒有顯示狀態與縮圖，所以再用 **freecad.exe** 開一次重存（gui_finish.py），本站預覽圖也是這樣在介面裡繪製",
+                "內建獨立的 Python 3.11.14（含 matplotlib 3.10.8），用來切剖面（Part.slice）畫檢查圖",
+            ]),
+            ("踩過的雷", [
+                "特徵數會拖慢開檔：麵包板底座原本約 500 個特徵，介面開檔要 75 分鐘；改用陣列降到 54 個後，三個檔案合計 1 分鐘內",
+                "陣列只會複製原始特徵裡**第一個實體**；兩個不相連的孔要各自做一個陣列，而且陣列要緊接在它的原始特徵後面",
+                "兩個圓柱面剛好相切（只碰在一條線上）時，匯出的網格會有破邊；讓它們重疊 0.02 mm 就正常",
+                "3MF 用 Mesh.export（等同介面的「匯出」）產生，匯出後檢查是否為封閉實體",
+            ]),
+        ],
+    },
+    {
+        "id": "openscad",
+        "name": "OpenSCAD",
+        "version": "2021.01",
+        "role": "程式碼式 3D 建模",
+        "url": "https://openscad.org/",
+        "where": "C:\\Program Files\\OpenSCAD",
+        "tools": ["OpenSCAD"],
+        "summary": "用文字程式碼描述形狀的 CAD，適合尺寸規則、靠參數變化的零件。LEGO × DUPLO 轉接磚和行星齒輪教學模型的 .scad 原始檔都用它開啟。",
+        "sections": [
+            ("本站的用法", [
+                "參數集中放在檔案開頭，並用 `/* [LEGO 底部] */` 這類註解分組，在自訂器（Customizer）面板裡直接調整",
+                "行星齒輪檔用一個 `part` 變數切換要輸出的零件（sun、planet、ring…），按 F6 算繪後匯出 STL",
+                "漸開線齒形、齒數、背隙等都寫成參數，改一個數字就能重出整組齒輪",
+            ]),
+            ("注意", [
+                "2021.01 是較舊的穩定版，大型布林運算較慢",
+                "轉接磚最早期本機還沒有 OpenSCAD，STL 改用 Python manifold3d 依同一組參數產生（build_stl.py）",
+            ]),
+        ],
+    },
+    {
+        "id": "bambu-studio",
+        "name": "Bambu Studio",
+        "version": "02.09.01.70",
+        "role": "切片軟體（Slicer）",
+        "url": "https://bambulab.com/en/download/studio",
+        "where": "C:\\Program Files\\Bambu Studio",
+        "tools": ["Bambu Studio"],
+        "summary": "Bambu Lab 官方切片軟體，把 3D 模型切成印表機要走的路徑（G-code）。本站大部分 3MF 都是它的專案檔，連同切片設定與列印盤一起保存。",
+        "sections": [
+            ("本站的用法", [
+                "印表機：**Bambu Lab X2D** 雙噴頭——左噴頭直驅印模型，右噴頭遠端送料專印支撐材",
+                "耗材分組改成**手動**，避免自動分組把模型和支撐材的噴頭對調",
+                "一個 3MF 專案可以有多個列印盤（例如差速器、行星齒輪 v2 各 2 盤）",
+                "3MF 內建每個列印盤的預覽圖，本站作品卡片的部分圖片就是從裡面取出",
+            ]),
+            ("試尺寸的設定", [
+                "量配合尺寸（凸點、十字孔）時，X-Y 輪廓補償設 0，否則量到的不是模型本身的尺寸",
+                "同一盤印多個不同尺寸的試件，一次挑出最合適的（DUPLO 凸點 9.55 mm、十字孔間隙 0.075 mm 都是這樣定的）",
+            ]),
+        ],
+    },
+    {
+        "id": "python",
+        "name": "Python ＋ manifold3d",
+        "version": "Python 3.12.10、manifold3d 3.5.4",
+        "role": "腳本、網格運算、檢查圖",
+        "url": "https://www.python.org/",
+        "where": "%LOCALAPPDATA%\\Programs\\Python\\Python312",
+        "tools": ["Python", "Python manifold3d"],
+        "summary": "用來寫各種小工具：產生 STL、直接修改 3MF、畫剖面檢查圖，以及產生這個網站。",
+        "sections": [
+            ("裝了哪些套件", [
+                "**manifold3d 3.5.4**：快速、可靠的網格布林運算（聯集、差集），輸出一定是封閉實體",
+                "**numpy 2.2.6**：網格頂點與座標運算",
+                "**matplotlib 3.10.9**：畫剖面與檢查圖",
+            ]),
+            ("用在哪裡", [
+                "build_stl.py：依 .scad 相同參數產生 LEGO × DUPLO 轉接磚 STL",
+                "add_keyring.py：讀進 3MF、在公仔頭頂加鑰匙圈環、寫出新的 3MF",
+                "tools/build_site.py：讀作品目錄，產生本網站所有頁面",
+            ]),
+        ],
+    },
+    {
+        "id": "build123d",
+        "name": "build123d（text-to-cad 外掛環境）",
+        "version": "隨外掛提供",
+        "role": "Python 參數化 CAD（齒輪等複雜幾何）",
+        "url": "https://build123d.readthedocs.io/",
+        "where": "Claude Code 的 text-to-cad 外掛（cadgen 執行環境，%LOCALAPPDATA%\\cadgen）",
+        "tools": ["build123d"],
+        "summary": "以 OpenCascade 核心為基礎的 Python CAD 函式庫，能直接做出 B-rep 實體並匯出 STEP。齒形計算這類需要大量數學的零件用它最方便。",
+        "sections": [
+            ("本站的用法", [
+                "差速器的所有零件：直齒傘齒輪用 Tredgold 近似，漸開線齒形放樣到錐頂，再做變位避免根切",
+                "行星齒輪 v2／v2.1 的零件與組裝模型，用來做試裝檢查（Fit Check），並和 .scad 保持同步",
+                "差速器動畫用的網格也是從這個環境匯出（export_meshes.py），再放進 Three.js 網頁",
+            ]),
+            ("注意", [
+                "它跑在外掛自己的 Python 裡，不在系統 Python 的套件清單中；腳本要用該環境的 python 執行",
+            ]),
+        ],
+    },
+]
+
+# 其他輔助工具：名稱、版本、用途
+AUX_TOOLS = [
+    ("Git", "2.53.0", "版本控制；本網站的原始碼與檔案也用它管理"),
+    ("GitHub CLI", "2.89.0", "建立 GitHub repo、開啟 GitHub Pages、部署本網站"),
+    ("Notepad++", "8.9.6", "直接編輯 .scad、.py 等純文字檔"),
+    ("Arduino IDE", "2.3.5", "TT 馬達、麵包板這類電子專案的程式開發（設計周邊）"),
+    ("Three.js", "0.147.0（CDN 載入）", "瀏覽器 3D 繪圖函式庫，做差速器組裝與運轉動畫頁"),
+]

@@ -15,7 +15,7 @@ import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from catalog import KINDS, PROJECTS, ROOT  # noqa: E402
+from catalog import AUX_TOOLS, KINDS, PROJECTS, ROOT, SOFTWARE  # noqa: E402
 
 WEB = os.path.dirname(HERE)
 TODAY = datetime.date.today().isoformat()
@@ -24,8 +24,18 @@ FILE_TYPES = {".fcstd": ("FCStd", "fc"), ".3mf": ("3MF", "mf"), ".scad": ("SCAD"
 
 
 def esc(text):
-    """Escape for HTML and turn **x** into <strong>x</strong>."""
-    return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", html.escape(text))
+    """Escape for HTML and turn **x** into <strong>x</strong>, `x` into <code>x</code>."""
+    text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", html.escape(text))
+    return re.sub(r"`(.+?)`", r"<code>\1</code>", text)
+
+
+# tool label on a work page -> anchor on the software page
+TOOL_ANCHOR = {t: s["id"] for s in SOFTWARE for t in s["tools"]}
+
+
+def tool_badges(tools, up):
+    return "".join(f'<a class="badge tool" href="{up}software.html#{TOOL_ANCHOR.get(t, "aux")}">{esc(t)}</a>'
+                   for t in tools)
 
 
 def size_str(n):
@@ -167,6 +177,36 @@ table.files .sz { color: var(--muted); white-space: nowrap; font-size: .85rem; }
 .none { color: var(--muted); }
 .pager { display: flex; justify-content: space-between; gap: 12px; margin: 36px 0 12px; flex-wrap: wrap; }
 .pager a { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; max-width: 48%; }
+code { background: #07111e; color: #7dd3fc; border: 1px solid rgba(59,130,246,.3); border-radius: 5px;
+  padding: 0 5px; font-family: ui-monospace, Consolas, monospace; font-size: .88em; word-break: break-all; }
+a.badge.tool { color: var(--fg); }
+a.badge.tool:hover { border-color: rgba(59,130,246,.6); text-decoration: none; }
+.statlink { color: var(--fg); }
+.statlink:hover { border-color: rgba(59,130,246,.6); text-decoration: none; }
+.statlink span { color: var(--blue-soft); }
+ol.flow { list-style: none; padding: 0; margin: 22px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+ol.flow li { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; position: relative; }
+ol.flow li b { display: block; }
+ol.flow li span { color: var(--muted); font-size: .85rem; }
+ol.flow li:not(:last-child)::after { content: "→"; position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+  color: var(--blue); font-weight: 700; }
+@media (max-width: 700px) { ol.flow { grid-template-columns: 1fr 1fr; } ol.flow li::after { display: none; } }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.sw { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin: 24px 0;
+  scroll-margin-top: 16px; }
+.swhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.sw h2 { margin: 0; font-size: 1.35rem; }
+.sw > p { color: var(--fg); margin: 12px 0; }
+.subs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px; }
+.sub { background: var(--deep); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin-top: 14px; }
+.subs .sub { margin-top: 0; }
+.sub h3 { font-size: 1rem; margin: 0 0 6px; color: var(--blue-soft); }
+.sub ul { margin: 0; padding-left: 1.2em; }
+.sub li { margin: 5px 0; }
+ul.works { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+ul.works li { margin: 0; }
+ul.works a { display: inline-block; border: 1px solid var(--line); border-radius: 8px; padding: 3px 10px; font-size: .9rem; }
+ul.works a:hover { border-color: rgba(59,130,246,.6); text-decoration: none; }
 footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; margin-top: 24px; }
 footer .wrap { padding-top: 18px; padding-bottom: 36px; }
 footer ul { margin: 6px 0 0; padding-left: 1.2em; }
@@ -210,6 +250,55 @@ def file_badges(files):
     return "".join(f'<span class="badge t-{c}">{n} × {k}</span>' for (n, c), k in counts.items())
 
 
+def build_software(built):
+    """software.html: the design software installed on this computer and the works each one was used for."""
+    flow = [("設計建模", "FreeCAD、OpenSCAD、build123d、Python"), ("匯出", "FCStd → STEP／STL／3MF"),
+            ("切片", "Bambu Studio"), ("列印", "Bambu Lab X2D")]
+    flow_html = '<ol class="flow">' + "".join(
+        f"<li><b>{esc(a)}</b><span>{esc(b)}</span></li>" for a, b in flow) + "</ol>"
+    toc = "".join(f'<a class="badge tool" href="#{s["id"]}">{esc(s["name"])}</a>' for s in SOFTWARE)
+    cards = ""
+    for s in SOFTWARE:
+        works = [p for p, _, _ in built if any(TOOL_ANCHOR.get(t) == s["id"] for t in p["tools"])]
+        works_html = "".join(f'<li><a href="works/{p["id"]}.html">{esc(p["title"])}</a></li>' for p in works)
+        secs = "".join(f'<div class="sub"><h3>{esc(h)}</h3><ul>' + "".join(f"<li>{esc(b)}</li>" for b in items)
+                       + "</ul></div>" for h, items in s["sections"])
+        cards += f"""<section class="sw" id="{s["id"]}">
+<div class="swhead">
+<div><h2>{esc(s["name"])}</h2><div class="en">{esc(s["role"])}</div></div>
+<a class="badge tool" href="{s["url"]}" target="_blank" rel="noopener">官方網站 ↗</a>
+</div>
+<p>{esc(s["summary"])}</p>
+<dl class="specs"><dt>本機版本</dt><dd><strong>{esc(s["version"])}</strong></dd>
+<dt>安裝位置</dt><dd><code>{esc(s["where"])}</code></dd></dl>
+<div class="subs">{secs}</div>
+<div class="sub"><h3>用在這些作品（{len(works)} 件）</h3><ul class="works">{works_html}</ul></div>
+</section>
+"""
+    aux_rows = "".join(f"<tr><td><strong>{esc(n)}</strong></td><td>{esc(v)}</td><td>{esc(u)}</td></tr>"
+                       for n, v, u in AUX_TOOLS)
+    body = f"""<header class="top"><div class="wrap">
+<div class="crumb"><a href="index.html">← 全部作品</a></div>
+<h1>使用的設計軟體</h1>
+<div class="en">Design Software on This Computer</div>
+<p class="lead">這台電腦上用來設計、檢查與列印這些作品的軟體：版本、安裝位置、在本站專案裡怎麼用，以及實際踩過的雷。</p>
+{flow_html}
+<div class="toc">{toc}<a class="badge tool" href="#aux">輔助工具</a></div>
+</div></header>
+<main class="wrap">
+{cards}
+<section class="sw" id="aux">
+<div class="swhead"><div><h2>輔助工具</h2><div class="en">Supporting Tools</div></div></div>
+<div class="tablewrap"><table class="files"><thead><tr><th>工具</th><th>版本</th><th>用途</th></tr></thead>
+<tbody>{aux_rows}</tbody></table></div>
+<p class="none">印表機：Bambu Lab X2D（雙噴頭，左直驅、右遠端送料）。</p>
+</section>
+</main>
+{footer_html('<li>版本資訊：Windows「已安裝的程式」清單、pip list 與各軟體的 --version 輸出（查詢日期 ' + TODAY + '）</li>')}"""
+    with open(os.path.join(WEB, "software.html"), "w", encoding="utf-8") as fh:
+        fh.write(page("使用的設計軟體｜3D 列印作品集", body, 0))
+
+
 def build():
     built = []
     for p in PROJECTS:
@@ -220,7 +309,7 @@ def build():
     # detail pages
     for n, (p, files, images) in enumerate(built):
         kind = f'<span class="badge k-{p["kind"]}">{KINDS[p["kind"]]}</span>'
-        tools = "".join(f'<span class="badge">{esc(t)}</span>' for t in p["tools"])
+        tools = tool_badges(p["tools"], "../")
         credit = f'<div class="callout">{esc(p["credit"])}</div>' if p.get("credit") else ""
         if images:
             main = f'<div class="main"><img id="mainimg" src="../{images[0]}" alt="{esc(p["title"])}"></div>'
@@ -259,7 +348,7 @@ def build():
             f'<a href="{prev_l[0]["id"]}.html">← 較新：{esc(prev_l[0]["title"])}</a>' if prev_l else "<span></span>") + (
             f'<a href="{next_l[0]["id"]}.html">較舊：{esc(next_l[0]["title"])} →</a>' if next_l else "<span></span>") + "</nav>"
         body = f"""<div class="wrap">
-<div class="crumb"><a href="../index.html">← 全部作品</a></div>
+<div class="crumb"><a href="../index.html">← 全部作品</a>　｜　<a href="../software.html">使用的設計軟體</a></div>
 <div class="head">
 <h1>{esc(p["title"])}</h1>
 <div class="en">{esc(p["en"])}</div>
@@ -319,6 +408,7 @@ document.querySelectorAll('.strip button').forEach(function (b) {{
 <div class="stat"><b>{len(built)}</b><span>件作品（自製／改作 {n_own}）</span></div>
 <div class="stat"><b>{n_fc}</b><span>個 FCStd 參數化模型</span></div>
 <div class="stat"><b>{n_mf}</b><span>個 3MF 列印檔</span></div>
+<a class="stat statlink" href="software.html"><b>{len(SOFTWARE)}</b><span>套設計軟體介紹 →</span></a>
 </div>
 </div></header>
 <main class="wrap">
@@ -339,6 +429,7 @@ document.querySelectorAll('.chip').forEach(function (c) {{
 </script>"""
     with open(os.path.join(WEB, "index.html"), "w", encoding="utf-8") as fh:
         fh.write(page("3D 列印作品集", body, 0))
+    build_software(built)
     os.makedirs(os.path.join(WEB, "assets"), exist_ok=True)
     with open(os.path.join(WEB, "assets", "style.css"), "w", encoding="utf-8") as fh:
         fh.write(CSS)

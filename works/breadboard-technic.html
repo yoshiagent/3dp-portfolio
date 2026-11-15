@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="wrap">
-<div class="crumb"><a href="../index.html">← 全部作品</a></div>
+<div class="crumb"><a href="../index.html">← 全部作品</a>　｜　<a href="../software.html">使用的設計軟體</a></div>
 <div class="head">
 <h1>麵包板 Technic 底座</h1>
 <div class="en">Half-Size Breadboard Technic Tray</div>
@@ -20,7 +20,7 @@
 <div class="layout">
 <div class="gallery"><div class="main"><img id="mainimg" src="../img/breadboard-technic/breadboard_technic.png" alt="麵包板 Technic 底座"></div><p class="cap" id="cap">breadboard_technic（FreeCAD 等角視圖）</p></div>
 <div class="panel"><h2>重點規格</h2><dl class="specs"><dt>外形</dt><dd>103.4 × 71.4 × 15.8 mm</dd><dt>格數</dt><dd>13 × 9 × 2 Technic</dd><dt>麵包板實測</dt><dd>85 × 55.8 × 8.5 mm</dd><dt>銷孔</dt><dd>117 垂直＋80 側面</dd></dl>
-<div class="tools"><span class="badge">FreeCAD PartDesign</span><span class="badge">Python</span></div></div>
+<div class="tools"><a class="badge tool" href="../software.html#freecad">FreeCAD PartDesign</a><a class="badge tool" href="../software.html#freecad">FreeCAD 腳本</a></div></div>
 </div>
 <div class="secs"><section class="sec"><h2>放麵包板</h2><ul><li>麵包板頂面與框頂齊平，四周各留 0.4 mm 間隙，靠緊配合加上麵包板自己的背膠固定</li><li>麵包板尺寸依實物量測（85 × 55.8），不用一般規格的 82.5 × 54.5</li></ul></section><section class="sec"><h2>垂直孔</h2><ul><li>外圈 40 個垂直孔上下貫穿</li><li>底板 11 × 7 個貫穿孔，整個底面是完整的 13 × 9 Technic 格</li><li>每個垂直孔上下兩端都有 Ø6.2 × 0.8 沉頭，銷的凸緣能沉進去，兩件可以貼平</li></ul></section><section class="sec"><h2>側面孔</h2><ul><li>四邊各兩排水平孔（中心上下 ±4 mm），與垂直孔直角交叉，像十字交叉孔磚</li><li>長邊上排深一根銷，會打通到槽內：銷全插時輕觸麵包板約 0.2 mm，當作輕夾</li><li>短邊上排直接穿透到槽內（盲孔留下的料太薄），下排是盲孔；短邊跳過角落那一列</li></ul></section><section class="sec"><h2>建模</h2><ul><li>每種孔只建一次，再用 PartDesign LinearPattern（線性陣列）複製，整個模型只有 54 個特徵</li></ul></section></div>
 <section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-fc">FCStd</span></td><td>FreeCAD 參數化模型<br><a class="fn" href="../files/breadboard-technic/breadboard_technic.FCStd" download>breadboard_technic.FCStd</a></td><td class="sz">5.8 MB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>3MF（由最新 FCStd 匯出）<br><a class="fn" href="../files/breadboard-technic/breadboard_technic.3mf" download>breadboard_technic.3mf</a></td><td class="sz">2.8 MB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>建模腳本<br><a class="fn" href="../files/breadboard-technic/build_breadboard_technic.py" download>build_breadboard_technic.py</a></td><td class="sz">8 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>共用模組：馬達座核心幾何、參數表、匯出與 GUI 重存<br><a class="fn" href="../files/breadboard-technic/tt_adapter_core.py" download>tt_adapter_core.py</a></td><td class="sz">10 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>在 FreeCAD 介面重存檔案，寫入縮圖與顯示狀態<br><a class="fn" href="../files/breadboard-technic/gui_finish.py" download>gui_finish.py</a></td><td class="sz">2 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>

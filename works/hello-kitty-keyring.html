@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="wrap">
-<div class="crumb"><a href="../index.html">← 全部作品</a></div>
+<div class="crumb"><a href="../index.html">← 全部作品</a>　｜　<a href="../software.html">使用的設計軟體</a></div>
 <div class="head">
 <h1>Hello Kitty Mini 鑰匙圈改裝</h1>
 <div class="en">Keyring Loop Added to a Figure</div>
@@ -20,7 +20,7 @@
 <div class="layout">
 <div class="gallery"><div class="main"><div class="thumb"><div class="ph"><b>3D</b>依原作授權不提供圖片與模型檔</div></div></div></div>
 <div class="panel"><h2>重點規格</h2><dl class="specs"><dt>環寬</dt><dd>8 mm</dd><dt>孔徑</dt><dd>3.5 mm（可穿鑰匙圈扣）</dd><dt>環厚</dt><dd>2.5 mm</dd><dt>位置</dt><dd>左耳與蝴蝶結之間</dd></dl>
-<div class="tools"><span class="badge">Python manifold3d</span><span class="badge">Bambu Studio</span></div></div>
+<div class="tools"><a class="badge tool" href="../software.html#python">Python manifold3d</a><a class="badge tool" href="../software.html#bambu-studio">Bambu Studio</a></div></div>
 </div>
 <div class="secs"><section class="sec"><h2>做法</h2><ul><li>用 Python（manifold3d）讀 3MF，在頭頂加一個帶孔的環，作為同一物件的第二個零件</li><li>環的位置在左耳與蝴蝶結之間的空隙；孔底比頭頂高 0.5 mm，環的底部埋進頭部 0.75 mm</li><li>原檔的物件存成 2 倍大、在組裝時縮 0.5，所以環的尺寸先換算到物件座標再加入</li><li>輸出新的 3MF，原檔保持不變</li></ul></section></div>
 <section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-src">PY</span></td><td>加鑰匙圈環的腳本（不含原作網格）<br><a class="fn" href="../files/hello-kitty-keyring/add_keyring.py" download>add_keyring.py</a></td><td class="sz">5 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
