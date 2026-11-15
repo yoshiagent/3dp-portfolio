@@ -409,7 +409,36 @@ PROJECTS = [
         "images": [("render", TT + "technic_cube_2x2.FCStd"), ("file", TT + "preview/technic_cube_2x2_preview.png")],
         "files": [(TT + "technic_cube_2x2.FCStd", "FreeCAD 參數化模型"),
                   (TT + "out/technic_cube_2x2.3mf", "3MF"),
-                  (TT + "build_cube_technic.py", "建模腳本")] + TT_SRC,
+                  (TT + "build_cube_technic.py", "建模腳本（立方塊＋半高方塊）")] + TT_SRC,
+    },
+    {
+        "id": "technic-block-2x2x1",
+        "title": "2×2×1 Technic 方塊（含沉頭）",
+        "en": "2×2×1 Technic Block with Counterbores",
+        "date": "2026-11-15",
+        "kind": "own",
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
+        "summary": "2×2×2 立體方塊的半高版：上下 4 個直孔、四個側面各 2 個橫孔，每個孔兩端都有沉頭。",
+        "specs": [("外形", "15.8 × 15.8 × 7.8 mm（2 × 2 × 1 格）"), ("孔", "直向 4 ＋ 橫向 4，共 8 個貫穿孔"),
+                  ("孔徑", "4.94 mm，孔距 8 mm"), ("沉頭", "Ø6.2 × 0.8 mm，共 16 個")],
+        "sections": [
+            ("設計", [
+                "高度 1 格減 0.2 mm，兩塊疊起來正好是一個 2×2×2 立體方塊的高度",
+                "直向 2 × 2 個孔，和立體方塊對齊；橫向孔在中間高度，X、Y 方向各 2 個，和直孔在內部交叉",
+                "每個孔兩端都有沉頭，六個面都能用 Technic 銷接零件並貼平",
+            ]),
+            ("建模", [
+                "和立體方塊共用同一支腳本，CUBE_PARTS=half 只建這一塊",
+                "長寬（size）、高（height）、孔距、孔徑、沉頭都在 Params 試算表；沉頭同樣多挖 0.02 mm 避免網格破面",
+            ]),
+            ("列印", [
+                "大面朝下列印最穩，不需要支撐",
+            ]),
+        ],
+        "images": [("render", TT + "technic_block_2x2x1.FCStd"), ("file", TT + "preview/technic_block_2x2x1_preview.png")],
+        "files": [(TT + "technic_block_2x2x1.FCStd", "FreeCAD 參數化模型"),
+                  (TT + "out/technic_block_2x2x1.3mf", "3MF"),
+                  (TT + "build_cube_technic.py", "建模腳本（立方塊＋半高方塊）")] + TT_SRC,
     },
     {
         "id": "hello-kitty-keyring",

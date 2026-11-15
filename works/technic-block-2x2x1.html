@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>2×2×1 Technic 方塊（含沉頭）｜3D 列印作品集</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<nav class="topnav"><div class="wrap">
+<a href="https://yoshiagent.github.io/MechanicalAI/">← MechanicalAI</a>
+<span class="sep">｜</span><a href="../index.html">3D 列印作品集</a>
+<span class="sep">｜</span><a href="../software.html">使用的設計軟體</a>
+</div></nav>
+<div class="wrap">
+<div class="crumb"><a href="../index.html">← 全部作品</a>　｜　<a href="../software.html">使用的設計軟體</a></div>
+<div class="head">
+<h1>2×2×1 Technic 方塊（含沉頭）</h1>
+<div class="en">2×2×1 Technic Block with Counterbores</div>
+<div class="meta"><span class="badge k-own">自製設計</span><span>2026-11-15</span></div>
+</div>
+
+<p class="lead">2×2×2 立體方塊的半高版：上下 4 個直孔、四個側面各 2 個橫孔，每個孔兩端都有沉頭。</p>
+<div class="layout">
+<div class="gallery"><div class="main"><img id="mainimg" src="../img/technic-block-2x2x1/technic_block_2x2x1.png" alt="2×2×1 Technic 方塊（含沉頭）"></div><p class="cap" id="cap">technic_block_2x2x1（FreeCAD 等角視圖）</p><div class="strip"><button type="button" data-src="../img/technic-block-2x2x1/technic_block_2x2x1.png" data-cap="technic_block_2x2x1（FreeCAD 等角視圖）" aria-current="true" aria-label="圖片 1"><img src="../img/technic-block-2x2x1/technic_block_2x2x1.png" alt="" loading="lazy"></button><button type="button" data-src="../img/technic-block-2x2x1/technic_block_2x2x1_preview.png" data-cap="technic_block_2x2x1_preview" aria-current="false" aria-label="圖片 2"><img src="../img/technic-block-2x2x1/technic_block_2x2x1_preview.png" alt="" loading="lazy"></button></div></div>
+<div class="panel"><h2>重點規格</h2><dl class="specs"><dt>外形</dt><dd>15.8 × 15.8 × 7.8 mm（2 × 2 × 1 格）</dd><dt>孔</dt><dd>直向 4 ＋ 橫向 4，共 8 個貫穿孔</dd><dt>孔徑</dt><dd>4.94 mm，孔距 8 mm</dd><dt>沉頭</dt><dd>Ø6.2 × 0.8 mm，共 16 個</dd></dl>
+<div class="tools"><a class="badge tool" href="../software.html#freecad">FreeCAD PartDesign</a><a class="badge tool" href="../software.html#freecad">FreeCAD 腳本</a></div></div>
+</div>
+<div class="secs"><section class="sec"><h2>設計</h2><ul><li>高度 1 格減 0.2 mm，兩塊疊起來正好是一個 2×2×2 立體方塊的高度</li><li>直向 2 × 2 個孔，和立體方塊對齊；橫向孔在中間高度，X、Y 方向各 2 個，和直孔在內部交叉</li><li>每個孔兩端都有沉頭，六個面都能用 Technic 銷接零件並貼平</li></ul></section><section class="sec"><h2>建模</h2><ul><li>和立體方塊共用同一支腳本，CUBE_PARTS=half 只建這一塊</li><li>長寬（size）、高（height）、孔距、孔徑、沉頭都在 Params 試算表；沉頭同樣多挖 0.02 mm 避免網格破面</li></ul></section><section class="sec"><h2>列印</h2><ul><li>大面朝下列印最穩，不需要支撐</li></ul></section></div>
+<section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-fc">FCStd</span></td><td>FreeCAD 參數化模型<br><a class="fn" href="../files/technic-block-2x2x1/technic_block_2x2x1.FCStd" download>technic_block_2x2x1.FCStd</a></td><td class="sz">374 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>3MF<br><a class="fn" href="../files/technic-block-2x2x1/technic_block_2x2x1.3mf" download>technic_block_2x2x1.3mf</a></td><td class="sz">945 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>建模腳本（立方塊＋半高方塊）<br><a class="fn" href="../files/technic-block-2x2x1/build_cube_technic.py" download>build_cube_technic.py</a></td><td class="sz">5 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>共用模組：馬達座核心幾何、參數表、匯出與 GUI 重存<br><a class="fn" href="../files/technic-block-2x2x1/tt_adapter_core.py" download>tt_adapter_core.py</a></td><td class="sz">10 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>在 FreeCAD 介面重存檔案，寫入縮圖與顯示狀態<br><a class="fn" href="../files/technic-block-2x2x1/gui_finish.py" download>gui_finish.py</a></td><td class="sz">2 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
+<nav class="pager"><a href="technic-cube-2x2.html">← 較新：2×2×2 Technic 立體方塊（含沉頭）</a><a href="aaa3-battery-box.html">較舊：電池盒 Technic 容器與上蓋 →</a></nav>
+</div>
+<footer><div class="wrap">
+<strong>資料來源</strong>
+<ul>
+<li>模型、參數與說明：本機專案資料夾 C:\CludeHome\3DP（FreeCAD、OpenSCAD、build123d 原始檔與 Bambu Studio 專案）</li>
+<li>FreeCAD 預覽圖由 FreeCAD 1.1 繪製；3MF 縮圖取自檔案內建的 Bambu Studio 列印盤預覽</li>
+<li>網站產生日期：2026-11-15</li>
+</ul></div></footer>
+<script>
+document.querySelectorAll('.strip button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.getElementById('mainimg').src = b.dataset.src;
+    document.getElementById('cap').textContent = b.dataset.cap;
+    document.querySelectorAll('.strip button').forEach(function (o) { o.setAttribute('aria-current', o === b); });
+  });
+});
+</script>
+</body>
+</html>
