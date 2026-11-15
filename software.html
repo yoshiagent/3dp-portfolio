@@ -53,7 +53,7 @@
 <dl class="specs"><dt>本機版本</dt><dd><strong>02.09.01.70</strong></dd>
 <dt>安裝位置</dt><dd><code>C:\Program Files\Bambu Studio</code></dd></dl>
 <div class="subs"><div class="sub"><h3>本站的用法</h3><ul><li>印表機：<strong>Bambu Lab X2D</strong> 雙噴頭——左噴頭直驅印模型，右噴頭遠端送料專印支撐材</li><li>耗材分組改成<strong>手動</strong>，避免自動分組把模型和支撐材的噴頭對調</li><li>一個 3MF 專案可以有多個列印盤（例如差速器、行星齒輪 v2 各 2 盤）</li><li>3MF 內建每個列印盤的預覽圖，本站作品卡片的部分圖片就是從裡面取出</li></ul></div><div class="sub"><h3>試尺寸的設定</h3><ul><li>量配合尺寸（凸點、十字孔）時，X-Y 輪廓補償設 0，否則量到的不是模型本身的尺寸</li><li>同一盤印多個不同尺寸的試件，一次挑出最合適的（DUPLO 凸點 9.55 mm、十字孔間隙 0.075 mm 都是這樣定的）</li></ul></div></div>
-<div class="sub"><h3>用在這些作品（6 件）</h3><ul class="works"><li><a href="works/tt-20to1-reduction.html">TT 馬達 20:1 減速器（參考原件）</a></li><li><a href="works/hello-kitty-keyring.html">Hello Kitty Mini 鑰匙圈改裝</a></li><li><a href="works/differential-model.html">開放式差速器教學模型</a></li><li><a href="works/planetary-gear-model.html">行星齒輪教學模型</a></li><li><a href="works/print-in-place-planetary.html">一體成形行星齒輪（試印）</a></li><li><a href="works/lego-duplo-adapter.html">LEGO × DUPLO 轉接磚</a></li></ul></div>
+<div class="sub"><h3>用在這些作品（7 件）</h3><ul class="works"><li><a href="works/electric-differential.html">電動差速器教學模型</a></li><li><a href="works/tt-20to1-reduction.html">TT 馬達 20:1 減速器（參考原件）</a></li><li><a href="works/hello-kitty-keyring.html">Hello Kitty Mini 鑰匙圈改裝</a></li><li><a href="works/differential-model.html">開放式差速器教學模型</a></li><li><a href="works/planetary-gear-model.html">行星齒輪教學模型</a></li><li><a href="works/print-in-place-planetary.html">一體成形行星齒輪（試印）</a></li><li><a href="works/lego-duplo-adapter.html">LEGO × DUPLO 轉接磚</a></li></ul></div>
 </section>
 <section class="sw" id="python">
 <div class="swhead">
@@ -74,8 +74,8 @@
 <p>以 OpenCascade 核心為基礎的 Python CAD 函式庫，能直接做出 B-rep 實體並匯出 STEP。齒形計算這類需要大量數學的零件用它最方便。</p>
 <dl class="specs"><dt>本機版本</dt><dd><strong>隨外掛提供</strong></dd>
 <dt>安裝位置</dt><dd><code>Claude Code 的 text-to-cad 外掛（cadgen 執行環境，%LOCALAPPDATA%\cadgen）</code></dd></dl>
-<div class="subs"><div class="sub"><h3>本站的用法</h3><ul><li>差速器的所有零件：直齒傘齒輪用 Tredgold 近似，漸開線齒形放樣到錐頂，再做變位避免根切</li><li>行星齒輪 v2／v2.1 的零件與組裝模型，用來做試裝檢查（Fit Check），並和 .scad 保持同步</li><li>差速器動畫用的網格也是從這個環境匯出（export_meshes.py），再放進 Three.js 網頁</li></ul></div><div class="sub"><h3>注意</h3><ul><li>它跑在外掛自己的 Python 裡，不在系統 Python 的套件清單中；腳本要用該環境的 python 執行</li></ul></div></div>
-<div class="sub"><h3>用在這些作品（2 件）</h3><ul class="works"><li><a href="works/differential-model.html">開放式差速器教學模型</a></li><li><a href="works/planetary-gear-model.html">行星齒輪教學模型</a></li></ul></div>
+<div class="subs"><div class="sub"><h3>本站的用法</h3><ul><li>差速器的所有零件：直齒傘齒輪用 Tredgold 近似，漸開線齒形放樣到錐頂，再做變位避免根切</li><li>行星齒輪 v2／v2.1 的零件與組裝模型，用來做試裝檢查（Fit Check），並和 .scad 保持同步</li><li>差速器動畫用的網格也是從這個環境匯出（export_meshes.py），再放進 Three.js 網頁</li><li>電動差速器：匯入 FreeCAD 做好的馬達外框、電池盒、麵包板 STEP，組成整台模型，再跑干涉與齒輪嚙合檢查</li></ul></div><div class="sub"><h3>注意</h3><ul><li>它跑在外掛自己的 Python 裡，不在系統 Python 的套件清單中；腳本要用該環境的 python 執行</li></ul></div></div>
+<div class="sub"><h3>用在這些作品（3 件）</h3><ul class="works"><li><a href="works/electric-differential.html">電動差速器教學模型</a></li><li><a href="works/differential-model.html">開放式差速器教學模型</a></li><li><a href="works/planetary-gear-model.html">行星齒輪教學模型</a></li></ul></div>
 </section>
 
 <section class="sw" id="aux">
