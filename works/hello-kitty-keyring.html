@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Hello Kitty Mini 鑰匙圈改裝｜3D 列印作品集</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<div class="crumb"><a href="../index.html">← 全部作品</a></div>
+<div class="head">
+<h1>Hello Kitty Mini 鑰匙圈改裝</h1>
+<div class="en">Keyring Loop Added to a Figure</div>
+<div class="meta"><span class="badge k-derived">改作／重建</span><span>2026-10-25</span></div>
+</div>
+<div class="callout">原作：「Hello Kitty Mini」by sidbarret007（MakerWorld，Standard Digital File License）。依授權不提供模型檔與圖片，只公開修改用的腳本。</div>
+<p class="lead">在別人的 Hello Kitty Mini 公仔頭頂加一個鑰匙圈環，用程式直接修改 3MF，原檔不動。</p>
+<div class="layout">
+<div class="gallery"><div class="main"><div class="thumb"><div class="ph"><b>3D</b>依原作授權不提供圖片與模型檔</div></div></div></div>
+<div class="panel"><h2>重點規格</h2><dl class="specs"><dt>環寬</dt><dd>8 mm</dd><dt>孔徑</dt><dd>3.5 mm（可穿鑰匙圈扣）</dd><dt>環厚</dt><dd>2.5 mm</dd><dt>位置</dt><dd>左耳與蝴蝶結之間</dd></dl>
+<div class="tools"><span class="badge">Python manifold3d</span><span class="badge">Bambu Studio</span></div></div>
+</div>
+<div class="secs"><section class="sec"><h2>做法</h2><ul><li>用 Python（manifold3d）讀 3MF，在頭頂加一個帶孔的環，作為同一物件的第二個零件</li><li>環的位置在左耳與蝴蝶結之間的空隙；孔底比頭頂高 0.5 mm，環的底部埋進頭部 0.75 mm</li><li>原檔的物件存成 2 倍大、在組裝時縮 0.5，所以環的尺寸先換算到物件座標再加入</li><li>輸出新的 3MF，原檔保持不變</li></ul></section></div>
+<section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-src">PY</span></td><td>加鑰匙圈環的腳本（不含原作網格）<br><a class="fn" href="../files/hello-kitty-keyring/add_keyring.py" download>add_keyring.py</a></td><td class="sz">5 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
+<nav class="pager"><a href="tt-20to1-reduction.html">← 較新：TT 馬達 20:1 減速器（參考原件）</a><a href="differential-model.html">較舊：開放式差速器教學模型 →</a></nav>
+</div>
+<footer><div class="wrap">
+<strong>資料來源</strong>
+<ul>
+<li>模型、參數與說明：本機專案資料夾 C:\CludeHome\3DP（FreeCAD、OpenSCAD、build123d 原始檔與 Bambu Studio 專案）</li>
+<li>FreeCAD 預覽圖由 FreeCAD 1.1 繪製；3MF 縮圖取自檔案內建的 Bambu Studio 列印盤預覽</li>
+<li>網站產生日期：2026-11-15</li>
+</ul></div></footer>
+<script>
+document.querySelectorAll('.strip button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.getElementById('mainimg').src = b.dataset.src;
+    document.getElementById('cap').textContent = b.dataset.cap;
+    document.querySelectorAll('.strip button').forEach(function (o) { o.setAttribute('aria-current', o === b); });
+  });
+});
+</script>
+</body>
+</html>

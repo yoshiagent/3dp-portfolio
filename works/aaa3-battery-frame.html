@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>3×AAA 電池盒 Technic 框（滑入卡扣）｜3D 列印作品集</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<div class="crumb"><a href="../index.html">← 全部作品</a></div>
+<div class="head">
+<h1>3×AAA 電池盒 Technic 框（滑入卡扣）</h1>
+<div class="en">3×AAA Battery Box Technic Frame</div>
+<div class="meta"><span class="badge k-own">自製設計</span><span>2026-11-12</span></div>
+</div>
+
+<p class="lead">讓 3 顆 AAA 電池盒從後方滑入、自動扣住的 Technic 框，沿用 TT 馬達外框 SideTop 的開孔方式。</p>
+<div class="layout">
+<div class="gallery"><div class="main"><img id="mainimg" src="../img/aaa3-battery-frame/aaa3_battery_technic.png" alt="3×AAA 電池盒 Technic 框（滑入卡扣）"></div><p class="cap" id="cap">aaa3_battery_technic（FreeCAD 等角視圖）</p></div>
+<div class="panel"><h2>重點規格</h2><dl class="specs"><dt>外形</dt><dd>79.4 × 55.4 × 23.8 mm</dd><dt>電池盒實測</dt><dd>63 × 37 × 16 mm</dd><dt>底板</dt><dd>3 mm</dd><dt>固定</dt><dd>兩條唇＋底板彈片</dd></dl>
+<div class="tools"><span class="badge">FreeCAD PartDesign</span><span class="badge">Python</span></div></div>
+</div>
+<div class="secs"><section class="sec"><h2>裝入與取出</h2><ul><li>電池盒平放在頂部與後方（出線端）開放的槽內，從後方滑進兩條唇下方，直到碰到封閉的前端</li><li>底板彈片上有帶斜面的凸塊：推入時壓過去，盒子通過後彈起擋住，防止滑出</li><li>取出：從後方開口壓下凸塊（或從底下壓彈片），再從前端底板圓孔把盒子推出</li><li>唇只蓋住盒子前段，靠近出線端的開關保持露出</li></ul></section><section class="sec"><h2>Technic 開孔</h2><ul><li>兩長邊各 3 排側孔、前端面 3 排孔</li><li>垂直孔貫穿側牆與前擋塊</li></ul></section></div>
+<section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-fc">FCStd</span></td><td>FreeCAD 參數化模型<br><a class="fn" href="../files/aaa3-battery-frame/aaa3_battery_technic.FCStd" download>aaa3_battery_technic.FCStd</a></td><td class="sz">27.8 MB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>3MF<br><a class="fn" href="../files/aaa3-battery-frame/aaa3_battery_technic-Frame.3mf" download>aaa3_battery_technic-Frame.3mf</a></td><td class="sz">278 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>建模腳本<br><a class="fn" href="../files/aaa3-battery-frame/build_battery_technic.py" download>build_battery_technic.py</a></td><td class="sz">10 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>共用模組：馬達座核心幾何、參數表、匯出與 GUI 重存<br><a class="fn" href="../files/aaa3-battery-frame/tt_adapter_core.py" download>tt_adapter_core.py</a></td><td class="sz">10 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>在 FreeCAD 介面重存檔案，寫入縮圖與顯示狀態<br><a class="fn" href="../files/aaa3-battery-frame/gui_finish.py" download>gui_finish.py</a></td><td class="sz">2 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
+<nav class="pager"><a href="breadboard-technic.html">← 較新：麵包板 Technic 底座</a><a href="tt-motor-technic.html">較舊：TT 馬達 Technic 座與聯軸器 →</a></nav>
+</div>
+<footer><div class="wrap">
+<strong>資料來源</strong>
+<ul>
+<li>模型、參數與說明：本機專案資料夾 C:\CludeHome\3DP（FreeCAD、OpenSCAD、build123d 原始檔與 Bambu Studio 專案）</li>
+<li>FreeCAD 預覽圖由 FreeCAD 1.1 繪製；3MF 縮圖取自檔案內建的 Bambu Studio 列印盤預覽</li>
+<li>網站產生日期：2026-11-15</li>
+</ul></div></footer>
+<script>
+document.querySelectorAll('.strip button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.getElementById('mainimg').src = b.dataset.src;
+    document.getElementById('cap').textContent = b.dataset.cap;
+    document.querySelectorAll('.strip button').forEach(function (o) { o.setAttribute('aria-current', o === b); });
+  });
+});
+</script>
+</body>
+</html>
