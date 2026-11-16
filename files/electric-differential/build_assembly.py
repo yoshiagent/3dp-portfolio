@@ -67,4 +67,12 @@ finally:
     os.makedirs(os.path.dirname(LOG), exist_ok=True)
     with open(LOG, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
-    os._exit(0)
+    # Quit through the main window rather than os._exit: a normal shutdown removes this session's recovery
+    # (transient) folders, which os._exit left behind, so the next FreeCAD start showed Document Recovery.
+    # The timers fire once the GUI event loop runs; the second is only a safety net if a dialog blocks closing.
+    from PySide import QtCore
+
+    for name in list(App.listDocuments()):
+        App.closeDocument(name)
+    QtCore.QTimer.singleShot(0, Gui.getMainWindow().close)
+    QtCore.QTimer.singleShot(120000, lambda: os._exit(0))

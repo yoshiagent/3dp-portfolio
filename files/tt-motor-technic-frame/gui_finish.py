@@ -1,5 +1,6 @@
 """Run inside freecad.exe (GUI): open each FCStd in env GUI_RESAVE (';'-separated), fit an isometric view,
-save (writes GuiDocument.xml + thumbnail), then quit. Log to env GUI_RESAVE_LOG."""
+save (writes GuiDocument.xml + thumbnail), then quit normally (closing the main window). Log to env
+GUI_RESAVE_LOG."""
 import os
 import time
 import zipfile
@@ -39,4 +40,13 @@ try:
 except Exception as exc:  # report and still quit
     log.write(f"ERROR {exc!r}\n")
 log.close()
-os._exit(0)
+
+# Quit through the main window rather than os._exit: a normal shutdown removes this session's recovery
+# (transient) folders, which os._exit left behind, so the next FreeCAD start showed Document Recovery.
+# The timers fire once the GUI event loop runs; the second is only a safety net if a dialog blocks closing.
+from PySide import QtCore  # noqa: E402
+
+for name in list(App.listDocuments()):
+    App.closeDocument(name)
+QtCore.QTimer.singleShot(0, Gui.getMainWindow().close)
+QtCore.QTimer.singleShot(120000, lambda: os._exit(0))
