@@ -1,0 +1,282 @@
+"""MG90S front steering for LEGO Technic: steering frame, two knuckles, tie rod, servo crank (FreeCAD, parametric).
+Saves <part>.FCStd here and STEP/STL in out/.
+
+Run:  freecadcmd.exe build_steering.py      (STEER_PARTS="frame;knuckle_r;knuckle_l;tierod;crank", ';'-separated)
+
+Vehicle coordinates: x to the right, y forward, z up from the ground; the servo output shaft is the z axis.
+The MG90S sits in the side-loading holder (../tt_motor_adapter/build_mg90s_side.py), shaft up, its short end
+forward, holder bottom 8 above the ground (tab underside z = 31.8). Layout (linkage geometry from
+tools/linkage.py, Ackermann for a 160 wheelbase):
+  - frame: a bulkhead pinned to the holder's front face (5 x 3 Technic holes) and a 1-unit plate (z 24.2-31.6)
+    out to the kingpins at (+-40, 40); Technic holes all over for mounting it in a LEGO chassis
+  - knuckles: C-shaped, lower and upper ears around the frame's kingpin boss (3L frictionless pin as kingpin),
+    an outboard upright with a round hole for the wheel axle at z = 27.9 (56 mm wheel), and an 18 mm
+    steering arm on the upper ear pointing rearward and 19 deg inward
+  - tie rods (2, identical): 26.45 between pin holes, at z 40.2-47.6, 2L frictionless pins at both ends
+  - crank: fixed to the servo's cross horn like the horn adapter (arms in a recess, 4 small screws), with the
+    two tie-rod pin holes at (+-8, 27); its arm is relieved 1.2 underneath so the tie rods clear it
+Every part is 7.4 thick with 0.6 gaps on an 8 mm pitch, so standard Technic pins join them.
+"""
+import os
+import subprocess
+import sys
+
+import FreeCAD as App
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ADAPTER = os.path.join(os.path.dirname(HERE), "tt_motor_adapter")
+sys.path.insert(0, ADAPTER)
+import tt_adapter_core as core  # noqa: E402
+from tt_adapter_core import bind, box  # noqa: E402
+
+core.HERE = HERE  # finish() saves <stem>.FCStd and out/ next to this script
+
+PARAMS = [
+    ("pitch", "8", "Technic 孔距 (mm)"),
+    ("part_t", "7.4", "零件厚：1 格 (mm)"),
+    ("part_gap", "0.6", "疊放間隙 (mm)"),
+    ("pin_d", "4.94", "銷孔直徑：軸也能在裡面轉 (mm)"),
+    ("cb_d", "6.2", "孔沉頭直徑 (mm)"),
+    ("cb_depth", "0.8", "孔沉頭深度 (mm)"),
+    ("end_r", "=part_t / 2", "零件圓頭半徑（自動計算）"),
+    # layout (tools/linkage.py)
+    ("kp_x", "40", "主銷離中心線 x (mm)"),
+    ("kp_y", "40", "主銷在伺服軸前方 y (mm)"),
+    ("arm_a", "18", "轉向臂長：主銷到拉桿銷 (mm)"),
+    ("arm_beta", "19", "轉向臂內傾角：阿克曼，對 160 軸距 (deg)"),
+    ("crank_c", "8", "曲柄拉桿銷離中心線 x (mm)"),
+    ("crank_j", "27", "曲柄拉桿銷在伺服軸前方 y (mm)"),
+    ("rod_len", "=sqrt((kp_x - arm_a * sin(arm_beta) - crank_c) ^ 2 + (kp_y - arm_a * cos(arm_beta) - crank_j) ^ 2)",
+     "拉桿兩孔中心距（自動計算）"),
+    # heights above the ground
+    ("z_low", "16.2", "轉向節下耳底面 z (mm)"),
+    ("z_plate", "=z_low + pitch", "車架平板底面 z（自動計算）"),
+    ("z_up", "=z_low + 2 * pitch", "轉向節上耳底面 z（自動計算）"),
+    ("z_rod", "=z_low + 3 * pitch", "拉桿底面 z（自動計算）"),
+    ("wheel_z", "=z_plate + part_t / 2", "輪軸高度：56 mm 輪（自動計算）"),
+    # frame
+    ("bulk_w", "39.4", "隔板寬：伺服座寬 (mm)"),
+    ("bulk_y0", "20.3", "隔板背面 y：伺服座前面 + 0.6 (mm)"),
+    ("bulk_z0", "8", "隔板底面 z：伺服座底面 (mm)"),
+    ("plate_hw", "27.7", "平板中段半寬 (mm)"),
+    # knuckle
+    ("body_in", "5.8", "轉向節立柱內面離主銷：留空間給軸端擋片 (mm)"),
+    # crank on the servo horn (same horn values as the horn adapter)
+    ("disc_d", "25.6", "曲柄圓盤直徑 (mm)"),
+    ("crank_h", "8.6", "曲柄厚：拉桿區 7.4 + 下方讓位 1.2 (mm)"),
+    ("crank_relief", "1.2", "曲柄臂下方讓位：拉桿在它下面 (mm)"),
+    ("horn_r", "11", "十字舵盤臂端半徑 (mm)"),
+    ("arm_w", "5.4", "舵盤臂寬 (mm)"),
+    ("arm_t", "1.8", "舵盤臂厚 (mm)"),
+    ("horn_clear", "0.25", "舵盤凹槽每邊間隙 (mm)"),
+    ("head_d", "5.2", "舵盤中心螺絲頭讓位直徑 (mm)"),
+    ("head_h", "2", "舵盤中心螺絲頭讓位高度 (mm)"),
+    ("screw_r", "8", "固定螺絲在舵盤臂上的半徑 (mm)"),
+    ("screw_d", "2.2", "固定螺絲穿孔直徑：M2 (mm)"),
+    ("screw_cb_d", "4.2", "固定螺絲頭沉孔直徑 (mm)"),
+    ("screw_cb_h", "1.6", "固定螺絲頭沉孔深度 (mm)"),
+    ("axle_d", "4.8", "LEGO 十字軸外徑 (mm)"),
+    ("axle_arm", "1.8", "LEGO 十字軸臂寬 (mm)"),
+    ("lego_clear", "0.075", "十字孔每邊間隙 (mm)"),
+    ("hole_d", "=axle_d + 2 * lego_clear", "十字孔外徑（自動計算）"),
+    ("hole_w", "=axle_arm + 2 * lego_clear", "十字孔臂寬（自動計算）"),
+    ("slot_l", "=2 * (horn_r + horn_clear)", "舵盤凹槽長（自動計算）"),
+    ("slot_w", "=arm_w + 2 * horn_clear", "舵盤凹槽寬（自動計算）"),
+    ("slot_h", "=arm_t + 0.2", "舵盤凹槽深（自動計算）"),
+]
+
+P = "Params."
+CB_OVERLAP = 0.02
+COS45 = "0.70710678"
+T, R = f"{P}part_t", f"{P}end_r"
+
+
+def g(k):
+    return f"{k} * {P}pitch"
+
+
+def cylinder(body, name, cut, radius, height, x, y, z, rot=None):
+    cyl = body.newObject("PartDesign::SubtractiveCylinder" if cut else "PartDesign::AdditiveCylinder", name)
+    if rot is not None:
+        cyl.Placement = App.Placement(App.Vector(), rot)
+    bind(cyl, "Radius", radius)
+    bind(cyl, "Height", height)
+    bind(cyl, ".Placement.Base.x", x)
+    bind(cyl, ".Placement.Base.y", y)
+    bind(cyl, ".Placement.Base.z", z)
+    return cyl
+
+
+def vertical_hole(body, name, x, y, z_bot, z_top, cb_bot=True, cb_top=True):
+    """Vertical pin hole z_bot..z_top (open ends run 1 mm past), counterbored at the chosen ends."""
+    cb_h = f"{P}cb_depth + {CB_OVERLAP} + 1"
+    feats = [cylinder(body, name, True, f"{P}pin_d / 2", f"({z_top}) - ({z_bot}) + 2", x, y, f"({z_bot}) - 1")]
+    if cb_bot:
+        feats.append(cylinder(body, f"{name}CbB", True, f"{P}cb_d / 2", cb_h, x, y, f"({z_bot}) - 1"))
+    if cb_top:
+        feats.append(cylinder(body, f"{name}CbT", True, f"{P}cb_d / 2", cb_h, x, y,
+                              f"({z_top}) - {P}cb_depth - {CB_OVERLAP}"))
+    return feats
+
+
+def y_hole(body, name, x, z, y0, y1, far_cb=True):
+    """Pin hole along y from y0 to y1 (both faces open), counterbored at y0 and (far_cb) at y1."""
+    rot = App.Rotation(App.Vector(1, 0, 0), -90)   # cylinder +z -> +y
+    cb_h = f"{P}cb_depth + {CB_OVERLAP} + 1"
+    feats = [cylinder(body, name, True, f"{P}pin_d / 2", f"({y1}) - ({y0}) + 2", x, f"({y0}) - 1", z, rot),
+             cylinder(body, f"{name}CbA", True, f"{P}cb_d / 2", cb_h, x, f"({y0}) - 1", z, rot)]
+    if far_cb:
+        feats.append(cylinder(body, f"{name}CbB", True, f"{P}cb_d / 2", cb_h, x,
+                              f"({y1}) - {P}cb_depth - {CB_OVERLAP}", z, rot))
+    return feats
+
+
+def link_bar(body, name, x0, y0, length, angle, z0):
+    """Additive bar of width part_t from (x0, y0) along `angle` (deg expression), `length` long, round ends."""
+    bar = box(body, name, False, length, T, T)
+    bar.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0, 0, 1), 10))
+    bind(bar, ".Placement.Rotation.Angle", angle)
+    # box corner = start point offset by half the width, perpendicular to the bar
+    bind(bar, ".Placement.Base.x", f"({x0}) + {R} * sin({angle})")
+    bind(bar, ".Placement.Base.y", f"({y0}) - {R} * cos({angle})")
+    bind(bar, ".Placement.Base.z", z0)
+    cylinder(body, f"{name}End0", False, R, T, x0, y0, z0)
+    cylinder(body, f"{name}End1", False, R, T, f"({x0}) + ({length}) * cos({angle})",
+             f"({y0}) + ({length}) * sin({angle})", z0)
+    return bar
+
+
+# ---------------------------------------------------------------- frame
+def build_frame(stem):
+    doc = core.make_doc(stem, PARAMS)
+    body = doc.addObject("PartDesign::Body", "SteerFrame")
+    zp0, zp1 = f"{P}z_plate", f"{P}z_plate + {T}"
+    y0, y1 = P + "bulk_y0", f"{P}kp_y + {R}"
+    # bulkhead pinned to the holder's front face, plate out to the kingpins
+    box(body, "Bulkhead", False, P + "bulk_w", T, f"{zp1} - {P}bulk_z0",
+        x=f"-{P}bulk_w / 2", y=y0, z=P + "bulk_z0")
+    box(body, "Plate", False, f"2 * {P}plate_hw", f"{y1} - {y0}", T, x=f"-{P}plate_hw", y=y0, z=zp0)
+    for t, s in (("R", 1), ("L", -1)):
+        box(body, f"Arm{t}", False, f"{P}kp_x - {P}plate_hw", T, T,
+            x=P + "plate_hw" if s > 0 else f"-{P}kp_x", y=f"{P}kp_y - {R}", z=zp0)
+        cylinder(body, f"Boss{t}", False, R, T, f"{s} * {P}kp_x", P + "kp_y", zp0)
+    # holes along y: rows 11.9, 19.9 through the bulkhead, row 27.9 on through the plate to its front edge
+    for i, zrow in enumerate((f"{P}bulk_z0 + {P}pitch / 2 - 0.1", f"{P}bulk_z0 + 1.5 * {P}pitch - 0.1",
+                              P + "wheel_z")):
+        y_end = y1 if i == 2 else f"{y0} + {T}"
+        # hole + back counterbore in one pattern, the front counterbore in another: a pattern of a tipped hole
+        # with both counterbores copied nothing
+        core.pattern(body, f"Y{i}", y_hole(body, f"Y{i}h", g(-2), zrow, y0, y_end, far_cb=False), "X", 5, g(4))
+        rot = App.Rotation(App.Vector(1, 0, 0), -90)
+        cb_b = cylinder(body, f"Y{i}hCbB", True, f"{P}cb_d / 2", f"{P}cb_depth + {CB_OVERLAP} + 1", g(-2),
+                        f"({y_end}) - {P}cb_depth - {CB_OVERLAP}", zrow, rot)
+        core.pattern(body, f"Y{i}B", [cb_b], "X", 5, g(4))
+    # vertical holes: y = 24 through bulkhead and plate (x -16..16), plate only elsewhere
+    core.pattern(body, "VBulk", vertical_hole(body, "VBulkh", g(-2), g(3), P + "bulk_z0", zp1), "X", 5, g(4))
+    for t, x in (("L", g(-3)), ("R", g(3))):
+        vertical_hole(body, f"VSide{t}", x, g(3), zp0, zp1)
+    core.pattern(body, "VPlate", vertical_hole(body, "VPlateh", g(-3), g(4), zp0, zp1), "X", 7, g(6), "Y", 2, g(1))
+    for t, s in (("R", 1), ("L", -1)):
+        vertical_hole(body, f"VArm{t}", f"{s} * 4 * {P}pitch", P + "kp_y", zp0, zp1)
+        vertical_hole(body, f"Kingpin{t}", f"{s} * {P}kp_x", P + "kp_y", zp0, zp1)
+    core.finish(doc, body, stem)
+    return stem
+
+
+# ---------------------------------------------------------------- knuckle
+def build_knuckle(stem, s):
+    """Knuckle for side s (+1 right, -1 left), kingpin on the z axis (place it at (s * kp_x, kp_y))."""
+    doc = core.make_doc(stem, PARAMS)
+    body = doc.addObject("PartDesign::Body", "Knuckle")
+    zl, zu = P + "z_low", P + "z_up"
+    out = f"{P}body_in + {T}"
+    for tag, z in (("Low", zl), ("Up", zu)):
+        box(body, f"Ear{tag}", False, out, T, T, x="0" if s > 0 else f"-({out})", y=f"-{R}", z=z)
+        cylinder(body, f"EarEnd{tag}", False, R, T, "0", "0", z)
+    box(body, "Upright", False, T, T, f"{zu} + {T} - {zl}",
+        x=P + "body_in" if s > 0 else f"-({out})", y=f"-{R}", z=zl)
+    # steering arm on the upper ear: rearward, turned inward by arm_beta
+    angle = f"(270 - {P}arm_beta)" if s > 0 else f"(270 + {P}arm_beta)"   # positive: FreeCAD keeps the z axis
+    link_bar(body, "SteerArm", "0", "0", P + "arm_a", angle, zu)
+    ax, ay = f"{P}arm_a * cos({angle})", f"{P}arm_a * sin({angle})"
+    vertical_hole(body, "ArmPin", ax, ay, zu, f"{zu} + {T}")
+    # kingpin through both ears, counterbored outside
+    vertical_hole(body, "Kingpin", "0", "0", zl, f"{zu} + {T}")
+    # wheel axle: round hole across the upright at wheel height (the axle turns in it)
+    rot = App.Rotation(App.Vector(0, 1, 0), 90 * s)   # cylinder +z -> +-x
+    cylinder(body, "Axle", True, f"{P}pin_d / 2", f"{T} + 2", f"{s} * ({P}body_in - 1)", "0", P + "wheel_z", rot)
+    core.finish(doc, body, stem)
+    return stem
+
+
+# ---------------------------------------------------------------- tie rod
+def build_tierod(stem):
+    doc = core.make_doc(stem, PARAMS)
+    body = doc.addObject("PartDesign::Body", "TieRod")
+    link_bar(body, "Rod", "0", "0", P + "rod_len", "0", "0")
+    vertical_hole(body, "PinA", "0", "0", "0", T)
+    vertical_hole(body, "PinB", P + "rod_len", "0", "0", T)
+    core.finish(doc, body, stem)
+    return stem
+
+
+# ---------------------------------------------------------------- crank
+def build_crank(stem):
+    """Servo crank, z = 0 level with the underside of the horn arms, arm toward +y."""
+    doc = core.make_doc(stem, PARAMS)
+    body = doc.addObject("PartDesign::Body", "SteerCrank")
+    H, rel = P + "crank_h", P + "crank_relief"
+    cylinder(body, "Disc", False, f"{P}disc_d / 2", H, "0", "0", "0")
+    box(body, "CrankArm", False, f"2 * {P}crank_c", f"{P}crank_j", f"{H} - {rel}",
+        x=f"-{P}crank_c", y="0", z=rel)
+    box(body, "CrankWeb", False, f"2 * ({P}crank_c + {R})", f"{P}crank_j - {P}disc_d / 4", f"{H} - {rel}",
+        x=f"-({P}crank_c + {R})", y=f"{P}disc_d / 4", z=rel)
+    for t, s in (("R", 1), ("L", -1)):
+        cylinder(body, f"PinBoss{t}", False, R, f"{H} - {rel}", f"{s} * {P}crank_c", P + "crank_j", rel)
+    # horn recess underneath, arms at +-45 deg (same as the horn adapter)
+    for tag, ang in (("A", 45), ("B", -45)):
+        slot = box(body, f"HornSlot{tag}", True, P + "slot_l", P + "slot_w", f"{P}slot_h + 1")
+        slot.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0, 0, 1), ang))
+        if ang > 0:
+            bind(slot, ".Placement.Base.x", f"-({P}slot_l - {P}slot_w) / 2 * {COS45}")
+            bind(slot, ".Placement.Base.y", f"-({P}slot_l + {P}slot_w) / 2 * {COS45}")
+        else:
+            bind(slot, ".Placement.Base.x", f"-({P}slot_l + {P}slot_w) / 2 * {COS45}")
+            bind(slot, ".Placement.Base.y", f"({P}slot_l - {P}slot_w) / 2 * {COS45}")
+        bind(slot, ".Placement.Base.z", "-1")
+    cylinder(body, "HeadPocket", True, f"{P}head_d / 2", f"{P}slot_h + {P}head_h", "0", "0", "-0.5")
+    for name, length, width in (("CrossX", "hole_d", "hole_w"), ("CrossY", "hole_w", "hole_d")):
+        box(body, name, True, P + length, P + width, f"{H} + 1",
+            x=f"-{P}{length} / 2", y=f"-{P}{width} / 2", z="0")
+    for i, (sx, sy) in enumerate(((1, 1), (-1, 1), (-1, -1), (1, -1)), start=1):
+        x, y = f"{sx} * {P}screw_r * {COS45}", f"{sy} * {P}screw_r * {COS45}"
+        cylinder(body, f"Screw{i}", True, f"{P}screw_d / 2", f"{H} + 2", x, y, "-1")
+        cylinder(body, f"Screw{i}Cb", True, f"{P}screw_cb_d / 2", f"{P}screw_cb_h + 1", x, y,
+                 f"{H} - {P}screw_cb_h")
+    for t, s in (("R", 1), ("L", -1)):
+        vertical_hole(body, f"RodPin{t}", f"{s} * {P}crank_c", P + "crank_j", rel, H)
+    core.finish(doc, body, stem)
+    return stem
+
+
+def gui_resave(stems):
+    if os.environ.get("NO_GUI_RESAVE"):
+        return
+    paths = [os.path.join(HERE, f"{stem}.FCStd") for stem in stems]
+    log = os.path.join(HERE, "out", f"gui_finish_{stems[0]}.log")
+    env = dict(os.environ, GUI_RESAVE=";".join(paths), GUI_RESAVE_LOG=log)
+    exe = os.path.join(App.getHomePath(), "bin", "freecad.exe")
+    subprocess.run([exe, os.path.join(ADAPTER, "gui_finish.py")], env=env, timeout=5400,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print(open(log, encoding="utf-8").read())
+
+
+PARTS = {
+    "frame": lambda: build_frame("steer_frame"),
+    "knuckle_r": lambda: build_knuckle("steer_knuckle_right", 1),
+    "knuckle_l": lambda: build_knuckle("steer_knuckle_left", -1),
+    "tierod": lambda: build_tierod("steer_tierod"),
+    "crank": lambda: build_crank("steer_crank"),
+}
+todo = [p for p in os.environ.get("STEER_PARTS", ";".join(PARTS)).split(";") if p]
+gui_resave([PARTS[p]() for p in todo])

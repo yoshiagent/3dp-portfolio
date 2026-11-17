@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>MG90S 伺服機前輪轉向機構（阿克曼）｜3D 列印作品集</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<nav class="topnav"><div class="wrap">
+<a href="https://yoshiagent.github.io/MechanicalAI/">← MechanicalAI</a>
+<span class="sep">｜</span><a href="../index.html">3D 列印作品集</a>
+<span class="sep">｜</span><a href="../software.html">使用的設計軟體</a>
+</div></nav>
+<div class="wrap">
+<div class="crumb"><a href="../index.html">← 全部作品</a>　｜　<a href="../software.html">使用的設計軟體</a></div>
+<div class="head">
+<h1>MG90S 伺服機前輪轉向機構（阿克曼）</h1>
+<div class="en">MG90S Servo Front Steering, Ackermann</div>
+<div class="meta"><span class="badge k-own">自製設計</span><span>2026-11-17</span></div>
+</div>
+
+<p class="lead">用 MG90S 伺服機推動的 LEGO Technic 相容前輪轉向：曲柄帶兩支拉桿推動左右轉向節，阿克曼梯形讓轉彎時內輪轉得比外輪多。</p>
+<div class="layout">
+<div class="gallery"><div class="main"><img id="mainimg" src="../img/mg90s-steering/steering_assembly_preview.png" alt="MG90S 伺服機前輪轉向機構（阿克曼）"></div><p class="cap" id="cap">steering_assembly_preview</p><div class="strip"><button type="button" data-src="../img/mg90s-steering/steering_assembly_preview.png" data-cap="steering_assembly_preview" aria-current="true" aria-label="圖片 1"><img src="../img/mg90s-steering/steering_assembly_preview.png" alt="" loading="lazy"></button><button type="button" data-src="../img/mg90s-steering/steering_assembly.png" data-cap="steering_assembly（FreeCAD 等角視圖）" aria-current="false" aria-label="圖片 2"><img src="../img/mg90s-steering/steering_assembly.png" alt="" loading="lazy"></button><button type="button" data-src="../img/mg90s-steering/steering_left_lock_preview.png" data-cap="steering_left_lock_preview" aria-current="false" aria-label="圖片 3"><img src="../img/mg90s-steering/steering_left_lock_preview.png" alt="" loading="lazy"></button><button type="button" data-src="../img/mg90s-steering/steer_knuckle_right.png" data-cap="steer_knuckle_right（FreeCAD 等角視圖）" aria-current="false" aria-label="圖片 4"><img src="../img/mg90s-steering/steer_knuckle_right.png" alt="" loading="lazy"></button><button type="button" data-src="../img/mg90s-steering/steer_crank.png" data-cap="steer_crank（FreeCAD 等角視圖）" aria-current="false" aria-label="圖片 5"><img src="../img/mg90s-steering/steer_crank.png" alt="" loading="lazy"></button></div></div>
+<div class="panel"><h2>重點規格</h2><dl class="specs"><dt>轉角</dt><dd>伺服機 ±17.5° → 內輪 32°／外輪 26°</dd><dt>阿克曼誤差</dt><dd>最大 0.8°（軸距 160 mm）</dd><dt>主銷距</dt><dd>80 mm，輪心離地 27.9 mm（Ø56 輪）</dd><dt>零件</dt><dd>1 格厚 7.4 mm，標準 Technic 銷連接</dd></dl>
+<div class="tools"><a class="badge tool" href="../software.html#freecad">FreeCAD PartDesign</a><a class="badge tool" href="../software.html#freecad">FreeCAD 腳本</a><a class="badge tool" href="../software.html#build123d">build123d</a><a class="badge tool" href="../software.html#python">Python</a></div></div>
+</div>
+<div class="secs"><section class="sec"><h2>運作方式</h2><ul><li>MG90S 裝在側蓋版伺服座裡，輸出軸朝上；曲柄用 4 顆 M2 螺絲鎖在十字舵盤上，拉桿銷孔在軸前方 27 mm、左右各 8 mm</li><li>兩支拉桿（孔距 26.45 mm）各接到左右轉向節的轉向臂；轉向臂長 18 mm，往後並內傾 19°，形成阿克曼梯形</li><li>轉向節是 C 形：上下兩耳夾住車架的主銷凸台，用 3L 無摩擦銷當主銷；外側立柱的圓孔讓附擋頭的十字軸帶著輪子轉</li><li>車架的隔板用 15 支 2L 銷接在伺服座前面，平板延伸到兩側主銷，全身都有 Technic 孔可以裝進樂高底盤</li></ul></section><section class="sec"><h2>連桿幾何（Python 解算）</h2><ul><li>每一側都是四連桿：伺服軸、曲柄銷、拉桿、轉向臂；用兩圓交點解出每個伺服角度下的輪子轉角</li><li>掃描轉向臂長、內傾角與曲柄銷位置，找阿克曼誤差最小、傳動角夠大（≥ 37°）、曲柄銷不會壓到伺服座的組合</li><li>取捨：伺服機轉角越小、阿克曼越準；若要求 ±22° 的轉角，誤差會增加到約 3°</li></ul></section><section class="sec"><h2>高度分層</h2><ul><li>零件依 8 mm 一層疊放：下耳 16.2、車架 24.2、上耳與轉向臂 32.2、拉桿 40.2、曲柄 48.2（mm，離地）</li><li>曲柄鎖在舵盤上時底面固定在 47.0，所以曲柄臂下方讓位 1.2 mm，拉桿才放得進標準 2L 銷的長度</li></ul></section><section class="sec"><h2>檢查（build123d）</h2><ul><li>伺服機在 −17.5、−8.8、0、8.8、17.5° 五個姿勢下，全部零件兩兩檢查：沒有任何重疊</li><li>最小間隙：曲柄與舵盤 0.2 mm（凹槽間隙）、拉桿與伺服座頂面 0.4 mm（打到底時），其他都在 0.6 mm 以上</li><li>各零件的孔位與沉頭用探測點逐一確認；FreeCAD 組立圖由組裝 STEP 匯入，12 個零件保留名稱與顏色</li></ul></section><section class="sec"><h2>待實測</h2><ul><li>伺服機耳片以上的高度依照片推估；輪子以 Ø56 × 26 估算</li><li>打到底的位置沒有機械擋塊，程式裡要把伺服機限制在 ±17.5° 以內</li></ul></section></div>
+<section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-fc">FCStd</span></td><td>FreeCAD 組立圖（12 個零件）<br><a class="fn" href="../files/mg90s-steering/steering_assembly.FCStd" download>steering_assembly.FCStd</a></td><td class="sz">584 KB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>轉向車架：FreeCAD 參數化模型<br><a class="fn" href="../files/mg90s-steering/steer_frame.FCStd" download>steer_frame.FCStd</a></td><td class="sz">1.6 MB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>轉向車架：3MF<br><a class="fn" href="../files/mg90s-steering/steer_frame.3mf" download>steer_frame.3mf</a></td><td class="sz">5.0 MB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>右轉向節：FreeCAD 參數化模型<br><a class="fn" href="../files/mg90s-steering/steer_knuckle_right.FCStd" download>steer_knuckle_right.FCStd</a></td><td class="sz">111 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>右轉向節：3MF<br><a class="fn" href="../files/mg90s-steering/steer_knuckle_right.3mf" download>steer_knuckle_right.3mf</a></td><td class="sz">223 KB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>左轉向節：FreeCAD 參數化模型<br><a class="fn" href="../files/mg90s-steering/steer_knuckle_left.FCStd" download>steer_knuckle_left.FCStd</a></td><td class="sz">114 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>左轉向節：3MF<br><a class="fn" href="../files/mg90s-steering/steer_knuckle_left.3mf" download>steer_knuckle_left.3mf</a></td><td class="sz">224 KB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>拉桿（印 2 支）：FreeCAD 參數化模型<br><a class="fn" href="../files/mg90s-steering/steer_tierod.FCStd" download>steer_tierod.FCStd</a></td><td class="sz">52 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>拉桿：3MF<br><a class="fn" href="../files/mg90s-steering/steer_tierod.3mf" download>steer_tierod.3mf</a></td><td class="sz">202 KB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>曲柄：FreeCAD 參數化模型<br><a class="fn" href="../files/mg90s-steering/steer_crank.FCStd" download>steer_crank.FCStd</a></td><td class="sz">352 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>曲柄：3MF<br><a class="fn" href="../files/mg90s-steering/steer_crank.3mf" download>steer_crank.3mf</a></td><td class="sz">436 KB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>MG90S 側蓋版伺服座：底座 FreeCAD 模型<br><a class="fn" href="../files/mg90s-steering/mg90s_side_base.FCStd" download>mg90s_side_base.FCStd</a></td><td class="sz">7.9 MB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>MG90S 側蓋版伺服座：底座 3MF<br><a class="fn" href="../files/mg90s-steering/mg90s_side_base.3mf" download>mg90s_side_base.3mf</a></td><td class="sz">8.7 MB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>MG90S 側蓋版伺服座：側蓋 FreeCAD 模型<br><a class="fn" href="../files/mg90s-steering/mg90s_side_cover.FCStd" download>mg90s_side_cover.FCStd</a></td><td class="sz">1.9 MB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>MG90S 側蓋版伺服座：側蓋 3MF<br><a class="fn" href="../files/mg90s-steering/mg90s_side_cover.3mf" download>mg90s_side_cover.3mf</a></td><td class="sz">1.9 MB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>轉向零件建模腳本（FreeCAD）<br><a class="fn" href="../files/mg90s-steering/build_steering.py" download>build_steering.py</a></td><td class="sz">16 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>伺服座建模腳本（FreeCAD）<br><a class="fn" href="../files/mg90s-steering/build_mg90s_side.py" download>build_mg90s_side.py</a></td><td class="sz">16 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>連桿解算與最佳化（Python）<br><a class="fn" href="../files/mg90s-steering/linkage.py" download>linkage.py</a></td><td class="sz">6 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>組裝模型（build123d）<br><a class="fn" href="../files/mg90s-steering/steering_assembly.py" download>steering_assembly.py</a></td><td class="sz">4 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>轉向範圍干涉檢查與探測<br><a class="fn" href="../files/mg90s-steering/check_steering.py" download>check_steering.py</a></td><td class="sz">4 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>產生 FreeCAD 組立圖的腳本<br><a class="fn" href="../files/mg90s-steering/build_assembly.py" download>build_assembly.py</a></td><td class="sz">3 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>共用模組：馬達座核心幾何、參數表、匯出與 GUI 重存<br><a class="fn" href="../files/mg90s-steering/tt_adapter_core.py" download>tt_adapter_core.py</a></td><td class="sz">10 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>在 FreeCAD 介面重存檔案，寫入縮圖與顯示狀態<br><a class="fn" href="../files/mg90s-steering/gui_finish.py" download>gui_finish.py</a></td><td class="sz">2 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
+<nav class="pager"><span></span><a href="electric-differential.html">較舊：電動差速器教學模型 →</a></nav>
+</div>
+<footer><div class="wrap">
+<strong>資料來源</strong>
+<ul>
+<li>模型、參數與說明：本機專案資料夾 C:\CludeHome\3DP（FreeCAD、OpenSCAD、build123d 原始檔與 Bambu Studio 專案）</li>
+<li>FreeCAD 預覽圖由 FreeCAD 1.1 繪製；3MF 縮圖取自檔案內建的 Bambu Studio 列印盤預覽</li>
+<li>網站產生日期：2026-11-17</li>
+</ul></div></footer>
+<script>
+document.querySelectorAll('.strip button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.getElementById('mainimg').src = b.dataset.src;
+    document.getElementById('cap').textContent = b.dataset.cap;
+    document.querySelectorAll('.strip button').forEach(function (o) { o.setAttribute('aria-current', o === b); });
+  });
+});
+</script>
+</body>
+</html>
