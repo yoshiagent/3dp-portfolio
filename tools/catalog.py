@@ -446,8 +446,8 @@ PROJECTS = [
         "en": "MG90S Servo Front Steering, Ackermann",
         "date": "2026-11-17",
         "kind": "own",
-        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本", "build123d", "Python"],
-        "summary": "用 MG90S 伺服機推動的 LEGO Technic 相容前輪轉向：曲柄帶兩支拉桿推動左右轉向節，阿克曼梯形讓轉彎時內輪轉得比外輪多。",
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本", "build123d", "Python", "Three.js"],
+        "summary": "用 MG90S 伺服機推動的 LEGO Technic 相容前輪轉向：曲柄帶兩支拉桿推動左右轉向節，阿克曼梯形讓轉彎時內輪轉得比外輪多。附 3D 動畫頁示範組裝與轉向。",
         "specs": [("轉角", "伺服機 ±17.5° → 內輪 32°／外輪 26°"), ("阿克曼誤差", "最大 0.8°（軸距 160 mm）"),
                   ("主銷距", "80 mm，輪心離地 27.9 mm（Ø56 輪）"), ("零件", "1 格厚 7.4 mm，標準 Technic 銷連接")],
         "sections": [
@@ -471,6 +471,11 @@ PROJECTS = [
                 "最小間隙：曲柄與舵盤 0.2 mm（凹槽間隙）、拉桿與伺服座頂面 0.4 mm（打到底時），其他都在 0.6 mm 以上",
                 "各零件的孔位與沉頭用探測點逐一確認；FreeCAD 組立圖由組裝 STEP 匯入，12 個零件保留名稱與顏色",
             ]),
+            ("3D 動畫頁", [
+                "組裝步驟：9 步，從爆炸圖依實際組裝方向逐一裝回（伺服機從側面滑入、轉向節與輪子從外側裝上）",
+                "轉向示範：拖滑桿或自動左右擺動，輪子轉角由同一組四連桿即時計算，並顯示阿克曼誤差",
+                "「轉彎中心」畫出兩前輪輪軸延長線與後軸線的交點，看得出內外輪轉角不同的原因",
+            ]),
             ("待實測", [
                 "伺服機耳片以上的高度依照片推估；輪子以 Ø56 × 26 估算",
                 "打到底的位置沒有機械擋塊，程式裡要把伺服機限制在 ±17.5° 以內",
@@ -481,6 +486,7 @@ PROJECTS = [
                    ("file", "mg90s_steering/preview/steering_left_lock_preview.png"),
                    ("render", "mg90s_steering/steer_knuckle_right.FCStd"),
                    ("render", "mg90s_steering/steer_crank.FCStd")],
+        "demo": ("mg90s_steering/animation/steering_animation.html", "開啟 3D 動畫：組裝與轉向"),
         "files": [("mg90s_steering/steering_assembly.FCStd", "FreeCAD 組立圖（12 個零件）"),
                   ("mg90s_steering/steer_frame.FCStd", "轉向車架：FreeCAD 參數化模型"),
                   ("mg90s_steering/out/steer_frame.3mf", "轉向車架：3MF"),
@@ -693,5 +699,5 @@ AUX_TOOLS = [
     ("GitHub CLI", "2.89.0", "建立 GitHub repo、開啟 GitHub Pages、部署本網站"),
     ("Notepad++", "8.9.6", "直接編輯 .scad、.py 等純文字檔"),
     ("Arduino IDE", "2.3.5", "TT 馬達、麵包板這類電子專案的程式開發（設計周邊）"),
-    ("Three.js", "0.147.0（CDN 載入）", "瀏覽器 3D 繪圖函式庫，做差速器組裝與運轉動畫頁"),
+    ("Three.js", "0.147.0（CDN 載入）", "瀏覽器 3D 繪圖函式庫，做差速器、MG90S 轉向的組裝與運轉動畫頁"),
 ]
