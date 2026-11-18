@@ -476,6 +476,11 @@ PROJECTS = [
                 "轉向示範：拖滑桿或自動左右擺動，輪子轉角由同一組四連桿即時計算，並顯示阿克曼誤差",
                 "「轉彎中心」畫出兩前輪輪軸延長線與後軸線的交點，看得出內外輪轉角不同的原因",
             ]),
+            ("一盤列印", [
+                "8 件全部排在一盤（約 191 × 90 mm，最高 31.8 mm），每件是獨立物件、保留名稱",
+                "車架與曲柄翻面、轉向節與側蓋側躺，都是大平面貼床；轉向節的主銷孔與輪軸孔改成水平，免支撐",
+                "直接用 FreeCAD 匯出的封閉網格排盤，8 件都是 0 條開放邊",
+            ]),
             ("待實測", [
                 "伺服機耳片以上的高度依照片推估；輪子以 Ø56 × 26 估算",
                 "打到底的位置沒有機械擋塊，程式裡要把伺服機限制在 ±17.5° 以內",
@@ -488,6 +493,8 @@ PROJECTS = [
                    ("render", "mg90s_steering/steer_crank.FCStd")],
         "demo": ("mg90s_steering/animation/steering_animation.html", "開啟 3D 動畫：組裝與轉向"),
         "files": [("mg90s_steering/steering_assembly.FCStd", "FreeCAD 組立圖（12 個零件）"),
+                  ("mg90s_steering/3MF/steering_plate.3mf",
+                   "全部零件一盤：3MF（車架、左右轉向節、拉桿 ×2、曲柄、伺服座底座與側蓋，共 8 件，已轉好列印方向）"),
                   ("mg90s_steering/steer_frame.FCStd", "轉向車架：FreeCAD 參數化模型"),
                   ("mg90s_steering/out/steer_frame.3mf", "轉向車架：3MF"),
                   ("mg90s_steering/steer_knuckle_right.FCStd", "右轉向節：FreeCAD 參數化模型"),
@@ -504,6 +511,7 @@ PROJECTS = [
                   (TT + "out/mg90s_side_cover.3mf", "MG90S 側蓋版伺服座：側蓋 3MF"),
                   ("mg90s_steering/build_steering.py", "轉向零件建模腳本（FreeCAD）"),
                   (TT + "build_mg90s_side.py", "伺服座建模腳本（FreeCAD）"),
+                  ("mg90s_steering/src/print_plate.py", "一盤 3MF 的排盤腳本（Python）"),
                   ("mg90s_steering/tools/linkage.py", "連桿解算與最佳化（Python）"),
                   ("mg90s_steering/src/steering_assembly.py", "組裝模型（build123d）"),
                   ("mg90s_steering/tools/check_steering.py", "轉向範圍干涉檢查與探測"),
