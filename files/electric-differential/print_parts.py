@@ -4,6 +4,9 @@ Plate 1 (electric_base): the base alone, flat side down (155.4 x 207.4 mm).
 Plate 2 (electric_gears): every other printed part of the differential, each turned onto its flat face and
 laid out in a grid. Coupler, motor frame, battery box + lid and breadboard frame are the existing prints in
 ../../tt_motor_adapter.
+
+After rebuilding, close the mesher's T-junctions (4 open edges in electric_gears, 6 in the base otherwise):
+    python ../../web/tools/fix_tjunctions.py ../3MF/electric_gears.3mf ../3MF/electric_base.3mf ../STL/electric_base.stl
 """
 from __future__ import annotations
 
