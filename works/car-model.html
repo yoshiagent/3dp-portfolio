@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>差速轉向車模型（電動差速器＋MG90S 轉向）｜3D 列印作品集</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<nav class="topnav"><div class="wrap">
+<a href="https://yoshiagent.github.io/MechanicalAI/">← MechanicalAI</a>
+<span class="sep">｜</span><a href="../index.html">3D 列印作品集</a>
+<span class="sep">｜</span><a href="../software.html">使用的設計軟體</a>
+</div></nav>
+<div class="wrap">
+<div class="crumb"><a href="../index.html">← 全部作品</a>　｜　<a href="../software.html">使用的設計軟體</a></div>
+<div class="head">
+<h1>差速轉向車模型（電動差速器＋MG90S 轉向）</h1>
+<div class="en">Differential Drive Car with Servo Steering</div>
+<div class="meta"><span class="badge k-own">自製設計</span><span>2026-11-18</span></div>
+</div>
+
+<p class="lead">把「電動差速器」放到後軸、「MG90S 前輪轉向」放到前軸，加上 3×AAA 電池盒與麵包板，組成一台 LEGO Technic 相容的四輪車。附 3D 動畫頁示範組裝，以及轉彎時差速器怎麼讓內外後輪轉速不同。</p>
+<div class="layout">
+<div class="gallery"><div class="main"><img id="mainimg" src="../img/car-model/car_assembly_preview.png" alt="差速轉向車模型（電動差速器＋MG90S 轉向）"></div><p class="cap" id="cap">car_assembly_preview</p><div class="strip"><button type="button" data-src="../img/car-model/car_assembly_preview.png" data-cap="car_assembly_preview" aria-current="true" aria-label="圖片 1"><img src="../img/car-model/car_assembly_preview.png" alt="" loading="lazy"></button><button type="button" data-src="../img/car-model/car_assembly.png" data-cap="car_assembly（FreeCAD 等角視圖）" aria-current="false" aria-label="圖片 2"><img src="../img/car-model/car_assembly.png" alt="" loading="lazy"></button><button type="button" data-src="../img/car-model/car_front_iso_preview.png" data-cap="car_front_iso_preview" aria-current="false" aria-label="圖片 3"><img src="../img/car-model/car_front_iso_preview.png" alt="" loading="lazy"></button><button type="button" data-src="../img/car-model/car_top_preview.png" data-cap="car_top_preview" aria-current="false" aria-label="圖片 4"><img src="../img/car-model/car_top_preview.png" alt="" loading="lazy"></button><button type="button" data-src="../img/car-model/car_side_preview.png" data-cap="car_side_preview" aria-current="false" aria-label="圖片 5"><img src="../img/car-model/car_side_preview.png" alt="" loading="lazy"></button></div></div>
+<div class="panel"><h2>重點規格</h2><dl class="specs"><dt>軸距／輪距</dt><dd>160 mm／前 134、後 141 mm</dd><dt>輪子</dt><dd>前 Ø56 LEGO、後 Ø80 自印</dd><dt>整車</dt><dd>165 × 228 × 95 mm，最低點離地 6.7 mm</dd><dt>最小轉彎半徑</dt><dd>約 291 mm（後軸中點）</dd></dl>
+<div class="tools"><a class="badge tool" href="../software.html#build123d">build123d</a><a class="badge tool" href="../software.html#freecad">FreeCAD</a><a class="badge tool" href="../software.html#python">Python</a><a class="badge tool" href="../software.html#aux">Three.js</a></div><a class="demo" href="../demo/car_animation.html">開啟 3D 動畫：組裝與行駛 ↗</a></div>
+</div>
+<div class="secs"><section class="sec"><h2>整車配置</h2><ul><li>車輛座標沿用轉向機構：前軸 y = 40、後軸 y = −120，軸距維持轉向設計時假設的 160 mm，阿克曼幾何不受影響</li><li>差速器轉 180° 放到後軸，TT 馬達在它前方、輸入軸在車身中線上；冠狀齒輪 44 齒 : 小齒輪 11 齒 = <strong>4:1</strong></li><li>冠狀齒輪的齒頂在後軸下方 33.3 mm，所以後輪改成自印 Ø80（軸心離地 40），底盤挖一道槽讓冠狀齒輪穿過去轉，離地 6.7 mm</li><li>前輪維持 Ø56 LEGO 輪，轉向模組（伺服座、車架、轉向節、拉桿、曲柄）一個零件都沒改</li></ul></section><section class="sec"><h2>新設計的零件</h2><ul><li>底盤：一整片 Technic 孔板（103.4 × 187.4 mm），帶差速器的軸承塔、小齒輪塔、外側輪軸塔與馬達墩柱；兩支側臂用 11 支銷夾住伺服座，前端墊高塊接轉向車架</li><li>後輪 Ø80 × 24：碟形、輪緣兩道 O 型環溝、碟內箭頭方便比較兩輪轉速；10L 十字軸穿過內外兩座軸承塔，止動環與墊片定位</li><li>上層平台與兩根立柱：平台放麵包板，壓在側立的電池盒頂與右側立柱上</li></ul></section><section class="sec"><h2>電池盒與麵包板</h2><ul><li>3×AAA 電池盒寬 55.4 mm，平放塞不進馬達旁 23 mm 的空間，所以側立在馬達左邊：重心低、蓋子朝外，換電池不用拆車</li><li>電池盒四面都有 Technic 孔：下面插底盤、上面接平台，本身就是平台的支柱</li><li>麵包板底座放在上層平台（離地 71.8 mm），剛好高過冠狀齒輪與電池盒</li></ul></section><section class="sec"><h2>檢查（build123d）</h2><ul><li>41 個零件兩兩檢查：沒有重疊；轉向打到左右極限時，最小間隙是拉桿與伺服座 0.4 mm，前輪與底盤側臂 2.4 mm</li><li>差速器每 3.75° 轉一格到 90°：冠狀齒輪與小齒輪沒有重疊（齒隙 0.111 mm），旋轉部分離底盤至少 1.14 mm</li><li>插銷孔逐一探測：伺服座、轉向車架、電池盒、馬達外框、立柱、平台、麵包板共 140 個孔全部對準</li><li>FreeCAD 組立圖由組裝 STEP 匯入，41 個零件保留名稱與顏色</li></ul></section><section class="sec"><h2>3D 動畫頁</h2><ul><li>組裝步驟：14 步，從爆炸圖依實際組裝方向裝回（插銷由上往下、輪軸由外往內）</li><li>行駛示範：前輪轉角由轉向四連桿即時計算，再由轉彎中心推算四輪轉速；左打到底時內側後輪 76 %、外側 124 %</li><li>差速器跟著動：行星架轉速是兩後輪的平均，行星齒輪依轉速差自轉，小齒輪轉 4 倍；「轉彎中心」畫出前後輪軸線的交點</li></ul></section><section class="sec"><h2>待實測</h2><ul><li>後輪要套 O 型環或 TPU 胎才抓地，溝槽尺寸依實際材料再調</li><li>轉向沒有機械擋塊，伺服機要在程式裡限制在 ±17.5°；3×AAA 約 4.5 V，同時推 MG90S 與 TT 馬達可能不夠力</li></ul></section></div>
+<section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-fc">FCStd</span></td><td>FreeCAD 組立圖（41 個零件）<br><a class="fn" href="../files/car-model/car_assembly.FCStd" download>car_assembly.FCStd</a></td><td class="sz">2.2 MB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>底盤（一盤，平放列印）<br><a class="fn" href="../files/car-model/car_chassis.3mf" download>car_chassis.3mf</a></td><td class="sz">14.0 MB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>平台、立柱、後輪、墊片、止動環、10L 軸（一盤）<br><a class="fn" href="../files/car-model/car_parts.3mf" download>car_parts.3mf</a></td><td class="sz">10.6 MB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>新零件幾何與擺放（build123d）<br><a class="fn" href="../files/car-model/car_parts.py" download>car_parts.py</a></td><td class="sz">13 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>整車組裝模型（build123d）<br><a class="fn" href="../files/car-model/car_assembly.py" download>car_assembly.py</a></td><td class="sz">4 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>列印盤排版（build123d）<br><a class="fn" href="../files/car-model/print_parts.py" download>print_parts.py</a></td><td class="sz">3 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>干涉、轉向掃掠、差速器、插銷孔檢查<br><a class="fn" href="../files/car-model/check_car.py" download>check_car.py</a></td><td class="sz">8 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>冠狀齒輪嚙合與行星架旋轉檢查<br><a class="fn" href="../files/car-model/check_mesh.py" download>check_mesh.py</a></td><td class="sz">1 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>產生 FreeCAD 組立圖的腳本<br><a class="fn" href="../files/car-model/build_assembly.py" download>build_assembly.py</a></td><td class="sz">3 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
+<nav class="pager"><span></span><a href="mg90s-steering.html">較舊：MG90S 伺服機前輪轉向機構（阿克曼） →</a></nav>
+</div>
+<footer><div class="wrap">
+<strong>資料來源</strong>
+<ul>
+<li>模型、參數與說明：本機專案資料夾 C:\CludeHome\3DP（FreeCAD、OpenSCAD、build123d 原始檔與 Bambu Studio 專案）</li>
+<li>FreeCAD 預覽圖由 FreeCAD 1.1 繪製；3MF 縮圖取自檔案內建的 Bambu Studio 列印盤預覽</li>
+<li>網站產生日期：2026-11-18</li>
+</ul></div></footer>
+<script>
+document.querySelectorAll('.strip button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.getElementById('mainimg').src = b.dataset.src;
+    document.getElementById('cap').textContent = b.dataset.cap;
+    document.querySelectorAll('.strip button').forEach(function (o) { o.setAttribute('aria-current', o === b); });
+  });
+});
+</script>
+</body>
+</html>
