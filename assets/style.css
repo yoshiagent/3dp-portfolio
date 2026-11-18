@@ -81,6 +81,17 @@ table.files .fn { font-family: ui-monospace, Consolas, monospace; font-size: .85
 table.files .sz { color: var(--muted); white-space: nowrap; font-size: .85rem; }
 .tablewrap { overflow-x: auto; }
 .none { color: var(--muted); }
+.parts { margin: 28px 0; }
+.parts > h2 { font-size: 1.1rem; margin: 0 0 4px; }
+.parts > p { margin: 0 0 14px; }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.pgrid .card .thumb { aspect-ratio: 16 / 10; }
+.pgrid .card .body { padding: 10px 12px 12px; gap: 4px; }
+.pgrid .card h3 { font-size: .98rem; margin: 0; line-height: 1.4; }
+.pgrid .card p { font-size: .86rem; }
+.role { color: var(--blue-soft); border-color: rgba(59,130,246,.45); align-self: flex-start; }
+.usedin { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 18px 0 0; }
+.usedin a { background: #0f2040; border: 1px solid rgba(59,130,246,.4); border-radius: 8px; padding: 4px 10px; }
 .pager { display: flex; justify-content: space-between; gap: 12px; margin: 36px 0 12px; flex-wrap: wrap; }
 .pager a { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; max-width: 48%; }
 .topnav { background: #0b1524; border-bottom: 1px solid var(--line); font-size: .9rem; }

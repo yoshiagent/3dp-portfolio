@@ -175,6 +175,17 @@ table.files .fn { font-family: ui-monospace, Consolas, monospace; font-size: .85
 table.files .sz { color: var(--muted); white-space: nowrap; font-size: .85rem; }
 .tablewrap { overflow-x: auto; }
 .none { color: var(--muted); }
+.parts { margin: 28px 0; }
+.parts > h2 { font-size: 1.1rem; margin: 0 0 4px; }
+.parts > p { margin: 0 0 14px; }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.pgrid .card .thumb { aspect-ratio: 16 / 10; }
+.pgrid .card .body { padding: 10px 12px 12px; gap: 4px; }
+.pgrid .card h3 { font-size: .98rem; margin: 0; line-height: 1.4; }
+.pgrid .card p { font-size: .86rem; }
+.role { color: var(--blue-soft); border-color: rgba(59,130,246,.45); align-self: flex-start; }
+.usedin { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 18px 0 0; }
+.usedin a { background: #0f2040; border: 1px solid rgba(59,130,246,.4); border-radius: 8px; padding: 4px 10px; }
 .pager { display: flex; justify-content: space-between; gap: 12px; margin: 36px 0 12px; flex-wrap: wrap; }
 .pager a { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; max-width: 48%; }
 .topnav { background: #0b1524; border-bottom: 1px solid var(--line); font-size: .9rem; }
@@ -313,9 +324,33 @@ def build():
         files, images = collect(p)
         built.append((p, files, images))
     built.sort(key=lambda b: b[0]["date"], reverse=True)
+    by_id = {b[0]["id"]: b for b in built}
+    used_in = {}  # component id -> works that list it under "parts"
+    for p, _, _ in built:
+        for pid, _, _ in p.get("parts", []):
+            if pid not in by_id:
+                raise SystemExit(f"{p['id']}: unknown part id {pid!r}")
+            used_in.setdefault(pid, []).append(p)
 
     # detail pages
     for n, (p, files, images) in enumerate(built):
+        parts = ""
+        if p.get("parts"):
+            pcards = ""
+            for pid, role, note in p["parts"]:
+                q, _, qimgs = by_id[pid]
+                img = (f'<img src="../{qimgs[0]}" alt="" loading="lazy">' if qimgs
+                       else '<div class="ph"><b>3D</b></div>')
+                pcards += (f'<a class="card" href="{pid}.html"><div class="thumb">{img}</div><div class="body">'
+                           f'<span class="badge role">{esc(role)}</span><h3>{esc(q["title"])}</h3>'
+                           f'<p>{esc(note)}</p></div></a>')
+            parts = (f'<section class="parts"><h2>組成零件（{len(p["parts"])} 件作品）</h2>'
+                     '<p class="none">以下零件直接沿用各自的作品；點進去可看設計說明、下載列印檔與原始碼。</p>'
+                     f'<div class="pgrid">{pcards}</div></section>')
+        usedin = ""
+        if used_in.get(p["id"]):
+            usedin = ('<div class="usedin"><span class="none">用在這些組合：</span>' + "".join(
+                f'<a href="{u["id"]}.html">{esc(u["title"])} →</a>' for u in used_in[p["id"]]) + "</div>")
         kind = f'<span class="badge k-{p["kind"]}">{KINDS[p["kind"]]}</span>'
         tools = tool_badges(p["tools"], "../")
         credit = f'<div class="callout">{esc(p["credit"])}</div>' if p.get("credit") else ""
@@ -364,11 +399,13 @@ def build():
 </div>
 {credit}
 <p class="lead">{esc(p["summary"])}</p>
+{usedin}
 <div class="layout">
 <div class="gallery">{gallery}</div>
 <div class="panel"><h2>重點規格</h2><dl class="specs">{specs}</dl>
 <div class="tools">{tools}</div>{demo}</div>
 </div>
+{parts}
 <div class="secs">{secs}</div>
 <section class="panel"><h2>檔案下載</h2>{ftable}</section>
 {pager}
