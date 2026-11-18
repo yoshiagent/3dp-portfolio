@@ -65,6 +65,7 @@ HOLDER_END_COLS = (-16.0, -8.0, 0.0, 8.0, 16.0)  # holder back-end holes (x) at 
 SIDE_HOLE_DEPTH = 9.0
 SLOT = (-17.0, -4.0, REAR_Y - 24.5, REAR_Y + 24.5)  # the ring (x -15.4 .. -5.6) turns through it
 TOWER_TOP = AXLE_Z + d.TOWER_TOP
+TIE_RIB_H = 8.0  # low rib joining each inner axle tower to the outer one
 T = d.TOWER_X1 - d.TOWER_X0  # tower thickness 4
 PT_Y0, PT_Y1 = REAR_Y - e.PINION_TOWER_Y1, REAR_Y - e.PINION_TOWER_Y0  # pinion tower -85 .. -81
 MOTOR_Y = REAR_Y - e.MOTOR_C_Y  # -48
@@ -109,8 +110,16 @@ def vhole(x, y, z0, z1) -> bd.Part:
     return hole((x, y, z0), (0, 0, 1), z1 - z0, cb_start=True, cb_end=True)
 
 
+EMBED = 1.0  # towers, ribs, piers and risers start this far inside the plate: a thin overlap left 0.01 mm
+             # sliver faces that meshed with open edges
+
+
 def gusset(corner, run_dir, run, height, thick_dir, thick=T) -> bd.Part:
-    return d.gusset(corner, run_dir, run, height, thick_dir, thick)
+    """Rib standing on the plate top (corner z = Z1), its foot sunk EMBED into the plate; the part above the
+    plate is the triangle run x height."""
+    x, y, z = corner
+    k = (height + EMBED) / height
+    return d.gusset((x, y, z - EMBED), run_dir, run * k, height + EMBED, thick_dir, thick)
 
 
 # --- chassis ---
@@ -118,12 +127,12 @@ def gusset(corner, run_dir, run, height, thick_dir, thick=T) -> bd.Part:
 def towers() -> tuple[bd.Part, list[tuple]]:
     """Inner axle towers (as in the bench model), outer axle towers, pinion tower, their ribs.
     Returns the solid and its footprints (to keep plate holes away)."""
-    z = Z1 - 0.01
+    z = Z1
     parts, foot = [], []
     for s in (1, -1):
-        for x_in, x_out, inner_rib in ((d.TOWER_X0, d.TOWER_X1, (6.0, 8.0)), (OUTER_X0, OUTER_X1, (8.0, 20.0))):
+        for x_in, x_out, inner_rib in ((d.TOWER_X0, d.TOWER_X1, (6.0, 8.0)), (OUTER_X0, OUTER_X1, (8.0, 14.0))):  # outer rib 14 high: clear of the axle collar
             x_lo = min(s * x_in, s * x_out)
-            parts.append(box(x_lo, x_lo + T, REAR_Y - d.TOWER_HALF_W, REAR_Y + d.TOWER_HALF_W, z, TOWER_TOP))
+            parts.append(box(x_lo, x_lo + T, REAR_Y - d.TOWER_HALF_W, REAR_Y + d.TOWER_HALF_W, z - EMBED, TOWER_TOP))
             for sy in (1, -1):
                 parts.append(gusset((x_lo, REAR_Y + sy * d.TOWER_HALF_W, z), (0, sy, 0), 8.0, 26.0, (1, 0, 0)))
             foot.append((x_lo, x_lo + T, REAR_Y - d.TOWER_HALF_W - 8, REAR_Y + d.TOWER_HALF_W + 8))
@@ -132,11 +141,14 @@ def towers() -> tuple[bd.Part, list[tuple]]:
                 run, h = inner_rib
                 parts.append(gusset((s * x_in, REAR_Y - T / 2, z), (-s, 0, 0), run, h, (0, 1, 0)))
                 foot.append((min(s * x_in, s * (x_in - run)), max(s * x_in, s * (x_in - run)), REAR_Y - T / 2, REAR_Y + T / 2))
-        # outward rib of the inner tower
+        # outward rib of the inner tower, and a low tie rib on to the outer tower (one continuous rib: two ribs
+        # ending on the same line left a seam the mesher could not close)
         parts.append(gusset((s * d.TOWER_X1, REAR_Y - T / 2, z), (s, 0, 0), 8.0, 20.0, (0, 1, 0)))
-        foot.append((min(s * 25.0, s * 33.0), max(s * 25.0, s * 33.0), REAR_Y - T / 2, REAR_Y + T / 2))
+        xa, xb = sorted((s * d.TOWER_X1, s * OUTER_X0))
+        parts.append(box(xa, xb, REAR_Y - T / 2, REAR_Y + T / 2, z - EMBED, z + TIE_RIB_H))
+        foot.append((xa, xb, REAR_Y - T / 2, REAR_Y + T / 2))
     hw = e.PTOWER_HALF_W
-    parts.append(box(-hw, hw, PT_Y0, PT_Y1, z, TOWER_TOP))
+    parts.append(box(-hw, hw, PT_Y0, PT_Y1, z - EMBED, TOWER_TOP))
     parts.append(gusset((-T / 2, PT_Y1, z), (0, 1, 0), 8.0, 12.0, (1, 0, 0)))  # motor side
     parts.append(gusset((-T / 2, PT_Y0, z), (0, -1, 0), 8.0, 10.0, (1, 0, 0)))  # pinion side
     foot.append((-hw, hw, PT_Y0 - 8, PT_Y1 + 8))
@@ -146,9 +158,15 @@ def towers() -> tuple[bd.Part, list[tuple]]:
 def piers() -> tuple[bd.Part, list[tuple]]:
     out, foot = [], []
     y0, y1 = MOTOR_Y - 11.8, MOTOR_Y + 11.8
+    spans = []  # piers under the frame's hole columns; neighbours closer than 10 mm join into one block
     for c0, c1 in PIER_COLS:
         x0, x1 = max(c0 - 4.0, MOTOR_X[0]), min(c1 + 4.0, MOTOR_X[1])
-        out.append(box(x0, x1, y0, y1, Z1 - 0.01, PIER_TOP))
+        if spans and x0 - spans[-1][1] < 10.0:
+            spans[-1] = (spans[-1][0], x1)
+        else:
+            spans.append((x0, x1))
+    for x0, x1 in spans:
+        out.append(box(x0, x1, y0, y1, Z1 - EMBED, PIER_TOP))
         foot.append((x0, x1, y0, y1))
     return reduce(lambda a, b: a + b, out), foot
 
@@ -183,7 +201,7 @@ def chassis() -> bd.Part:
     for s in (1, -1):
         body += box(*sorted((s * HOLDER_HALF, s * ARM_X1)), HOLDER_Y0, ARM_Y1, Z0, Z1)
         rx = sorted((s * RISER[0], s * RISER[1]))
-        body += box(*rx, RISER[2], RISER[3], Z1 - 0.01, RISER_Z1)
+        body += box(*rx, RISER[2], RISER[3], Z1 - EMBED, RISER_Z1)
         foot.append((*rx, RISER[2], RISER[3]))
     tw, tfoot = towers()
     pr, pfoot = piers()
