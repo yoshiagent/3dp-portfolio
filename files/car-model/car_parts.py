@@ -6,8 +6,8 @@ the z axis. Front axle (kingpins) at y = 40; wheelbase 160 as the steering's Ack
 rear axle is at y = -120.
 
 Why the rear is different from the bench model: the 44-tooth ring reaches 33.3 mm below the axle, so the rear
-wheels grow to dia. 80 (axle 40 above the ground) and the plate gets a slot the ring turns in (ring 6.7 mm
-above the ground). The front keeps the LEGO 56 x 26 wheels and the steering module unchanged.
+wheels are the large LEGO 81.6 x 38 R tyres (axle 40.8 above the ground) and the plate gets a slot the ring
+turns in (ring 7.5 mm above the ground). The front keeps the LEGO 56 x 26 wheels and the steering module unchanged.
 
 Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, all vertical, from above)
 * drive module: drive base (Technic plate z 8 - 15.8, 8 mm grid, x = 0, y = 0 mod 8, the lowest level at the
@@ -21,8 +21,8 @@ Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, al
 * upper level: the breadboard frame itself (its bottom is a full 13 x 9 Technic grid), pinned straight onto the
   battery box top (stood on edge, lid outward) and two posts (front post on the chassis, rear post on the drive
   base: the motor leaves no chassis there). No separate deck plate.
-* rear wheels dia. 80 x 24. The rear axle line's 10L axles, collars (= LEGO half bush, 4 mm, cross hole) and
-  spacers (= LEGO bush, 8 mm) are LEGO standard parts; their shapes here are stand-ins, not printed.
+* nothing on the rear axle line is printed: LEGO 81.6 x 38 R tyres on their rims, 10L axles, half bushes (the
+  collars, 4 mm) and bushes (the spacers, 8 mm). Their shapes here are stand-ins for the assembly and checks.
 
 Why three levels: the TT motor frame's lower side is 20.3 above the ground, so the drive base must stay at the
 bottom (z 8 - 15.8) and the chassis that joins it to the steering goes one level up, clear of the motor.
@@ -47,17 +47,19 @@ from differential_parts import cross_bore, cyl, place, round_bore  # noqa: E402
 
 # --- vehicle layout ---
 REAR_Y = -120.0  # = YK - L of the steering linkage (40 - 160)
-AXLE_Z = 40.0  # rear wheel radius
+AXLE_Z = 40.8  # rear wheel radius: LEGO tyre 81.6 x 38 R
 PITCH = 8.0
 PIN_D, CB_D, CB_DEPTH = e.PIN_D, e.CB_D, e.CB_DEPTH
 
 # --- rear axle line (|x|) ---
-WHEEL_R, WHEEL_W = 40.0, 24.0
+WHEEL_R, WHEEL_W = 40.8, 38.0  # LEGO 81.6 x 38 R tyre (stand-in shape)
 AXLE_10L = 10 * PITCH - 0.2
-AXLE_END = d.AXLE_IN + AXLE_10L  # 82.3: flush with the wheel's outer face
-WHEEL_X0, WHEEL_X1 = AXLE_END - WHEEL_W, AXLE_END
+AXLE_END = d.AXLE_IN + AXLE_10L  # 82.3: 24 mm into the wheel's hub
+BUSH_L = 8.0  # LEGO bush between the outer tower and the wheel
 OUTER_X0, OUTER_X1 = 46.0, 50.0  # outer axle towers
-SPACER_X = (OUTER_X1 + 0.15, WHEEL_X0 - 0.15)  # tower -> wheel: the wheel cannot move inward
+SPACER_X = (OUTER_X1 + 0.15, OUTER_X1 + 0.15 + BUSH_L)  # LEGO bush, tower -> wheel: no inward slide
+WHEEL_X0 = SPACER_X[1] + 0.15  # 58.3: wheel inner face
+WHEEL_X1 = WHEEL_X0 + WHEEL_W
 COLLAR_L = 4.0
 COLLAR_X = (OUTER_X0 - 0.15 - COLLAR_L, OUTER_X0 - 0.15)  # on the axle inside the outer tower: no outward slide
 TUBE_OD = d.SLEEVE_OD
@@ -272,20 +274,14 @@ def deck_post(yc: float, z0: float) -> bd.Part:
 # --- rear axle line ---
 
 def rear_wheel(s: int) -> bd.Part:
-    """Dish wheel dia. 80 x 24: web on the inner face (prints flat on it), two O-ring grooves, a raised radial
-    marker inside the dish so the two sides can be compared turning."""
-    rim = cyl(WHEEL_R, WHEEL_W) - cyl(WHEEL_R - 4.0, WHEEL_W + 0.2, -0.1)
-    for zc in (6.0, WHEEL_W - 6.0):
-        rim -= cyl(WHEEL_R + 0.1, 2.5, zc - 1.25) - cyl(WHEEL_R - 1.2, 2.7, zc - 1.35)
-    web = cyl(WHEEL_R - 3.5, 4.0)
-    for k in range(5):
-        a = 36.0 + 72.0 * k
-        web -= bd.Rot(0, 0, a) * bd.Pos(21.5, 0, 0) * cyl(6.5, 4.4, -0.2)
-    hub = cyl(7.5, WHEEL_W)
-    marker = bd.Pos(0, 0, 4.0) * bd.extrude(
-        bd.Polygon((8.5, -1.5), (27.0, -1.5), (27.0, -3.5), (33.0, 0.0), (27.0, 3.5), (27.0, 1.5), (8.5, 1.5),
+    """Stand-in for the LEGO 81.6 x 38 R tyre on its rim (not printed): tyre, rim with a dished face, hub with the
+    cross hole, and a raised marker on the outer face so the two sides can be compared turning."""
+    tyre = cyl(WHEEL_R, WHEEL_W) - cyl(28.0, WHEEL_W + 0.2, -0.1)
+    rim = cyl(28.0, WHEEL_W) - cyl(24.0, WHEEL_W - 12.0, 6.0) - cyl(24.0, 3.1, WHEEL_W - 3.0)
+    marker = bd.Pos(0, 0, WHEEL_W - 3.0) * bd.extrude(
+        bd.Polygon((8.5, -1.5), (19.0, -1.5), (19.0, -3.5), (23.5, 0.0), (19.0, 3.5), (19.0, 1.5), (8.5, 1.5),
                    align=None), 1.2)
-    w = rim + web + hub + marker - cross_bore(0, WHEEL_W)
+    w = tyre + rim + cyl(7.5, WHEEL_W) + marker - cross_bore(0, WHEEL_W)
     return place(w, (s * WHEEL_X0, REAR_Y, AXLE_Z), (0, 0, 1), (s, 0, 0))
 
 

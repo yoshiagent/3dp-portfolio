@@ -3,12 +3,12 @@
 Plates (bed 256 x 256, Bambu Lab X2D as in ../../differential_model/differential_model.3mf, whose project
 settings are copied so the file opens with that printer):
   1 chassis      drive base, middle chassis
-  2 drive train  ring 44T, pinion 11T, carrier, cross pin, side gears x2, spider gears x2, inner sleeves x2
-  3 wheels       rear wheels x2, posts x2
-  4 steering     steering frame, knuckles, tie rods x2, crank, servo holder base and cover
-  5 motor+power  TT motor frame (SideTop), TT coupler, battery box, battery lid, breadboard frame
+  2 drive train  ring 44T, pinion 11T, carrier, cross pin, side gears x2, spider gears x2, inner sleeves x2,
+                 posts x2
+  3 steering     steering frame, knuckles, tie rods x2, crank, servo holder base and cover
+  4 motor+power  TT motor frame (SideTop), TT coupler, battery box, battery lid, breadboard frame
 Not printed (LEGO / standard parts): Technic pins, cross axles (3L, 10L x2, front axles with stop), half bushes
-x2 and bushes x2 on the rear axles, LEGO 56 x 26 front wheels, M2 screws.
+x2 and bushes x2 on the rear axles, LEGO wheels front (56 x 26) and rear (81.6 x 38 R), M2 screws.
 
 Poses: car parts as in print_parts.py, drive train as in ../../electric_differential/src/print_parts.py, steering
 as in ../../mg90s_steering/src/print_plate.py; FreeCAD parts (steering, motor frame, coupler, battery box, lid,
@@ -98,10 +98,10 @@ def plate_parts() -> list[tuple[str, list[tuple[str, np.ndarray, np.ndarray]]]]:
                           b3d("chassis", pose(c.chassis(), x_dir=X, z_dir=Z))]),
         ("2 傳動 drive train", [b3d(k, gears[k]) for k in ("ring_half", "pinion", "carrier_left", "cross_pin",
                                                           "side_gear_1", "side_gear_2", "spider_1", "spider_2",
-                                                          "sleeve_right", "sleeve_left")]),
-        ("3 後輪 wheels", [b3d(k, small[k]) for k in ("rear_wheel_right", "rear_wheel_left", "post_front", "post_rear")]),
-        ("4 轉向 steering", [(name, flat(v), t) for name, v, t in sp.posed()]),
-        ("5 馬達與電路 motor + power",
+                                                          "sleeve_right", "sleeve_left")]
+         + [b3d(k, small[k]) for k in ("post_front", "post_rear")]),
+        ("3 轉向 steering", [(name, flat(v), t) for name, v, t in sp.posed()]),
+        ("4 馬達與電路 motor + power",
          [(name, flat(read_stl(TT / f"{stem}.stl")[0]), read_stl(TT / f"{stem}.stl")[1]) for name, stem in (
              ("tt_motor_frame_SideTop", "tt_motor_technic_SideTop"), ("tt_coupler", "tt_technic_coupler"),
              ("battery_box", "aaa3_battery_box_technic"), ("battery_lid", "aaa3_battery_lid_technic"),

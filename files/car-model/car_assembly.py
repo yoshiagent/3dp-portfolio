@@ -66,7 +66,7 @@ def rear_parts() -> dict[str, bd.Part]:
         p[f"rear axle {side}"] = labeled(c.rear_axle(s), f"rear axle 10L:{side}", "silver")
         p[f"collar {side}"] = labeled(c.collar(s), f"axle collar:{side}", "khaki")
         p[f"spacer {side}"] = labeled(c.spacer(s), f"wheel spacer:{side}", "khaki")
-        p[f"rear wheel {side}"] = labeled(c.rear_wheel(s), f"rear wheel 80:{side}",
+        p[f"rear wheel {side}"] = labeled(c.rear_wheel(s), f"rear wheel LEGO 81.6:{side}",
                                           "royalblue" if s > 0 else "magenta")
     return p
 
