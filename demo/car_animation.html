@@ -139,7 +139,7 @@ footer { color: var(--muted); font-size: 0.75rem; }
       <div class="row">
         <button class="btn" id="prev">◀ 上一步</button>
         <button class="btn primary" id="next">下一步 ▶</button>
-        <span class="stepno" id="stepno">爆炸圖 · 0 / 15</span>
+        <span class="stepno" id="stepno">爆炸圖 · 0 / 14</span>
       </div>
       <div class="row">
         <button class="btn" id="play">▶ 自動播放</button>
@@ -238,14 +238,12 @@ footer { color: var(--muted); font-size: 0.75rem; }
       li: ["行星架、十字銷、兩個行星齒輪、兩個半軸齒輪先組成一顆，44 齒冠狀齒輪接在右側板上",
            "整顆放進兩座內側軸承塔之間，邊放邊轉讓冠狀齒輪咬進小齒輪；冠狀齒輪落進底板的槽",
            "軸套填滿塔和行星架之間的空隙，左右不會晃"], std: [] },
-    { t: "① 驅動模組：後輪軸＋止動環", en: "Rear Axles", p: { "axle collar:left": [0, 0, 40], "axle collar:right": [0, 0, 40] },
-      li: ["止動環先放進外塔與內塔之間", "10L 十字軸從外側穿過外塔、止動環、內塔，插進半軸齒輪；止動環貼著外塔內側，軸就不會往外滑"],
-      std: ["10L 十字軸 ×2（LEGO 或自印，自印版在零件盤裡）"] },
-    { t: "① 驅動模組：墊片＋後輪", en: "Spacers & Rear Wheels", p: { "wheel spacer:left": [-140, 0, 0], "wheel spacer:right": [140, 0, 0],
-      "rear wheel 80:left": [-160, 0, 0], "rear wheel 80:right": [160, 0, 0] },
-      li: ["墊片套在軸上、夾在外塔和輪子之間，輪子不會往內跑", "Ø80 自印後輪：冠狀齒輪齒頂在軸下 33.3 mm，輪子要夠大才不會碰地（離地 6.7 mm）",
+    { t: "① 驅動模組：後輪", en: "Rear Axles & Wheels", p: { "rear wheel 80:left": [-160, 0, 0], "rear wheel 80:right": [160, 0, 0] },
+      li: ["半軸套先放進外塔與內塔之間，10L 十字軸從外側穿過外塔、半軸套、內塔，插進半軸齒輪；半軸套貼著外塔內側，軸就不會往外滑",
+           "軸套套在外塔外側，Ø80 自印後輪再套上軸端：輪子不會往內跑；冠狀齒輪齒頂在軸下 33.3 mm，輪子要夠大才不會碰地（離地 6.7 mm）",
            "到這裡驅動模組完成，可以單獨通電測試馬達和差速器"],
-      std: ["O 型環 ×4（選配，套在輪緣兩道溝當輪胎）"] },
+      std: ["LEGO 10L 十字軸 ×2", "LEGO 半軸套（1/2 bush）×2：外塔內側", "LEGO 軸套（bush）×2：外塔與輪子之間",
+            "O 型環 ×4（選配，套在輪緣兩道溝當輪胎）"] },
     { t: "② 轉向模組：伺服座＋MG90S", en: "Steering Module · Servo Holder", p: { "holder base": [0, 0, 90], "MG90S (not printed)": [-35, 0, 90],
       "holder cover": [-60, 0, 90], "cross horn (not printed)": [0, 0, 100] },
       li: ["轉向模組先在車子前方另外組", "MG90S 從側面滑進伺服座底座，再蓋上側蓋，裝上十字舵盤"],
@@ -282,7 +280,8 @@ footer { color: var(--muted); font-size: 0.75rem; }
       std: ["Technic 2L 摩擦銷 ×10（電池盒頂 6、立柱頂 4）", "半尺寸麵包板（400 孔）×1"] },
   ];
   // standard parts: drawn in the driving demo only; in the assembly steps they are listed (std) instead
-  const STD_HIDDEN = ["input axle 3L", "rear axle 10L:left", "rear axle 10L:right", FW[-1], FW[1]];
+  const STD_HIDDEN = ["input axle 3L", "rear axle 10L:left", "rear axle 10L:right", FW[-1], FW[1],
+    "axle collar:left", "axle collar:right", "wheel spacer:left", "wheel spacer:right"];
   // a module built away from the car and carried into place in its own step (back level with its place, then down)
   const GROUPS = { steer: { off: [0, 130, 70], parts: STEER_PARTS } };
   const N = STEPS.length;
@@ -292,7 +291,7 @@ footer { color: var(--muted); font-size: 0.75rem; }
          "銷、十字軸、LEGO 前輪等標準件不畫出來，每一步的說明下方列出規格與數量", "零件分開排在各自的組裝方向上，虛線指出要裝到哪裡", "按「下一步 ▶」或鍵盤 → 裝上一個步驟；「◀ 上一步」或 ← 拆回去",
          "「▶ 自動播放」會一步一步自動組裝完成"],
     std: ["Technic 2L 摩擦銷 約 65 支（另加電池盒蓋用的銷）", "Technic 2L 無摩擦銷 ×4、3L 無摩擦銷 ×2",
-          "LEGO 十字軸：3L ×1、10L ×2（可自印）、附擋頭十字軸 ×2", "LEGO Ø56 × 26 輪 ×2、O 型環 ×4（選配）", "M2 螺絲 ×4",
+          "LEGO 十字軸：3L ×1、10L ×2、附擋頭十字軸 ×2", "LEGO 半軸套 ×2、軸套 ×2", "LEGO Ø56 × 26 輪 ×2、O 型環 ×4（選配）", "M2 螺絲 ×4",
           "MG90S 伺服機、TT 減速馬達、3×AAA 電池、半尺寸麵包板"] };
   const stepOf = {}, groupOf = {};
   STEPS.forEach((s, k) => Object.keys(s.p).forEach((n) => (stepOf[n] = k)));

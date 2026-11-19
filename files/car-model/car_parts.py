@@ -21,7 +21,8 @@ Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, al
 * upper level: the breadboard frame itself (its bottom is a full 13 x 9 Technic grid), pinned straight onto the
   battery box top (stood on edge, lid outward) and two posts (front post on the chassis, rear post on the drive
   base: the motor leaves no chassis there). No separate deck plate.
-* rear wheels dia. 80 x 24, 10L axles, spacers and collars.
+* rear wheels dia. 80 x 24. The rear axle line's 10L axles, collars (= LEGO half bush, 4 mm, cross hole) and
+  spacers (= LEGO bush, 8 mm) are LEGO standard parts; their shapes here are stand-ins, not printed.
 
 Why three levels: the TT motor frame's lower side is 20.3 above the ground, so the drive base must stay at the
 bottom (z 8 - 15.8) and the chassis that joins it to the steering goes one level up, clear of the motor.
