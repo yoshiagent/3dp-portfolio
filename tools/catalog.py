@@ -109,7 +109,7 @@ PROJECTS = [
             ("結構", [
                 "零件：冠狀齒輪（兩半）、小齒輪與輸入軸、行星架、十字銷、行星齒輪 ×2、半軸齒輪 ×2、輪軸、軸套、車輪、機架、曲柄",
                 "行星齒輪在十字銷上轉動（孔徑 +0.4），十字銷在行星架立柱裡緊配（+0.1）",
-                "車輪與半軸齒輪用 LEGO 十字軸傳動，十字孔每邊間隙 0.1 mm；軸在 5.4 mm 圓孔中轉動",
+                "車輪與半軸齒輪用 LEGO 十字軸傳動，十字孔每邊間隙 0.15 mm（原本 0.1 mm 時十字軸插不進，已更新到專案檔）；軸在 5.4 mm 圓孔中轉動",
                 "機架加三角補強，曲柄套在輸入軸上，軸端與軸套齊平",
             ]),
             ("建模流程", [
@@ -239,8 +239,8 @@ PROJECTS = [
         "files": [(TT + "tt_motor_technic.FCStd", "Technic 馬達座：FreeCAD 參數化模型"),
                   (TT + "out/tt_motor_technic.3mf", "Technic 馬達座：Bambu Studio 專案"),
                   (TT + "tt_technic_coupler.FCStd", "聯軸器：FreeCAD 參數化模型"),
-                  (TT + "out/tt_technic_coupler_c015.3mf", "聯軸器：3MF（十字孔每邊 0.15 mm，目前版本）"),
-                  (TT + "out/tt_technic_coupler.3mf", "聯軸器：Bambu Studio 專案（舊版，十字孔 0.075 mm，插不進）"),
+                  (TT + "out/tt_technic_coupler.3mf", "聯軸器：Bambu Studio 專案（十字孔每邊 0.15 mm）"),
+                  (TT + "out/tt_technic_coupler_c015.3mf", "聯軸器：純 3MF（同上，不含列印設定）"),
                   (TT + "cross_fit_test.FCStd", "十字孔試片：FreeCAD 參數化模型"),
                   (TT + "cross_fit_test.FCStd", "十字孔試片：3MF（由最新 FCStd 匯出）", "export"),
                   (TT + "build_tt_technic.py", "建模腳本")] + TT_SRC,
