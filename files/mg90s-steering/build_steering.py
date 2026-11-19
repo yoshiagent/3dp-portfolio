@@ -77,7 +77,7 @@ PARAMS = [
     ("screw_cb_h", "1.6", "固定螺絲頭沉孔深度 (mm)"),
     ("axle_d", "4.8", "LEGO 十字軸外徑 (mm)"),
     ("axle_arm", "1.8", "LEGO 十字軸臂寬 (mm)"),
-    ("lego_clear", "0.075", "十字孔每邊間隙 (mm)"),
+    ("lego_clear", "0.15", "十字孔每邊間隙：0.075 時十字軸插不進 (mm)"),
     ("hole_d", "=axle_d + 2 * lego_clear", "十字孔外徑（自動計算）"),
     ("hole_w", "=axle_arm + 2 * lego_clear", "十字孔臂寬（自動計算）"),
     ("slot_l", "=2 * (horn_r + horn_clear)", "舵盤凹槽長（自動計算）"),

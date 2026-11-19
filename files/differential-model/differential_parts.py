@@ -55,7 +55,7 @@ BEARING_D = 5.4  # round holes the LEGO axles turn in (axle 4.8)
 # wheel axles: LEGO Technic cross axle, standard 4L length so a real LEGO axle fits too
 LEGO_AXLE_D, LEGO_ARM_W = 4.8, 1.8
 LEGO_AXLE_L = 4 * 8.0 - 0.2  # 4L
-LEGO_CLEAR = 0.1  # per side, in the cross holes of the side gears and wheels
+LEGO_CLEAR = 0.15  # per side, in the cross holes of the side gears, pinion and wheels (0.1 was too tight to push an axle in)
 AXLE_IN = 2.5  # clear of the cross pin (|x| <= 2)
 AXLE_OUT = AXLE_IN + LEGO_AXLE_L
 INPUT_AXLE_L = 3 * 8.0 - 0.2  # input (pinion) shaft: LEGO 3L

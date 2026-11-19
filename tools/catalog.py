@@ -218,7 +218,7 @@ PROJECTS = [
         "tools": ["FreeCAD PartDesign", "FreeCAD 腳本"],
         "summary": "在 TT 馬達座兩側加上 LEGO Technic 銷孔牆，再配一個把 TT 馬達軸轉成 LEGO 十字軸的聯軸器，以及挑選十字孔間隙用的試片。",
         "specs": [("孔距／孔徑", "8 mm／4.9 mm"), ("沉頭", "Ø6.2 × 0.8 mm"), ("寬度", "5 格 Technic"),
-                  ("十字孔間隙", "每邊 0.075 mm（白色 PLA）")],
+                  ("十字孔間隙", "每邊 0.15 mm（0.075 時十字軸插不進）")],
         "sections": [
             ("Technic 馬達座", [
                 "以 TT 馬達座為核心，兩側加厚牆，雙側都有 Technic 銷孔（盲孔深 8 mm，不穿進馬達槽）",
@@ -231,7 +231,7 @@ PROJECTS = [
             ]),
             ("十字孔試片", [
                 "一排不同間隙的十字孔，用真的 LEGO 十字軸試插",
-                "白色 PLA 以第 1 孔最合適，所以聯軸器採每邊 0.075 mm；換耗材時重印試片重挑",
+                "白色 PLA 試片原本以第 1 孔（0.075 mm）最合適，但實際印出的聯軸器十字軸插不進，改成每邊 0.15 mm；換耗材時重印試片重挑",
             ]),
         ],
         "images": [("render", TT + "tt_motor_technic.FCStd"), ("render", TT + "tt_technic_coupler.FCStd"),
@@ -239,7 +239,8 @@ PROJECTS = [
         "files": [(TT + "tt_motor_technic.FCStd", "Technic 馬達座：FreeCAD 參數化模型"),
                   (TT + "out/tt_motor_technic.3mf", "Technic 馬達座：Bambu Studio 專案"),
                   (TT + "tt_technic_coupler.FCStd", "聯軸器：FreeCAD 參數化模型"),
-                  (TT + "out/tt_technic_coupler.3mf", "聯軸器：Bambu Studio 專案"),
+                  (TT + "out/tt_technic_coupler_c015.3mf", "聯軸器：3MF（十字孔每邊 0.15 mm，目前版本）"),
+                  (TT + "out/tt_technic_coupler.3mf", "聯軸器：Bambu Studio 專案（舊版，十字孔 0.075 mm，插不進）"),
                   (TT + "cross_fit_test.FCStd", "十字孔試片：FreeCAD 參數化模型"),
                   (TT + "cross_fit_test.FCStd", "十字孔試片：3MF（由最新 FCStd 匯出）", "export"),
                   (TT + "build_tt_technic.py", "建模腳本")] + TT_SRC,
@@ -569,6 +570,7 @@ PROJECTS = [
                 "③ 轉向：車架、轉向節、拉桿 ×2、曲柄、伺服座底座與側蓋（約 4.3 小時、48 g）",
                 "④ 馬達與電路：TT 馬達外框、聯軸器、電池盒與蓋、麵包板底座（約 11.6 小時、120 g）；合計約 26.3 小時、300 g（Bambu Lab X2D、PLA、0.4 噴嘴估算）",
                 "LEGO 標準件一律不印：Technic 銷、十字軸（3L、10L ×2、附擋頭軸 ×2）、半軸套 ×2、軸套 ×2、前輪 Ø56 ×2、後輪 Ø81.6 × 38 R ×2；數量見動畫頁的標準件總表",
+                "十字孔（半軸齒輪、小齒輪、聯軸器、曲柄）每邊間隙 0.15 mm：原本 0.075～0.1 mm 時十字軸插不進",
                 "用 Bambu Studio 命令列逐盤切片確認 4 盤都能切；27 件網格都是 0 條開放邊；零件間留 15 mm，給 5 mm 自動 brim",
             ]),
             ("3D 動畫頁", [
@@ -753,7 +755,7 @@ SOFTWARE = [
             ]),
             ("試尺寸的設定", [
                 "量配合尺寸（凸點、十字孔）時，X-Y 輪廓補償設 0，否則量到的不是模型本身的尺寸",
-                "同一盤印多個不同尺寸的試件，一次挑出最合適的（DUPLO 凸點 9.55 mm、十字孔間隙 0.075 mm 都是這樣定的）",
+                "同一盤印多個不同尺寸的試件，一次挑出最合適的（DUPLO 凸點 9.55 mm、十字孔間隙都是這樣定的；十字孔後來實印發現太緊，再放鬆到 0.15 mm）",
             ]),
         ],
     },

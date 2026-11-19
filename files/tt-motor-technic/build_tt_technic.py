@@ -43,7 +43,7 @@ COUPLER_PARAMS = [
     ("web", "1", "兩孔之間隔板厚 (mm)"),
     ("axle_d", "4.8", "LEGO 十字軸外徑 (mm)"),
     ("axle_arm", "1.8", "LEGO 十字軸臂寬 (mm)"),
-    ("lego_clear", "0.075", "十字孔每邊間隙：白色 PLA 試片第 1 孔最合適；換耗材請用 cross_fit_test 重挑 (mm)"),
+    ("lego_clear", "0.15", "十字孔每邊間隙：0.075 時十字軸插不進，改 0.15；換耗材請用 cross_fit_test 重挑 (mm)"),
     ("axle_depth", "8", "十字孔深度 (mm)"),
     ("length", "=tt_depth + web + axle_depth", "聯軸器總長（自動計算）"),
     ("hole_d", "=axle_d + 2 * lego_clear", "十字孔外徑（自動計算）"),
