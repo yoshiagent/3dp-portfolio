@@ -1,7 +1,12 @@
 """Car model, full assembly: MG90S front steering + motor-driven differential + battery box + breadboard.
 
+Three groups, each assembled on its own and then pinned together with vertical LEGO Technic 2L pins:
+  drive module     drive base + motor, coupler, differential, rear axle line, rear wheels (drive_parts)
+  steering module  servo holder + steering frame + linkage + front wheels (steering_parts)
+  body             chassis (middle level), battery box, deck posts, deck, breadboard frame (body_parts)
 `posed_parts(theta, spin)` places every part: theta = steering crank angle (deg, + = counter-clockwise from above,
 as in ../../mg90s_steering), spin = differential carrier turned about the rear axle (deg), for the checks.
+`exploded()` pulls the groups apart along z to show the pin joints.
 Vehicle frame: x right, y forward, z up from the ground (see car_parts.py).
 """
 from __future__ import annotations
@@ -66,13 +71,18 @@ def rear_parts() -> dict[str, bd.Part]:
     return p
 
 
+def drive_parts(spin: float = 0.0) -> dict[str, bd.Part]:
+    """The drive module: everything that comes off the car with the drive base."""
+    return {"drive base": labeled(c.drive_base(), "drive base", "dimgray"), **diff_parts(spin), **rear_parts()}
+
+
 def body_parts() -> dict[str, bd.Part]:
     return {
-        "chassis": labeled(c.chassis(), "chassis", "dimgray"),
+        "chassis": labeled(c.chassis(), "chassis", "#5a6470"),
         "battery box": labeled(c.battery_box(), "battery box 3xAAA", "slategray"),
         "battery lid": labeled(c.battery_lid(), "battery lid", "lightslategray"),
-        "post front": labeled(c.deck_post(c.POSTS_Y[0]), "deck post:front", "gray"),
-        "post rear": labeled(c.deck_post(c.POSTS_Y[1]), "deck post:rear", "gray"),
+        "post front": labeled(c.deck_post(c.POSTS_Y[0], c.POSTS_Z0[0]), "deck post:front", "gray"),
+        "post rear": labeled(c.deck_post(c.POSTS_Y[1], c.POSTS_Z0[1]), "deck post:rear", "gray"),
         "deck": labeled(c.deck(), "deck", "darkgray"),
         "breadboard frame": labeled(c.breadboard_frame(), "breadboard frame", "steelblue"),
     }
@@ -93,7 +103,23 @@ def steering_parts(theta: float = 0.0) -> dict[str, bd.Part]:
 
 
 def posed_parts(theta: float = 0.0, spin: float = 0.0) -> dict[str, bd.Part]:
-    return {**body_parts(), **steering_parts(theta), **diff_parts(spin), **rear_parts()}
+    return {**body_parts(), **steering_parts(theta), **drive_parts(spin)}
+
+
+EXPLODE = {"drive": -60.0, "chassis": 0.0, "steering": 50.0, "top": 110.0}  # z offset of each group
+
+
+def exploded() -> dict[str, bd.Part]:
+    """Groups pulled apart along z: drive module down, steering module up, battery/deck/breadboard further up."""
+    groups = [(drive_parts(), lambda k: "drive"), (steering_parts(), lambda k: "steering"),
+              (body_parts(), lambda k: "chassis" if k == "chassis" else "top")]
+    out = {}
+    for parts, group in groups:
+        for k, s in parts.items():
+            m = bd.Pos(0, 0, EXPLODE[group(k)]) * s
+            m.label, m.color = s.label, s.color
+            out[k] = m
+    return out
 
 
 @step(out="../STEP/car_assembly.step")

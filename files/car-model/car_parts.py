@@ -9,12 +9,21 @@ Why the rear is different from the bench model: the 44-tooth ring reaches 33.3 m
 wheels grow to dia. 80 (axle 40 above the ground) and the plate gets a slot the ring turns in (ring 6.7 mm
 above the ground). The front keeps the LEGO 56 x 26 wheels and the steering module unchanged.
 
-New printed parts
-* chassis: one Technic plate (8 mm grid, x = 0, y = 0 mod 8, 7.8 thick, bottom 8 above the ground, as the servo
-  holder), with the differential's towers, outer axle towers, motor piers, side arms pinned to the servo holder
-  and risers pinned under the steering frame.
-* deck (upper level) for the breadboard, carried by the battery box (stood on edge, lid outward) and two posts.
+Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, all vertical, from above)
+* drive module: drive base (Technic plate z 8 - 15.8, 8 mm grid, x = 0, y = 0 mod 8, the lowest level at the
+  rear) with the differential's towers, outer axle towers and motor piers; carries the TT motor in its frame,
+  coupler, differential, rear axles, collars, spacers and rear wheels.
+* steering module: the MG90S steering exactly as in ../../mg90s_steering (servo holder hanging from the steering
+  frame's bulkhead, frame plate z 24.2 - 31.6 out to the kingpins).
+* chassis (middle level, plate z 16.0 - 23.8): stacked on the drive base's front edge and left side, and under
+  the steering frame plate. Pins go down through the chassis into the drive base, and down through the steering
+  frame plate into the chassis. Battery box and front deck post stand on the chassis.
+* deck (upper level) for the breadboard, carried by the battery box (stood on edge, lid outward) and two posts
+  (front post on the chassis, rear post on the drive base: the motor leaves no chassis there).
 * rear wheels dia. 80 x 24, 10L axles, spacers and collars.
+
+Why three levels: the TT motor frame's lower side is 20.3 above the ground, so the drive base must stay at the
+bottom (z 8 - 15.8) and the chassis that joins it to the steering goes one level up, clear of the motor.
 
 Units mm.
 """
@@ -51,18 +60,11 @@ COLLAR_L = 4.0
 COLLAR_X = (OUTER_X0 - 0.15 - COLLAR_L, OUTER_X0 - 0.15)  # on the axle inside the outer tower: no outward slide
 TUBE_OD = d.SLEEVE_OD
 
-# --- chassis plate ---
+# --- drive base (lowest level, rear) ---
 Z0, Z1 = 8.0, 15.8
-ROW_Z = Z0 + 3.9  # 11.9: the servo holder's lowest hole row
 HALF_W = 51.7
 Y_REAR, Y_FRONT = -151.7, -12.3
 HOLDER_HALF, HOLDER_Y0 = 20.3, -28.3  # holder +0.6 all round (holder |x| <= 19.7, y >= -27.7)
-ARM_X1, ARM_Y1 = 35.7, 35.7
-RISER = (20.3, 27.7, 20.3, 35.7)  # |x|, y under the steering frame plate (bottom z 24.2)
-RISER_Z1 = 23.6
-HOLDER_SIDE_ROWS = (-24.0, -16.0, -8.0, 0.0, 8.0, 16.0)  # holder side-face holes (y) at z = 11.9
-HOLDER_END_COLS = (-16.0, -8.0, 0.0, 8.0, 16.0)  # holder back-end holes (x) at z = 11.9
-SIDE_HOLE_DEPTH = 9.0
 SLOT = (-17.0, -4.0, REAR_Y - 24.5, REAR_Y + 24.5)  # the ring (x -15.4 .. -5.6) turns through it
 TOWER_TOP = AXLE_Z + d.TOWER_TOP
 TIE_RIB_H = 8.0  # low rib joining each inner axle tower to the outer one
@@ -72,14 +74,32 @@ MOTOR_Y = REAR_Y - e.MOTOR_C_Y  # -48
 PIER_TOP = AXLE_Z + e.MOTOR_FRAME_Z  # 20.3: motor frame's lower side
 PIER_COLS = tuple(sorted((-c1, -c0) for c0, c1 in e.PIER_COLS))  # (-24,-16), (0,8), (40,48)
 MOTOR_X = (-27.7, 51.7)  # motor frame extent
+MOTOR_Y0 = MOTOR_Y - 11.9  # -59.9 .. -36.1: motor frame (and its piers) along y
+MOTOR_Y1 = MOTOR_Y + 11.9
+
+# --- chassis (middle level): one Technic plate stacked on the drive base, under the steering frame plate ---
+MID_Z0, MID_Z1 = Z1 + 0.2, Z1 + 8.0  # 16.0 .. 23.8; steering frame plate bottom 24.2 (0.4 above)
+MID_FRONT = (-35.7, -12.3)  # y: full-width part over the drive base's front edge, 0.4 ahead of the motor frame;
+                            # at full lock the front wheels reach y -4.7 (|x| >= 36.9) at this height
+RAIL = (-51.7, -28.3, -99.7, -35.7)  # x0, x1, y0, y1: left rail over the drive base, beside the motor frame
+                                     # (0.6 off x -27.7), ends clear of the left outer tower's ribs (y -105)
+ARM = (20.3, 27.7)  # |x| of the two arms beside the servo holder and bulkhead (inner edge 0.6 off them)
+NOSE = (28.3, 43.7)  # y: block under the steering frame plate, ahead of the bulkhead (y <= 27.7) up to the
+                     # plate's front edge; |x| <= ARM[1], well inside the knuckles' lower ears (|x| >= 36.3)
+STEER_PINS = [(x, y) for x in (-24.0, -16.0, -8.0, 0.0, 8.0, 16.0, 24.0) for y in (32.0, 40.0)] + [
+    (-24.0, 24.0), (24.0, 24.0)]  # steering frame plate holes over the chassis (plate holes in build_steering.py)
 
 # --- electronics ---
-BATT_C = (-40.0, -52.0, Z1 + 27.7)  # box stood on its long edge, lid facing -x
-DECK_Z0 = Z1 + 55.4 + 0.6  # 71.8: one pitch above the box top
+BATT_C = (-40.0, -52.0, MID_Z1 + 27.7)  # box stood on its long edge, lid facing -x, on the chassis rail
+DECK_Z0 = MID_Z1 + 55.4 + 0.6  # 79.8: one pitch above the box top
 DECK_Z1 = DECK_Z0 + 7.8
 DECK_Y = (-95.7, -16.3)
 POSTS_Y = (-20.0, -84.0)  # deck posts at x = 48, two holes each (y +/- 4)
+POSTS_Z0 = (MID_Z1, Z1)  # front post on the chassis, rear post on the drive base
 POST_X = (44.3, 51.7)
+# pin rows under the battery box (x -48, -40, -32): the box and the chassis->drive base pins take turns
+BATT_PIN_ROWS = (-88.0, -72.0, -56.0, -40.0, -24.0)
+RAIL_PIN_ROWS = (-96.0, -80.0, -64.0, -48.0, -32.0, -16.0)
 BREADBOARD_C = (0.0, -56.0, DECK_Z1 + 7.9)
 
 
@@ -171,59 +191,75 @@ def piers() -> tuple[bd.Part, list[tuple]]:
     return reduce(lambda a, b: a + b, out), foot
 
 
-def plate_grid(foot: list[tuple]) -> list[tuple[float, float]]:
-    """Vertical holes of the chassis plate on the 8 mm grid, away from towers, piers, risers and crossing holes."""
+def base_grid(foot: list[tuple]) -> list[tuple[float, float]]:
+    """Vertical holes of the drive base on the 8 mm grid, away from towers and piers."""
     m = CB_D / 2 + 0.6
     pts = []
     for i in range(-6, 7):
         x = i * PITCH
-        for j in range(-19, 5):
+        for j in range(-19, -1):
             y = j * PITCH
-            in_main = abs(x) <= HALF_W - 3.7 and Y_REAR + 3.7 <= y <= Y_FRONT - 3.7 and not (
-                abs(x) < HOLDER_HALF + 3.7 and y > HOLDER_Y0 - 3.7)
-            in_arm = HOLDER_HALF + 3.7 <= abs(x) <= ARM_X1 - 3.7 and HOLDER_Y0 <= y <= ARM_Y1 - 3.7
-            if not (in_main or in_arm):
+            if not (abs(x) <= HALF_W - 3.7 and Y_REAR + 3.7 <= y <= Y_FRONT - 3.7):
+                continue
+            if abs(x) < HOLDER_HALF + 3.7 and y > HOLDER_Y0 - 3.7:
                 continue
             if any(x0 - m < x < x1 + m and y0 - m < y < y1 + m for x0, x1, y0, y1 in foot):
                 continue
-            if y in HOLDER_SIDE_ROWS and abs(x) < HOLDER_HALF + SIDE_HOLE_DEPTH + 0.3:
-                continue  # crosses a side hole into the holder
-            if abs(x) <= 16 and y == -32:
-                continue  # crosses a back-end hole into the holder
             pts.append((x, y))
     return pts
 
 
-def chassis() -> bd.Part:
+def drive_base() -> bd.Part:
+    """Drive module base: the old one-piece chassis's rear, without the parts that held the steering."""
     body = box(-HALF_W, HALF_W, Y_REAR, Y_FRONT, Z0, Z1)
     body -= box(-HOLDER_HALF, HOLDER_HALF, HOLDER_Y0, Y_FRONT + 1, Z0 - 1, Z1 + 1)
-    foot = []
-    for s in (1, -1):
-        body += box(*sorted((s * HOLDER_HALF, s * ARM_X1)), HOLDER_Y0, ARM_Y1, Z0, Z1)
-        rx = sorted((s * RISER[0], s * RISER[1]))
-        body += box(*rx, RISER[2], RISER[3], Z1 - EMBED, RISER_Z1)
-        foot.append((*rx, RISER[2], RISER[3]))
-    tw, tfoot = towers()
+    tw, foot = towers()
     pr, pfoot = piers()
     body = body + tw + pr
-    foot += tfoot + pfoot + [SLOT]
+    foot += pfoot + [SLOT]
     # bearings: rear axle line (all four axle towers), pinion line
     body -= bd.Pos(0, REAR_Y, AXLE_Z) * bd.Rot(0, 90, 0) * bd.Cylinder(d.BEARING_D / 2, 2 * HALF_W + 2)
     body -= bd.Pos(0, (PT_Y0 + PT_Y1) / 2, AXLE_Z) * bd.Rot(90, 0, 0) * bd.Cylinder(d.BEARING_D / 2, 20)
     body -= box(SLOT[0], SLOT[1], SLOT[2], SLOT[3], Z0 - 1, Z1 + 1)
-    tools = [vhole(x, y, Z0, Z1) for x, y in plate_grid(foot)]
-    for s in (1, -1):
-        for y in (24.0, 32.0):  # through the risers, into the steering frame plate
-            tools.append(vhole(s * 24.0, y, Z0, RISER_Z1))
-        for y in HOLDER_SIDE_ROWS:  # side arms -> servo holder side faces
-            tools.append(hole((s * HOLDER_HALF, y, ROW_Z), (s, 0, 0), SIDE_HOLE_DEPTH))
-    for x in HOLDER_END_COLS:  # plate front edge -> servo holder back end
-        tools.append(hole((x, HOLDER_Y0, ROW_Z), (0, -1, 0), 8.5))
+    tools = [vhole(x, y, Z0, Z1) for x, y in base_grid(foot)]
     for c0, c1 in PIER_COLS:  # through pier and plate, under the motor frame's side holes
         for x in (c0, c1):
             for y in (MOTOR_Y - PITCH, MOTOR_Y, MOTOR_Y + PITCH):
                 tools.append(vhole(x, y, Z0, PIER_TOP))
     return body - bd.Compound(tools)
+
+
+def chassis_outline() -> list[tuple]:
+    """Chassis plate as boxes (x0, x1, y0, y1): front part, left rail, two arms, nose."""
+    out = [(-HALF_W, -HOLDER_HALF, MID_FRONT[0], MID_FRONT[1]), (HOLDER_HALF, HALF_W, MID_FRONT[0], MID_FRONT[1]),
+           (-HOLDER_HALF, HOLDER_HALF, MID_FRONT[0], HOLDER_Y0), RAIL[:2] + RAIL[2:]]
+    for s in (1, -1):
+        out.append((*sorted((s * ARM[0], s * ARM[1])), MID_FRONT[1] - 1.0, NOSE[0] + 1.0))
+    out.append((-ARM[1], ARM[1], NOSE[0], NOSE[1]))
+    return out
+
+
+def chassis_grid() -> list[tuple[float, float]]:
+    """Every 8 mm grid point at least 3.7 inside the chassis outline (whole hole and counterbore in the plate)."""
+    boxes = chassis_outline()
+
+    def inside(x, y):
+        return any(x0 <= x <= x1 and y0 <= y <= y1 for x0, x1, y0, y1 in boxes)
+
+    pts = []
+    for i in range(-6, 7):
+        for j in range(-13, 6):
+            x, y = i * PITCH, j * PITCH
+            if all(inside(x + dx, y + dy) for dx in (-3.7, 0, 3.7) for dy in (-3.7, 0, 3.7)):
+                pts.append((x, y))
+    return pts
+
+
+def chassis() -> bd.Part:
+    """Middle level: joins the drive module (below) to the steering module (above), carries the battery box."""
+    body = reduce(lambda a, b: a + b, [box(x0, x1, y0, y1, MID_Z0, MID_Z1) for x0, x1, y0, y1 in chassis_outline()])
+    body = body.clean()
+    return body - bd.Compound([vhole(x, y, MID_Z0, MID_Z1) for x, y in chassis_grid()])
 
 
 # --- upper level ---
@@ -234,9 +270,9 @@ def deck() -> bd.Part:
     return body - bd.Compound(tools)
 
 
-def deck_post(yc: float) -> bd.Part:
-    body = box(*POST_X, yc - 7.7, yc + 7.7, Z1, DECK_Z0 - 0.6)
-    tools = [vhole(48.0, yc + dy, Z1, DECK_Z0 - 0.6) for dy in (-4.0, 4.0)]
+def deck_post(yc: float, z0: float) -> bd.Part:
+    body = box(*POST_X, yc - 7.7, yc + 7.7, z0, DECK_Z0 - 0.6)
+    tools = [vhole(48.0, yc + dy, z0, DECK_Z0 - 0.6) for dy in (-4.0, 4.0)]
     return body - bd.Compound(tools)
 
 
