@@ -3,7 +3,7 @@
 Three groups, each assembled on its own and then pinned together with vertical LEGO Technic 2L pins:
   drive module     drive base + motor, coupler, differential, rear axle line, rear wheels (drive_parts)
   steering module  servo holder + steering frame + linkage + front wheels (steering_parts)
-  body             chassis (middle level), battery box, deck posts, deck, breadboard frame (body_parts)
+  body             chassis (middle level), battery box, posts, breadboard frame on top (body_parts)
 `posed_parts(theta, spin)` places every part: theta = steering crank angle (deg, + = counter-clockwise from above,
 as in ../../mg90s_steering), spin = differential carrier turned about the rear axle (deg), for the checks.
 `exploded()` pulls the groups apart along z to show the pin joints.
@@ -83,7 +83,6 @@ def body_parts() -> dict[str, bd.Part]:
         "battery lid": labeled(c.battery_lid(), "battery lid", "lightslategray"),
         "post front": labeled(c.deck_post(c.POSTS_Y[0], c.POSTS_Z0[0]), "deck post:front", "gray"),
         "post rear": labeled(c.deck_post(c.POSTS_Y[1], c.POSTS_Z0[1]), "deck post:rear", "gray"),
-        "deck": labeled(c.deck(), "deck", "darkgray"),
         "breadboard frame": labeled(c.breadboard_frame(), "breadboard frame", "steelblue"),
     }
 
@@ -110,7 +109,7 @@ EXPLODE = {"drive": -60.0, "chassis": 0.0, "steering": 50.0, "top": 110.0}  # z 
 
 
 def exploded() -> dict[str, bd.Part]:
-    """Groups pulled apart along z: drive module down, steering module up, battery/deck/breadboard further up."""
+    """Groups pulled apart along z: drive module down, steering module up, battery/posts/breadboard further up."""
     groups = [(drive_parts(), lambda k: "drive"), (steering_parts(), lambda k: "steering"),
               (body_parts(), lambda k: "chassis" if k == "chassis" else "top")]
     out = {}

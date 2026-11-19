@@ -17,9 +17,10 @@ Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, al
   frame's bulkhead, frame plate z 24.2 - 31.6 out to the kingpins).
 * chassis (middle level, plate z 16.0 - 23.8): stacked on the drive base's front edge and left side, and under
   the steering frame plate. Pins go down through the chassis into the drive base, and down through the steering
-  frame plate into the chassis. Battery box and front deck post stand on the chassis.
-* deck (upper level) for the breadboard, carried by the battery box (stood on edge, lid outward) and two posts
-  (front post on the chassis, rear post on the drive base: the motor leaves no chassis there).
+  frame plate into the chassis. Battery box and front post stand on the chassis.
+* upper level: the breadboard frame itself (its bottom is a full 13 x 9 Technic grid), pinned straight onto the
+  battery box top (stood on edge, lid outward) and two posts (front post on the chassis, rear post on the drive
+  base: the motor leaves no chassis there). No separate deck plate.
 * rear wheels dia. 80 x 24, 10L axles, spacers and collars.
 
 Why three levels: the TT motor frame's lower side is 20.3 above the ground, so the drive base must stay at the
@@ -91,16 +92,14 @@ STEER_PINS = [(x, y) for x in (-24.0, -16.0, -8.0, 0.0, 8.0, 16.0, 24.0) for y i
 
 # --- electronics ---
 BATT_C = (-40.0, -52.0, MID_Z1 + 27.7)  # box stood on its long edge, lid facing -x, on the chassis rail
-DECK_Z0 = MID_Z1 + 55.4 + 0.6  # 79.8: one pitch above the box top
-DECK_Z1 = DECK_Z0 + 7.8
-DECK_Y = (-95.7, -16.3)
-POSTS_Y = (-20.0, -84.0)  # deck posts at x = 48, two holes each (y +/- 4)
+TOP_Z0 = MID_Z1 + 55.4 + 0.6  # 79.8: breadboard frame bottom, one pitch above the box top
+POSTS_Y = (-28.0, -84.0)  # posts at x = 48, two holes each (y +/- 4), under the frame's bottom holes (y -88..-24)
 POSTS_Z0 = (MID_Z1, Z1)  # front post on the chassis, rear post on the drive base
 POST_X = (44.3, 51.7)
 # pin rows under the battery box (x -48, -40, -32): the box and the chassis->drive base pins take turns
 BATT_PIN_ROWS = (-88.0, -72.0, -56.0, -40.0, -24.0)
 RAIL_PIN_ROWS = (-96.0, -80.0, -64.0, -48.0, -32.0, -16.0)
-BREADBOARD_C = (0.0, -56.0, DECK_Z1 + 7.9)
+BREADBOARD_C = (0.0, -56.0, TOP_Z0 + 7.9)  # frame 15.8 high, origin at its centre
 
 
 def to_vehicle(shape: bd.Part) -> bd.Part:
@@ -262,17 +261,10 @@ def chassis() -> bd.Part:
     return body - bd.Compound([vhole(x, y, MID_Z0, MID_Z1) for x, y in chassis_grid()])
 
 
-# --- upper level ---
-
-def deck() -> bd.Part:
-    body = box(-HALF_W, HALF_W, DECK_Y[0], DECK_Y[1], DECK_Z0, DECK_Z1)
-    tools = [vhole(i * PITCH, j * PITCH, DECK_Z0, DECK_Z1) for i in range(-6, 7) for j in range(-11, -2)]
-    return body - bd.Compound(tools)
-
-
 def deck_post(yc: float, z0: float) -> bd.Part:
-    body = box(*POST_X, yc - 7.7, yc + 7.7, z0, DECK_Z0 - 0.6)
-    tools = [vhole(48.0, yc + dy, z0, DECK_Z0 - 0.6) for dy in (-4.0, 4.0)]
+    """Post under the breadboard frame's right edge, as high as the battery box."""
+    body = box(*POST_X, yc - 7.7, yc + 7.7, z0, TOP_Z0 - 0.6)
+    tools = [vhole(48.0, yc + dy, z0, TOP_Z0 - 0.6) for dy in (-4.0, 4.0)]
     return body - bd.Compound(tools)
 
 

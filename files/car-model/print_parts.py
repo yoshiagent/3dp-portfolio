@@ -2,7 +2,7 @@
 
 Plate 1 (car_drive_base): the drive module's base alone, flat bottom down (103.4 x 139.4 mm, towers 39 mm high).
 Plate 2 (car_chassis): the middle-level chassis alone, a flat 7.8 mm Technic plate (103.4 x 143.4 mm).
-Plate 3 (car_parts): deck, two deck posts, two rear wheels (web face down), spacers, collars and two 10L axles
+Plate 3 (car_parts): two posts, two rear wheels (web face down), spacers, collars and two 10L axles
 (a real LEGO 10L axle works too).
 After rebuilding, close the mesher's T-junctions:
     python ../../web/tools/fix_tjunctions.py ../3MF/car_drive_base.3mf ../3MF/car_chassis.3mf ../3MF/car_parts.3mf ../STL/car_drive_base.stl ../STL/car_chassis.stl
@@ -27,7 +27,7 @@ X, Z = (1, 0, 0), (0, 0, 1)
 
 def small_parts() -> list[tuple[str, bd.Part]]:
     pose = d.print_pose
-    out = [("deck", pose(c.deck(), x_dir=X, z_dir=Z))]
+    out = []
     for k, yc, z0 in (("post_front", c.POSTS_Y[0], c.POSTS_Z0[0]), ("post_rear", c.POSTS_Y[1], c.POSTS_Z0[1])):
         out.append((k, pose(c.deck_post(yc, z0), x_dir=(0, 1, 0), z_dir=X)))  # on its side, layers along the length
     for s, side in ((1, "right"), (-1, "left")):
