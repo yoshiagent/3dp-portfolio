@@ -11,12 +11,16 @@ from cadgen import build123d as bd  # noqa: E402
 import linkage  # noqa: E402
 from steering_assembly import posed_parts  # noqa: E402
 
+import os  # noqa: E402
+
+DIRECT = os.environ.get("STEER_CRANK") == "direct"  # STEER_CRANK=direct: the no-horn crank version
+print("crank version:", "direct (no horn)" if DIRECT else "on the double-arm horn")
 link = linkage.Linkage(**linkage.CHOSEN)
 th_max = linkage.score(link)[0]
 ok = True
 tight = {}
 for theta in (-th_max, -th_max / 2, 0.0, th_max / 2, th_max):
-    parts = posed_parts(theta)
+    parts = posed_parts(theta, direct=DIRECT)
     dl, _ = link.wheel_angle(-1, math.radians(theta))
     dr, _ = link.wheel_angle(1, math.radians(theta))
     bad = []
@@ -25,6 +29,16 @@ for theta in (-th_max, -th_max / 2, 0.0, th_max / 2, th_max):
             continue   # checked with the holder itself
         c = a & b
         v = 0.0 if c is None else c.volume
+        if DIRECT and {na, nb} == {"servo", "crank"} and v > 1e-3:
+            # the stand-in shaft is a plain r 2.4 cylinder: it overlaps the crank's spline teeth (r >= 2.009).
+            # Fine only if all of it stays inside the spline hole (r <= 2.55, z within its 3 mm depth)
+            bb = c.bounding_box()
+            z0 = 31.8 + 13.5 - 3.0
+            inside = (max(abs(bb.min.X), abs(bb.max.X), abs(bb.min.Y), abs(bb.max.Y)) <= 2.56
+                      and bb.min.Z >= z0 - 0.01 and bb.max.Z <= z0 + 3.01)
+            print(f"   spline engagement servo/crank {v:.2f} mm3, inside the spline hole: {inside}")
+            if inside:
+                continue
         if v > 1e-3:
             bad.append((na, nb, round(v, 3)))
         d = a.distance_to(b)
@@ -72,4 +86,9 @@ ok &= probe("crank", "out/steer_crank.step",
             [(8, 27, 6), (-8, 27, 10), (8, 27, 2), (0, 0, 10), (2.3, 0, 9), (6.25, 0, 8), (-11.25, 0, 4),
              (11.25, 0, 10), (15, 0, 1), (0, 3.5, 1), (17.5, 1, 1), (2, 1.5, 3)],
             [(0, 18, 6), (11, 27, 6), (4, -4, 6), (15.5, 0, 3), (19, 0, 1), (0, -5, 1), (8.75, 0, 1.5 + 2)])
+# direct crank: underside z 0 on the shaft top, hub D10 up to the 5.9 relief, top 13.3; spline 3 deep
+ok &= probe("crank direct", "out/steer_crank_direct.step",
+            [(2.4 * math.sin(math.radians(9)), 2.4 * math.cos(math.radians(9)), 1.5), (0, 0, 4), (2.2, 0, 10),
+             (0, 0, 12), (8, 27, 8), (-8, 27, 12), (8, 27, 3), (8, 0, 3)],
+            [(0, 2.3, 1.5), (0, -2.3, 1.5), (4, 0, 2), (0, -6, 8), (0, 15, 9), (11, 27, 9), (3.5, 0, 4.5)])
 print("RESULT", "PASS" if ok else "FAIL")

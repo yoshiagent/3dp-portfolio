@@ -28,6 +28,7 @@ Z_TAB = 31.8              # servo tab underside (holder bottom 8 above the groun
 HORN_STEP = ROOT / "mg90s_arm" / "out" / "mg90s_arm_double.step"
 HORN_TOP = 13.5 - 3.0 + 2.0 + 2.0   # plate top above the tab underside: spline top - spline hole depth + boss + plate
 Z_CRANK = Z_TAB + HORN_TOP - 1.9    # crank underside: its recess (1.9, horn plate 2 - 0.1) sits on the plate
+Z_CRANK_DIRECT = Z_TAB + 13.5 - 3.0  # direct crank underside: the shaft top bottoms in its 3 deep spline hole
 Z_ROD = 40.2
 KP = 40.0
 WHEEL_D, WHEEL_W = 56.0, 26.0
@@ -51,7 +52,8 @@ def wheel(s) -> bd.Part:
     return bd.Pos(s * (WHEEL_IN + WHEEL_W / 2), 0, WHEEL_Z) * w
 
 
-def posed_parts(theta: float = 0.0):
+def posed_parts(theta: float = 0.0, direct: bool = False):
+    """direct=True: the steer_crank_direct version (no horn) instead of the horn and crank."""
     link = linkage.Linkage(**linkage.CHOSEN)
     th = math.radians(theta)
     parts = {
@@ -65,6 +67,10 @@ def posed_parts(theta: float = 0.0):
                          "crank", "orange"),
         "frame": labeled(read_step(str(OUT / "steer_frame.step")), "steering frame", "dimgray"),
     }
+    if direct:  # the crank without a horn, its spline hole straight on the servo shaft
+        del parts["horn"]
+        parts["crank"] = labeled(bd.Pos(0, 0, Z_CRANK_DIRECT) * bd.Rot(0, 0, theta) *
+                                 read_step(str(OUT / "steer_crank_direct.step")), "crank (direct)", "orange")
     for s, side in ((1, "right"), (-1, "left")):
         delta, _ = link.wheel_angle(s, th)
         kp = bd.Pos(s * KP, linkage.YK, 0) * bd.Rot(0, 0, delta)

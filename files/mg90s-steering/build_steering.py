@@ -1,7 +1,8 @@
 """MG90S front steering for LEGO Technic: steering frame, two knuckles, tie rod, servo crank (FreeCAD, parametric).
 Saves <part>.FCStd here and STEP/STL in out/.
 
-Run:  freecadcmd.exe build_steering.py      (STEER_PARTS="frame;knuckle_r;knuckle_l;tierod;crank", ';'-separated)
+Run:  freecadcmd.exe build_steering.py
+      (STEER_PARTS="frame;knuckle_r;knuckle_l;tierod;crank;crank_direct", ';'-separated)
 
 Vehicle coordinates: x to the right, y forward, z up from the ground; the servo output shaft is the z axis.
 The MG90S sits in the side-loading holder (../tt_motor_adapter/build_mg90s_side.py), shaft up, its short end
@@ -16,6 +17,8 @@ tools/linkage.py, Ackermann for a 160 wheelbase):
   - crank: sized to the printed double-arm horn (../mg90s_arm, measured from MG90SSovoArm.3mf): the horn's
     plate sits in a recess under the crank, 4 M2 self-tapping screws go down through the crank into the horn's
     D1.5 holes; two tie-rod pin holes at (+-8, 27), the arm relieved underneath so the tie rods clear it by 0.6
+  - crank_direct (steer_crank_direct, alternative): no horn; the horn's measured 20-tooth spline hole is in the
+    crank's hub, which sits straight on the servo shaft, fixed by the servo's own horn screw; same pin holes
 Every part is 7.4 thick with 0.6 gaps on an 8 mm pitch, so standard Technic pins join them.
 """
 import os
@@ -84,6 +87,24 @@ PARAMS = [
     ("screw_d", "2.2", "固定螺絲穿孔直徑：M2 自攻螺絲鎖進舵臂 Ø1.5 孔 (mm)"),
     ("screw_cb_d", "4.2", "固定螺絲頭沉孔直徑 (mm)"),
     ("screw_grip", "3", "螺絲頭下方曲柄留的厚度：M2 × 5 剛好穿過舵臂 (mm)"),
+    # direct crank (steer_crank_direct): no horn, the 20-tooth spline hole measured from the horn is in the crank
+    ("shaft_top", "13.5", "伺服輸出軸頂離舵機耳下緣：照片推估，請實測 (mm)"),
+    ("spline_depth", "3", "齒孔深：與舵臂相同 (mm)"),
+    ("spline_teeth", "20", "齒數：SG90 / MG90S 20 齒"),
+    ("spline_ro", "2.55", "齒孔外半徑（齒槽底），量自舵臂 (mm)"),
+    ("spline_ri", "2.009", "齒孔內半徑（齒尖），量自舵臂 (mm)"),
+    ("tooth_tip_deg", "0.853", "齒尖半角寬 (deg)"),
+    ("tooth_base_deg", "5.022", "齒根半角寬（在外半徑上）(deg)"),
+    ("spline_clear", "0", "齒孔每邊放大量：舵臂原檔是緊配，太緊時調大 (mm)"),
+    ("tri", "=spline_ri + spline_clear", "齒尖半徑含間隙（自動計算）"),
+    ("tro", "=spline_ro + spline_clear", "齒槽底半徑含間隙（自動計算）"),
+    ("d_hub_d", "10", "直接版：下方軸轂直徑 (mm)"),
+    ("d_z0", "=z_tab + shaft_top - spline_depth", "直接版：曲柄底面離地 z，軸頂頂到齒孔底（自動計算）"),
+    ("d_relief", "=z_rod + part_t + part_gap - d_z0", "直接版：軸轂高＝曲柄臂下方讓位（自動計算）"),
+    ("d_h", "=d_relief + part_t", "直接版：曲柄總高（自動計算）"),
+    ("d_screw_d", "2.5", "直接版：中心螺絲孔直徑（伺服機附的舵盤螺絲）(mm)"),
+    ("d_head_d", "5.2", "直接版：中心螺絲頭沉孔直徑 (mm)"),
+    ("d_floor", "2", "直接版：齒孔底到螺絲頭之間留的厚度 (mm)"),
     ("axle_d", "4.8", "LEGO 十字軸外徑 (mm)"),
     ("axle_arm", "1.8", "LEGO 十字軸臂寬 (mm)"),
     ("lego_clear", "0.15", "十字孔每邊間隙：0.075 時十字軸插不進 (mm)"),
@@ -278,6 +299,50 @@ def build_crank(stem):
     return stem
 
 
+def build_crank_direct(stem):
+    """Crank fixed straight onto the servo spline, no horn: z = 0 is its underside (d_z0 above the ground), where
+    the servo shaft's top bottoms in the spline hole; the tie-rod arm toward +y at the same height as the horn
+    version. The servo's own horn screw goes down through the centre into the shaft."""
+    doc = core.make_doc(stem, PARAMS)
+    body = doc.addObject("PartDesign::Body", "SteerCrankDirect")
+    H, rel = P + "d_h", P + "d_relief"
+    hub = f"{P}crank_c + {R}"
+    cylinder(body, "Hub", False, f"{P}d_hub_d / 2", H, "0", "0", "0")
+    cylinder(body, "Disc", False, hub, f"{H} - {rel}", "0", "0", rel)
+    box(body, "CrankArm", False, f"2 * {P}crank_c", f"{P}crank_j", f"{H} - {rel}",
+        x=f"-{P}crank_c", y="0", z=rel)
+    box(body, "CrankWeb", False, f"2 * ({hub})", P + "crank_j", f"{H} - {rel}", x=f"-({hub})", y="0", z=rel)
+    for t, s in (("R", 1), ("L", -1)):
+        cylinder(body, f"PinBoss{t}", False, R, f"{H} - {rel}", f"{s} * {P}crank_c", P + "crank_j", rel)
+    # spline hole from the bottom: a bore at the tooth-space radius with the teeth added back (straight flanks
+    # from the tip, r tri, to the root, r tro), as in ../mg90s_arm/build_mg90s_arms.py
+    cylinder(body, "SplineBore", True, P + "tro", f"{P}spline_depth + 1", "0", "0", "-1")
+    x1, y1 = f"{P}tri * sin({P}tooth_tip_deg)", f"{P}tri * cos({P}tooth_tip_deg)"
+    x2, y2 = f"{P}tro * sin({P}tooth_base_deg)", f"{P}tro * cos({P}tooth_base_deg)"
+    ext = "0.3"  # flanks carried on past the root radius so each tooth joins the hub
+    tooth = body.newObject("PartDesign::AdditiveWedge", "Tooth")
+    x2e = f"{x2} + ({x2} - {x1}) / ({y2} - {y1}) * {ext}"
+    for prop, expr in (("Ymin", y1), ("Ymax", f"{y2} + {ext}"), ("Xmin", f"-{x1}"), ("Xmax", x1),
+                       ("X2min", f"-({x2e})"), ("X2max", x2e),
+                       ("Zmin", "0"), ("Zmax", P + "spline_depth"), ("Z2min", "0"), ("Z2max", P + "spline_depth")):
+        bind(tooth, prop, expr)
+    origin = {o.Role: o for o in body.Origin.OriginFeatures}
+    teeth = body.newObject("PartDesign::PolarPattern", "Teeth")
+    teeth.Originals = [tooth]
+    teeth.Axis = (origin["Z_Axis"], [""])
+    bind(teeth, "Occurrences", P + "spline_teeth")
+    teeth.Angle = 360
+    body.Tip = teeth
+    # centre screw: through hole above the spline, head counterbore from the top leaving d_floor
+    cylinder(body, "ScrewHole", True, f"{P}d_screw_d / 2", f"{H} + 2", "0", "0", "-1")
+    cylinder(body, "ScrewHead", True, f"{P}d_head_d / 2", f"{H} - {P}spline_depth - {P}d_floor + 1", "0", "0",
+             f"{P}spline_depth + {P}d_floor")
+    for t, s in (("R", 1), ("L", -1)):
+        vertical_hole(body, f"RodPin{t}", f"{s} * {P}crank_c", P + "crank_j", rel, H)
+    core.finish(doc, body, stem)
+    return stem
+
+
 def gui_resave(stems):
     if os.environ.get("NO_GUI_RESAVE"):
         return
@@ -296,6 +361,7 @@ PARTS = {
     "knuckle_l": lambda: build_knuckle("steer_knuckle_left", -1),
     "tierod": lambda: build_tierod("steer_tierod"),
     "crank": lambda: build_crank("steer_crank"),
+    "crank_direct": lambda: build_crank_direct("steer_crank_direct"),
 }
 todo = [p for p in os.environ.get("STEER_PARTS", ";".join(PARTS)).split(";") if p]
 gui_resave([PARTS[p]() for p in todo])

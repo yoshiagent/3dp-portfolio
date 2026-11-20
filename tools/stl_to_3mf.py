@@ -1,6 +1,6 @@
 """Write a 3MF next to each binary STL, using the STL's triangles as they are (no re-meshing).
 
-Run:  python tools/stl_to_3mf.py ../mg90s_steering/out/steer_crank.stl [more.stl ...]
+Run:  python tools/stl_to_3mf.py [--flip] ../mg90s_steering/out/steer_crank.stl [more.stl ...]
 -> steer_crank.3mf beside the STL: one object named after the file, same coordinates as the STL.
 
 Why: FreeCAD's Mesh.export (File > Export 3MF) meshes with a different mesher than the
@@ -58,9 +58,14 @@ def write_3mf(objects: list[tuple[str, np.ndarray, np.ndarray]], path: Path, tit
 
 
 if __name__ == "__main__":
-    for arg in sys.argv[1:]:
+    # --flip: turn each part over (180 deg about x) so its top face lies on the bed, e.g. the steering cranks
+    flip = "--flip" in sys.argv
+    for arg in [a for a in sys.argv[1:] if a != "--flip"]:
         stl = Path(arg).resolve()
         v, t = read_stl(stl)
+        if flip:
+            v = v * np.array([1.0, -1.0, -1.0])
+            v[:, 2] -= v[:, 2].min()
         dst = stl.with_suffix(".3mf")
         write_3mf([(stl.stem, v, t)], dst, stl.stem)
         print(f"{dst}: {len(t)} triangles, {dst.stat().st_size / 1e6:.2f} MB")
