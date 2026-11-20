@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>SG90／MG90S 舵機臂（參數化重建）｜3D 列印作品集</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<nav class="topnav"><div class="wrap">
+<a href="https://yoshiagent.github.io/MechanicalAI/">← MechanicalAI</a>
+<span class="sep">｜</span><a href="../index.html">3D 列印作品集</a>
+<span class="sep">｜</span><a href="../software.html">使用的設計軟體</a>
+</div></nav>
+<div class="wrap">
+<div class="crumb"><a href="../index.html">← 全部作品</a>　｜　<a href="../software.html">使用的設計軟體</a></div>
+<div class="head">
+<h1>SG90／MG90S 舵機臂（參數化重建）</h1>
+<div class="en">SG90 / MG90S Servo Horns, Parametric Rebuild</div>
+<div class="meta"><span class="badge k-derived">改作／重建</span><span>2026-11-20</span></div>
+</div>
+<div class="callout">原設計：「舵机臂 伺服电机臂 舵机配件 MG90S SG90」by 吾等斩去红尘时（MakerWorld，CC0）。CC0 允許自由再散布，原檔一併附上。</div>
+<p class="lead">把一組 CC0 授權的舵機臂（單臂、雙臂、十字臂）從網格量測後，用 FreeCAD 參數化重建；齒孔、臂長、孔距都能在參數表裡改。</p>
+
+<div class="layout">
+<div class="gallery"><div class="main"><img id="mainimg" src="../img/mg90s-servo-arms/mg90s_arm_cross.png" alt="SG90／MG90S 舵機臂（參數化重建）"></div><p class="cap" id="cap">mg90s_arm_cross（FreeCAD 等角視圖）</p><div class="strip"><button type="button" data-src="../img/mg90s-servo-arms/mg90s_arm_cross.png" data-cap="mg90s_arm_cross（FreeCAD 等角視圖）" aria-current="true" aria-label="圖片 1"><img src="../img/mg90s-servo-arms/mg90s_arm_cross.png" alt="" loading="lazy"></button><button type="button" data-src="../img/mg90s-servo-arms/mg90s_arm_double.png" data-cap="mg90s_arm_double（FreeCAD 等角視圖）" aria-current="false" aria-label="圖片 2"><img src="../img/mg90s-servo-arms/mg90s_arm_double.png" alt="" loading="lazy"></button><button type="button" data-src="../img/mg90s-servo-arms/mg90s_arm_single.png" data-cap="mg90s_arm_single（FreeCAD 等角視圖）" aria-current="false" aria-label="圖片 3"><img src="../img/mg90s-servo-arms/mg90s_arm_single.png" alt="" loading="lazy"></button><button type="button" data-src="../img/mg90s-servo-arms/MG90SSovoArm__plate_1.png" data-cap="MG90SSovoArm.3mf：Bambu Studio 列印盤 1" aria-current="false" aria-label="圖片 4"><img src="../img/mg90s-servo-arms/MG90SSovoArm__plate_1.png" alt="" loading="lazy"></button></div></div>
+<div class="panel"><h2>重點規格</h2><dl class="specs"><dt>單臂</dt><dd>21.75 × 7.5 × 4 mm</dd><dt>雙臂／十字臂</dt><dd>36 × 7.5 × 4／36 × 19 × 4 mm</dd><dt>齒孔</dt><dd>20 齒，齒槽底半徑 2.55、齒尖半徑 2.009，深 3 mm</dd><dt>小孔</dt><dd>Ø1.5，間距 2.5 mm</dd></dl>
+<div class="tools"><a class="badge tool" href="../software.html#freecad">FreeCAD PartDesign</a><a class="badge tool" href="../software.html#freecad">FreeCAD 腳本</a></div></div>
+</div>
+
+<div class="secs"><section class="sec"><h2>量測與重建</h2><ul><li>從原檔網格切出各高度的斷面，量出每個圓孔的位置與直徑、外形寬度變化和齒孔的輪廓</li><li>臂板厚 2 mm；長臂外形是中心 Ø7.5 圓接到 15.5 mm 外 Ø5 端圓的錐形；十字臂的短臂寬 4 mm、端圓心在 7.5 mm 外</li><li>中心凸台 Ø7.5、高出臂板 2 mm；齒孔從頂面往下 3 mm，下方接 Ø2.5 螺絲孔</li><li>小孔：長臂從離中心 6.25 mm 起每邊 5 個，短臂從 5.25 mm 起每邊 2 個</li></ul></section><section class="sec"><h2>FreeCAD 做法</h2><ul><li>錐形臂用 PartDesign 楔形（Wedge）做成兩圓的切線外形，端圓用圓柱；小孔用線性陣列</li><li>20 個齒：先挖齒槽底半徑的圓孔，再用環形陣列把梯形齒加回去</li><li>所有尺寸綁定 Params 試算表；三支臂共用同一份參數與同一支腳本</li><li>加了「齒孔每邊放大量」spline_clear（預設 0，和原檔一樣緊配），套不進舵機軸時調大</li></ul></section><section class="sec"><h2>與原檔比對</h2><ul><li>原檔頂點到重建表面、重建頂點到原檔表面，兩個方向最大誤差都在 0.013 mm 內（大多 &lt; 0.001 mm）</li><li>體積差 0.3～0.5 mm³，來自原檔把圓弧切成小平面</li></ul></section></div>
+<section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-fc">FCStd</span></td><td>十字臂：FreeCAD 參數化模型<br><a class="fn" href="../files/mg90s-servo-arms/mg90s_arm_cross.FCStd" download>mg90s_arm_cross.FCStd</a></td><td class="sz">187 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>十字臂：3MF<br><a class="fn" href="../files/mg90s-servo-arms/mg90s_arm_cross.3mf" download>mg90s_arm_cross.3mf</a></td><td class="sz">136 KB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>雙臂：FreeCAD 參數化模型<br><a class="fn" href="../files/mg90s-servo-arms/mg90s_arm_double.FCStd" download>mg90s_arm_double.FCStd</a></td><td class="sz">120 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>雙臂：3MF<br><a class="fn" href="../files/mg90s-servo-arms/mg90s_arm_double.3mf" download>mg90s_arm_double.3mf</a></td><td class="sz">99 KB</td></tr><tr><td><span class="badge t-fc">FCStd</span></td><td>單臂：FreeCAD 參數化模型<br><a class="fn" href="../files/mg90s-servo-arms/mg90s_arm_single.FCStd" download>mg90s_arm_single.FCStd</a></td><td class="sz">87 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>單臂：3MF<br><a class="fn" href="../files/mg90s-servo-arms/mg90s_arm_single.3mf" download>mg90s_arm_single.3mf</a></td><td class="sz">61 KB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>原作（CC0）：Bambu Studio 專案<br><a class="fn" href="../files/mg90s-servo-arms/MG90SSovoArm.3mf" download>MG90SSovoArm.3mf</a></td><td class="sz">1.1 MB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>建模腳本（三支臂）<br><a class="fn" href="../files/mg90s-servo-arms/build_mg90s_arms.py" download>build_mg90s_arms.py</a></td><td class="sz">9 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>與原檔網格比對的腳本<br><a class="fn" href="../files/mg90s-servo-arms/compare.py" download>compare.py</a></td><td class="sz">1 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
+<nav class="pager"><span></span><a href="car-model.html">較舊：差速轉向車模型（電動差速器＋MG90S 轉向） →</a></nav>
+</div>
+<footer><div class="wrap">
+<strong>資料來源</strong>
+<ul>
+<li>模型、參數與說明：本機專案資料夾 C:\CludeHome\3DP（FreeCAD、OpenSCAD、build123d 原始檔與 Bambu Studio 專案）</li>
+<li>FreeCAD 預覽圖由 FreeCAD 1.1 繪製；3MF 縮圖取自檔案內建的 Bambu Studio 列印盤預覽</li>
+<li>網站產生日期：2026-11-20</li>
+</ul></div></footer>
+<script>
+document.querySelectorAll('.strip button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.getElementById('mainimg').src = b.dataset.src;
+    document.getElementById('cap').textContent = b.dataset.cap;
+    document.querySelectorAll('.strip button').forEach(function (o) { o.setAttribute('aria-current', o === b); });
+  });
+});
+</script>
+</body>
+</html>
