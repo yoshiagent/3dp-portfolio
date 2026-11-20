@@ -89,7 +89,7 @@ ok &= probe("crank", "out/steer_crank.step",
              (6.25, 0, 8), (-6.25, 0, 4), (2.3, 0, 9)])
 # direct crank: underside z 0 on the shaft top, hub D10 up to the 5.9 relief, top 13.3; spline 3 deep
 ok &= probe("crank direct", "out/steer_crank_direct.step",
-            [(2.4 * math.sin(math.radians(9)), 2.4 * math.cos(math.radians(9)), 1.5), (0, 0, 4), (2.2, 0, 10),
+            [(2.4 * math.sin(math.radians(9)), 2.4 * math.cos(math.radians(9)), 1.5), (0, 0, 4), (1.8, 0, 10),
              (0, 0, 12), (8, 27, 8), (-8, 27, 12), (8, 27, 3), (8, 0, 3)],
-            [(0, 2.3, 1.5), (0, -2.3, 1.5), (4, 0, 2), (0, -6, 8), (0, 15, 9), (11, 27, 9), (3.5, 0, 4.5)])
+            [(0, 2.3, 1.5), (0, -2.3, 1.5), (4, 0, 2), (0, -6, 8), (0, 15, 9), (11, 27, 9), (3.5, 0, 4.5), (2.3, 0, 10)])
 print("RESULT", "PASS" if ok else "FAIL")
