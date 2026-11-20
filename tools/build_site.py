@@ -164,7 +164,7 @@ dl.specs dd { margin: 0; }
 .demo { display: inline-block; margin-top: 16px; background: var(--blue); color: #fff; border-radius: 10px;
   padding: 10px 18px; font-weight: 600; }
 .demo:hover { text-decoration: none; filter: brightness(1.1); }
-.demo + .demo { margin-left: 8px; }
+.demo { margin-right: 8px; }
 .secs { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin: 28px 0; }
 .sec { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
 .sec ul { margin: 0; padding-left: 1.2em; }
