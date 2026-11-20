@@ -15,8 +15,9 @@ tools/linkage.py, Ackermann for a 160 wheelbase):
     steering arm on the upper ear pointing rearward and 19 deg inward
   - tie rods (2, identical): 26.45 between pin holes, at z 40.2-47.6, 2L frictionless pins at both ends
   - crank: sized to the printed double-arm horn (../mg90s_arm, measured from MG90SSovoArm.3mf): the horn's
-    plate sits in a recess under the crank, 4 M2 self-tapping screws go down through the crank into the horn's
-    D1.5 holes; two tie-rod pin holes at (+-8, 27), the arm relieved underneath so the tie rods clear it by 0.6
+    plate sits in a recess under the crank, 2 M2 self-tapping screws go down through the crank into the horn's
+    3rd D1.5 hole each way, a D4 hole over the centre; two tie-rod pin holes at (+-8, 27), the arm relieved
+    underneath so the tie rods clear it by 0.6
   - crank_direct (steer_crank_direct, alternative): no horn; the horn's measured 20-tooth spline hole is in the
     crank's hub, which sits straight on the servo shaft, fixed by the servo's own horn screw; same pin holes
 Every part is 7.4 thick with 0.6 gaps on an 8 mm pitch, so standard Technic pins join them.
@@ -82,10 +83,10 @@ PARAMS = [
     ("crank_h", "=crank_relief + part_t", "曲柄總厚：臂頂與拉桿區同高（自動計算）"),
     ("head_d", "5.2", "舵臂中心螺絲頭讓位直徑 (mm)"),
     ("head_h", "2", "舵臂中心螺絲頭讓位高度 (mm)"),
-    ("screw_r1", "6.25", "固定螺絲：舵臂第 1 孔離中心 (mm)"),
-    ("screw_r2", "11.25", "固定螺絲：舵臂第 3 孔離中心 (mm)"),
+    ("screw_r", "11.25", "固定螺絲：舵臂第 3 孔離中心，左右各 1 顆 (mm)"),
     ("screw_d", "2.2", "固定螺絲穿孔直徑：M2 自攻螺絲鎖進舵臂 Ø1.5 孔 (mm)"),
-    ("screw_cb_d", "4.2", "固定螺絲頭沉孔直徑 (mm)"),
+    ("screw_cb_d", "5.2", "固定螺絲頭沉孔直徑 (mm)"),
+    ("center_d", "4", "曲柄中心圓孔直徑：可從上面看到／碰到舵臂中心螺絲 (mm)"),
     ("screw_grip", "3", "螺絲頭下方曲柄留的厚度：M2 × 5 剛好穿過舵臂 (mm)"),
     # direct crank (steer_crank_direct): no horn, the 20-tooth spline hole measured from the horn is in the crank
     ("shaft_top", "13.5", "伺服輸出軸頂離舵機耳下緣：照片推估，請實測 (mm)"),
@@ -105,11 +106,6 @@ PARAMS = [
     ("d_screw_d", "2.5", "直接版：中心螺絲孔直徑（伺服機附的舵盤螺絲）(mm)"),
     ("d_head_d", "5.2", "直接版：中心螺絲頭沉孔直徑 (mm)"),
     ("d_floor", "2", "直接版：齒孔底到螺絲頭之間留的厚度 (mm)"),
-    ("axle_d", "4.8", "LEGO 十字軸外徑 (mm)"),
-    ("axle_arm", "1.8", "LEGO 十字軸臂寬 (mm)"),
-    ("lego_clear", "0.15", "十字孔每邊間隙：0.075 時十字軸插不進 (mm)"),
-    ("hole_d", "=axle_d + 2 * lego_clear", "十字孔外徑（自動計算）"),
-    ("hole_w", "=axle_arm + 2 * lego_clear", "十字孔臂寬（自動計算）"),
 ]
 
 P = "Params."
@@ -284,12 +280,11 @@ def build_crank(stem):
     # recess underneath for the horn plate, 0.1 shallower than the plate so the crank bears on its top
     horn_outline(body, "Recess", True, P + "horn_clear", "-1", f"{P}recess_h + 1")
     cylinder(body, "HeadPocket", True, f"{P}head_d / 2", f"{P}recess_h + {P}head_h + 0.5", "0", "0", "-0.5")
-    for name, length, width in (("CrossX", "hole_d", "hole_w"), ("CrossY", "hole_w", "hole_d")):
-        box(body, name, True, P + length, P + width, f"{H} + 1",
-            x=f"-{P}{length} / 2", y=f"-{P}{width} / 2", z="0")
-    # 4 M2 self-tapping screws from the top into the horn's 1st and 3rd holes each way; deep counterbores
-    # leave screw_grip of crank under the heads, so M2 x 5 just passes through the horn plate
-    for i, x in enumerate((f"{P}screw_r1", f"{P}screw_r2", f"-{P}screw_r1", f"-{P}screw_r2"), start=1):
+    # round hole through the centre, over the horn's screw
+    cylinder(body, "CenterHole", True, f"{P}center_d / 2", f"{H} + 1", "0", "0", "0")
+    # 2 M2 self-tapping screws from the top into the horn's 3rd hole each way; deep counterbores leave
+    # screw_grip of crank under the heads, so M2 x 5 just passes through the horn plate
+    for i, x in enumerate((f"{P}screw_r", f"-{P}screw_r"), start=1):
         cylinder(body, f"Screw{i}", True, f"{P}screw_d / 2", f"{H} + 2", x, "0", "-1")
         cylinder(body, f"Screw{i}Cb", True, f"{P}screw_cb_d / 2", f"{H} - {P}recess_h - {P}screw_grip + 1", x, "0",
                  f"{P}recess_h + {P}screw_grip")
