@@ -81,11 +81,12 @@ ok &= probe("knuckle left", "out/steer_knuckle_left.step",
 ok &= probe("tie rod", "out/steer_tierod.step",
             [(0, 0, 3.7), (link.rod[1], 0, 3.7), (2.8, 0, 0.4), (link.rod[1] - 2.8, 0, 7.0)],
             [(link.rod[1] / 2, 0, 3.7), (2.8, 0, 3.7)])
-# crank: underside z 0, relief 3.8, top 11.2; horn recess 1.9 deep; screws at x +-11.25 (cb D5.2); D4 centre hole
+# crank: underside z 0, relief 3.8, top 11.2; recess 1.9 deep for the MG90S-size horn (hub r 3.44, ends r 1.8 at
+# 14.75); screws at x +-11.05 (cb D5.2); D4 centre hole
 ok &= probe("crank", "out/steer_crank.step",
-            [(8, 27, 6), (-8, 27, 10), (8, 27, 2), (0, 0, 10), (1.8, 0, 9), (-11.25, 0, 4), (11.25, 0, 10),
-             (13.6, 0, 10), (-8.9, 0, 10), (15, 0, 1), (0, 3.5, 1), (17.5, 1, 1), (2, 1.5, 3)],
-            [(0, 18, 6), (11, 27, 6), (4, -4, 6), (15.5, 0, 3), (19, 0, 1), (0, -5, 1), (8.75, 0, 1.5 + 2),
+            [(8, 27, 6), (-8, 27, 10), (8, 27, 2), (0, 0, 10), (1.8, 0, 9), (-11.05, 0, 4), (11.05, 0, 10),
+             (13.4, 0, 10), (-8.7, 0, 10), (14.5, 0, 1), (0, 3.4, 1), (16.2, 0.5, 1), (2, 1.5, 3)],
+            [(0, 18, 6), (11, 27, 6), (4, -4, 6), (15.5, 0, 3), (18, 0, 1), (0, -5, 1), (8.75, 0, 3.5),
              (6.25, 0, 8), (-6.25, 0, 4), (2.3, 0, 9)])
 # direct crank: underside z 0 on the shaft top, hub D10 up to the 5.9 relief, top 13.3; spline 3 deep
 ok &= probe("crank direct", "out/steer_crank_direct.step",

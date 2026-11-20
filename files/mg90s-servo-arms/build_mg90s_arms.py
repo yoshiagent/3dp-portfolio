@@ -9,6 +9,8 @@ from that mesh (tmp/sections.py, tmp/outline.py):
   (the cross arm's short arms: straight, 4 wide, Ø4 ends 7.5 mm out); hub boss Ø7.5 x 2 mm on top;
   20-tooth spline hole 3 mm deep from the top (outer r 2.55, tooth tips r 2.009); Ø2.5 screw hole below it;
   Ø1.5 holes every 2.5 mm from 6.25 mm out (short arms from 5.25 mm).
+The double arm is no longer the SovoArm one: it is resized after the MG90S's own double horn (see OVERRIDES):
+  33.1 long, hub Ø6.88 (its widest), Ø3.6 ends, 6 holes a side from 5.5 mm out, the last on the end circle's centre.
 Frame: hub centre at x = y = 0, z = 0 under the plate (the print bed); the single arm points to -x as in the 3MF.
 Every size lives in the `Params` spreadsheet; each feature of the body is bound to it.
 """
@@ -63,12 +65,35 @@ def bind(obj, prop, expr):
     obj.setExpression(prop, expr)
 
 
+# per-horn changes to PARAMS (same alias replaces the row, a new alias is added at the end).
+# The double arm is resized after the horn that comes with the MG90S (black, user's photo, 2026-11-20): 33.1 long,
+# 6.88 at its widest (measured); end width, hole count and first hole estimated from the photo
+OVERRIDES = {
+    "mg90s_arm_double": [
+        ("hub_d", "6.88", "中心凸台直徑＝最大寬：MG90S 原廠雙臂實測 (mm)"),
+        ("end_d", "3.6", "末端圓直徑：照原廠雙臂照片估計，請實測 (mm)"),
+        ("arm_len", "=total_len / 2 - end_d / 2", "中心到末端圓心距離（自動計算）"),
+        ("hole_first", "5.5", "第一個小孔離中心：照片估計 (mm)"),
+        ("hole_n", "6", "每邊小孔數：與原廠相同"),
+        ("hole_pitch", "=(arm_len - hole_first) / (hole_n - 1)", "小孔間距：最後一孔落在末端圓心（自動計算）"),
+        ("total_len", "33.1", "全長：MG90S 原廠雙臂實測 (mm)"),
+    ],
+}
+
+
 def make_doc(name):
     doc = App.newDocument(name)
     sheet = doc.addObject("Spreadsheet::Sheet", "Params")
     sheet.set("A1", "參數說明")
     sheet.set("B1", "數值")
-    for row, (alias, value, desc) in enumerate(PARAMS, start=2):
+    rows = list(PARAMS)
+    for alias, value, desc in OVERRIDES.get(name, []):
+        hit = [i for i, r in enumerate(rows) if r[0] == alias]
+        if hit:
+            rows[hit[0]] = (alias, value, desc)
+        else:
+            rows.append((alias, value, desc))
+    for row, (alias, value, desc) in enumerate(rows, start=2):
         sheet.set(f"A{row}", desc)
         sheet.set(f"B{row}", value)
         sheet.setAlias(f"B{row}", alias)

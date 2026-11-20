@@ -16,7 +16,7 @@ tools/linkage.py, Ackermann for a 160 wheelbase):
   - tie rods (2, identical): 26.45 between pin holes, at z 40.2-47.6, 2L frictionless pins at both ends
   - crank: sized to the printed double-arm horn (../mg90s_arm, measured from MG90SSovoArm.3mf): the horn's
     plate sits in a recess under the crank, 2 M2 self-tapping screws go down through the crank into the horn's
-    3rd D1.5 hole each way, a D4 hole over the centre; two tie-rod pin holes at (+-8, 27), the arm relieved
+    4th D1.5 hole each way, a D4 hole over the centre; two tie-rod pin holes at (+-8, 27), the arm relieved
     underneath so the tie rods clear it by 0.6
   - crank_direct (steer_crank_direct, alternative): no horn; the horn's measured 20-tooth spline hole is in the
     crank's hub, which sits straight on the servo shaft, fixed by the servo's own horn screw; same pin holes
@@ -66,15 +66,16 @@ PARAMS = [
     ("plate_hw", "27.7", "平板中段半寬 (mm)"),
     # knuckle
     ("body_in", "5.8", "轉向節立柱內面離主銷：留空間給軸端擋片 (mm)"),
-    # crank over the printed double-arm horn (../mg90s_arm/mg90s_arm_double: plate 2 thick, outline around a
-    # D7.5 hub circle and D5 end circles 15.5 out, D1.5 holes every 2.5 from 6.25 out). On the servo the horn's
+    # crank over the printed double-arm horn (../mg90s_arm/mg90s_arm_double, sized after the MG90S's own horn:
+    # plate 2 thick, 33.1 long, outline around a D6.88 hub circle and D3.6 end circles 14.75 out, 6 D1.5 holes a
+    # side every 1.85 from 5.5 out). On the servo the horn's
     # boss faces down, so its flat plate is on top; the crank's underside recess fits over that plate.
     ("z_tab", "31.8", "舵機耳下緣離地 z (mm)"),
     ("horn_top", "14.5", "舵臂板頂面離舵機耳下緣：軸頂 13.5 − 齒孔深 3 + 凸台 2 + 板 2 (mm)"),
     ("horn_t", "2", "舵臂板厚 (mm)"),
-    ("horn_hub_r", "3.75", "舵臂中心圓半徑 (mm)"),
-    ("horn_end_r", "2.5", "舵臂末端圓半徑 (mm)"),
-    ("horn_len", "15.5", "舵臂中心到末端圓心 (mm)"),
+    ("horn_hub_r", "3.44", "舵臂中心圓半徑：原廠雙臂最大寬 6.88 的一半 (mm)"),
+    ("horn_end_r", "1.8", "舵臂末端圓半徑 (mm)"),
+    ("horn_len", "14.75", "舵臂中心到末端圓心：全長 33.1 / 2 − 1.8 (mm)"),
     ("horn_clear", "0.2", "舵臂凹槽每邊間隙 (mm)"),
     ("recess_h", "=horn_t - 0.1", "凹槽深：比舵臂板薄 0.1，曲柄壓在板頂上（自動計算）"),
     ("crank_wall", "2", "凹槽外的曲柄壁厚 (mm)"),
@@ -83,7 +84,7 @@ PARAMS = [
     ("crank_h", "=crank_relief + part_t", "曲柄總厚：臂頂與拉桿區同高（自動計算）"),
     ("head_d", "5.2", "舵臂中心螺絲頭讓位直徑 (mm)"),
     ("head_h", "2", "舵臂中心螺絲頭讓位高度 (mm)"),
-    ("screw_r", "11.25", "固定螺絲：舵臂第 3 孔離中心，左右各 1 顆 (mm)"),
+    ("screw_r", "11.05", "固定螺絲：舵臂第 4 孔離中心（5.5 + 3 × 1.85），左右各 1 顆 (mm)"),
     ("screw_d", "2.2", "固定螺絲穿孔直徑：M2 自攻螺絲鎖進舵臂 Ø1.5 孔 (mm)"),
     ("screw_cb_d", "5.2", "固定螺絲頭沉孔直徑 (mm)"),
     ("center_d", "4", "曲柄中心圓孔直徑：可從上面看到／碰到舵臂中心螺絲 (mm)"),
@@ -282,7 +283,7 @@ def build_crank(stem):
     cylinder(body, "HeadPocket", True, f"{P}head_d / 2", f"{P}recess_h + {P}head_h + 0.5", "0", "0", "-0.5")
     # round hole through the centre, over the horn's screw
     cylinder(body, "CenterHole", True, f"{P}center_d / 2", f"{H} + 1", "0", "0", "0")
-    # 2 M2 self-tapping screws from the top into the horn's 3rd hole each way; deep counterbores leave
+    # 2 M2 self-tapping screws from the top into the horn's 4th hole each way; deep counterbores leave
     # screw_grip of crank under the heads, so M2 x 5 just passes through the horn plate
     for i, x in enumerate((f"{P}screw_r", f"-{P}screw_r"), start=1):
         cylinder(body, f"Screw{i}", True, f"{P}screw_d / 2", f"{H} + 2", x, "0", "-1")
