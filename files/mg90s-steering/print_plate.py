@@ -10,7 +10,8 @@ Each part is turned so a large flat face lies on the bed:
   frame    plate top face down (the bulkhead stands up from it)
   knuckle  front face down: the C profile lies flat, kingpin and axle holes print horizontally
   tie rod  as modelled (x2)
-  crank    top face down: the horn recess and the 1.2 relief end up on top, no support
+  crank    top face down: the horn recess and the 3.8 relief end up on top, no support
+  horn     the double-arm servo horn (../../mg90s_arm), plate down as modelled
   base     as modelled (open slot up)
   cover    outer face down
 Rebuild the FCStd/STL first when a part changes, then:  python src/print_plate.py
@@ -37,6 +38,7 @@ PARTS = [  # (name, stl, rotation, copies)
     ("steer_knuckle_left", STEER / "steer_knuckle_left.stl", FRONT, 1),
     ("steer_tierod", STEER / "steer_tierod.stl", KEEP, 2),
     ("steer_crank", STEER / "steer_crank.stl", FLIP, 1),
+    ("servo_horn_double", HERE.parents[1] / "mg90s_arm" / "out" / "mg90s_arm_double.stl", KEEP, 1),
     ("mg90s_side_base", SERVO / "mg90s_side_base.stl", KEEP, 1),
     ("mg90s_side_cover", SERVO / "mg90s_side_cover.stl", FRONT, 1),
 ]

@@ -13,8 +13,9 @@ tools/linkage.py, Ackermann for a 160 wheelbase):
     an outboard upright with a round hole for the wheel axle at z = 27.9 (56 mm wheel), and an 18 mm
     steering arm on the upper ear pointing rearward and 19 deg inward
   - tie rods (2, identical): 26.45 between pin holes, at z 40.2-47.6, 2L frictionless pins at both ends
-  - crank: fixed to the servo's cross horn like the horn adapter (arms in a recess, 4 small screws), with the
-    two tie-rod pin holes at (+-8, 27); its arm is relieved 1.2 underneath so the tie rods clear it
+  - crank: sized to the printed double-arm horn (../mg90s_arm, measured from MG90SSovoArm.3mf): the horn's
+    plate sits in a recess under the crank, 4 M2 self-tapping screws go down through the crank into the horn's
+    D1.5 holes; two tie-rod pin holes at (+-8, 27), the arm relieved underneath so the tie rods clear it by 0.6
 Every part is 7.4 thick with 0.6 gaps on an 8 mm pitch, so standard Technic pins join them.
 """
 import os
@@ -61,33 +62,37 @@ PARAMS = [
     ("plate_hw", "27.7", "平板中段半寬 (mm)"),
     # knuckle
     ("body_in", "5.8", "轉向節立柱內面離主銷：留空間給軸端擋片 (mm)"),
-    # crank on the servo horn (same horn values as the horn adapter)
-    ("disc_d", "25.6", "曲柄圓盤直徑 (mm)"),
-    ("crank_h", "8.6", "曲柄厚：拉桿區 7.4 + 下方讓位 1.2 (mm)"),
-    ("crank_relief", "1.2", "曲柄臂下方讓位：拉桿在它下面 (mm)"),
-    ("horn_r", "11", "十字舵盤臂端半徑 (mm)"),
-    ("arm_w", "5.4", "舵盤臂寬 (mm)"),
-    ("arm_t", "1.8", "舵盤臂厚 (mm)"),
-    ("horn_clear", "0.25", "舵盤凹槽每邊間隙 (mm)"),
-    ("head_d", "5.2", "舵盤中心螺絲頭讓位直徑 (mm)"),
-    ("head_h", "2", "舵盤中心螺絲頭讓位高度 (mm)"),
-    ("screw_r", "8", "固定螺絲在舵盤臂上的半徑 (mm)"),
-    ("screw_d", "2.2", "固定螺絲穿孔直徑：M2 (mm)"),
+    # crank over the printed double-arm horn (../mg90s_arm/mg90s_arm_double: plate 2 thick, outline around a
+    # D7.5 hub circle and D5 end circles 15.5 out, D1.5 holes every 2.5 from 6.25 out). On the servo the horn's
+    # boss faces down, so its flat plate is on top; the crank's underside recess fits over that plate.
+    ("z_tab", "31.8", "舵機耳下緣離地 z (mm)"),
+    ("horn_top", "14.5", "舵臂板頂面離舵機耳下緣：軸頂 13.5 − 齒孔深 3 + 凸台 2 + 板 2 (mm)"),
+    ("horn_t", "2", "舵臂板厚 (mm)"),
+    ("horn_hub_r", "3.75", "舵臂中心圓半徑 (mm)"),
+    ("horn_end_r", "2.5", "舵臂末端圓半徑 (mm)"),
+    ("horn_len", "15.5", "舵臂中心到末端圓心 (mm)"),
+    ("horn_clear", "0.2", "舵臂凹槽每邊間隙 (mm)"),
+    ("recess_h", "=horn_t - 0.1", "凹槽深：比舵臂板薄 0.1，曲柄壓在板頂上（自動計算）"),
+    ("crank_wall", "2", "凹槽外的曲柄壁厚 (mm)"),
+    ("crank_z0", "=z_tab + horn_top - recess_h", "曲柄底面離地 z（自動計算）"),
+    ("crank_relief", "=z_rod + part_t + part_gap - crank_z0", "曲柄臂下方讓位：拉桿在它下面 0.6（自動計算）"),
+    ("crank_h", "=crank_relief + part_t", "曲柄總厚：臂頂與拉桿區同高（自動計算）"),
+    ("head_d", "5.2", "舵臂中心螺絲頭讓位直徑 (mm)"),
+    ("head_h", "2", "舵臂中心螺絲頭讓位高度 (mm)"),
+    ("screw_r1", "6.25", "固定螺絲：舵臂第 1 孔離中心 (mm)"),
+    ("screw_r2", "11.25", "固定螺絲：舵臂第 3 孔離中心 (mm)"),
+    ("screw_d", "2.2", "固定螺絲穿孔直徑：M2 自攻螺絲鎖進舵臂 Ø1.5 孔 (mm)"),
     ("screw_cb_d", "4.2", "固定螺絲頭沉孔直徑 (mm)"),
-    ("screw_cb_h", "1.6", "固定螺絲頭沉孔深度 (mm)"),
+    ("screw_grip", "3", "螺絲頭下方曲柄留的厚度：M2 × 5 剛好穿過舵臂 (mm)"),
     ("axle_d", "4.8", "LEGO 十字軸外徑 (mm)"),
     ("axle_arm", "1.8", "LEGO 十字軸臂寬 (mm)"),
     ("lego_clear", "0.15", "十字孔每邊間隙：0.075 時十字軸插不進 (mm)"),
     ("hole_d", "=axle_d + 2 * lego_clear", "十字孔外徑（自動計算）"),
     ("hole_w", "=axle_arm + 2 * lego_clear", "十字孔臂寬（自動計算）"),
-    ("slot_l", "=2 * (horn_r + horn_clear)", "舵盤凹槽長（自動計算）"),
-    ("slot_w", "=arm_w + 2 * horn_clear", "舵盤凹槽寬（自動計算）"),
-    ("slot_h", "=arm_t + 0.2", "舵盤凹槽深（自動計算）"),
 ]
 
 P = "Params."
 CB_OVERLAP = 0.02
-COS45 = "0.70710678"
 T, R = f"{P}part_t", f"{P}end_r"
 
 
@@ -221,38 +226,52 @@ def build_tierod(stem):
 
 
 # ---------------------------------------------------------------- crank
+def horn_outline(body, name, cut, grow, z0, h):
+    """The double-arm horn's plate outline grown by `grow` (an expression), z0..z0 + h: the hub circle plus,
+    each way along x, the end circle and the tangent web between them (a PartDesign wedge)."""
+    L = P + "horn_len"
+    r0, r1 = f"({P}horn_hub_r + {grow})", f"({P}horn_end_r + {grow})"
+    cylinder(body, f"{name}Hub", cut, r0, h, "0", "0", z0)
+    s = f"({r0} - {r1}) / {L}"  # sine of the tangent lines' tilt
+    k = f"sqrt(1 - ({s}) ^ 2)"
+    for tag, sign in (("R", 1), ("L", -1)):
+        cylinder(body, f"{name}End{tag}", cut, r1, h, f"{sign} * {L}", "0", z0)
+        web = body.newObject("PartDesign::SubtractiveWedge" if cut else "PartDesign::AdditiveWedge", f"{name}Web{tag}")
+        for prop, expr in (("Ymin", f"{r0} * {s}"), ("Ymax", f"{L} + {r1} * {s}"),
+                           ("Xmin", f"-{r0} * {k}"), ("Xmax", f"{r0} * {k}"),
+                           ("X2min", f"-{r1} * {k}"), ("X2max", f"{r1} * {k}"),
+                           ("Zmin", z0), ("Zmax", f"({z0}) + ({h})"), ("Z2min", z0), ("Z2max", f"({z0}) + ({h})")):
+            bind(web, prop, expr)
+        # the wedge runs along its local y: turn that onto +x / -x
+        web.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0, 0, 1), -90 * sign))
+
+
 def build_crank(stem):
-    """Servo crank, z = 0 level with the underside of the horn arms, arm toward +y."""
+    """Servo crank over the printed double-arm horn: z = 0 is the crank's underside (crank_z0 above the ground),
+    the horn's long axis along x, the tie-rod arm toward +y."""
     doc = core.make_doc(stem, PARAMS)
     body = doc.addObject("PartDesign::Body", "SteerCrank")
     H, rel = P + "crank_h", P + "crank_relief"
-    cylinder(body, "Disc", False, f"{P}disc_d / 2", H, "0", "0", "0")
+    # body: the horn outline grown by the clearance and a wall, full height
+    horn_outline(body, "Body", False, f"{P}horn_clear + {P}crank_wall", "0", H)
     box(body, "CrankArm", False, f"2 * {P}crank_c", f"{P}crank_j", f"{H} - {rel}",
         x=f"-{P}crank_c", y="0", z=rel)
-    box(body, "CrankWeb", False, f"2 * ({P}crank_c + {R})", f"{P}crank_j - {P}disc_d / 4", f"{H} - {rel}",
-        x=f"-({P}crank_c + {R})", y=f"{P}disc_d / 4", z=rel)
+    box(body, "CrankWeb", False, f"2 * ({P}crank_c + {R})", f"{P}crank_j - {P}horn_hub_r", f"{H} - {rel}",
+        x=f"-({P}crank_c + {R})", y=P + "horn_hub_r", z=rel)
     for t, s in (("R", 1), ("L", -1)):
         cylinder(body, f"PinBoss{t}", False, R, f"{H} - {rel}", f"{s} * {P}crank_c", P + "crank_j", rel)
-    # horn recess underneath, arms at +-45 deg (same as the horn adapter)
-    for tag, ang in (("A", 45), ("B", -45)):
-        slot = box(body, f"HornSlot{tag}", True, P + "slot_l", P + "slot_w", f"{P}slot_h + 1")
-        slot.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0, 0, 1), ang))
-        if ang > 0:
-            bind(slot, ".Placement.Base.x", f"-({P}slot_l - {P}slot_w) / 2 * {COS45}")
-            bind(slot, ".Placement.Base.y", f"-({P}slot_l + {P}slot_w) / 2 * {COS45}")
-        else:
-            bind(slot, ".Placement.Base.x", f"-({P}slot_l + {P}slot_w) / 2 * {COS45}")
-            bind(slot, ".Placement.Base.y", f"({P}slot_l - {P}slot_w) / 2 * {COS45}")
-        bind(slot, ".Placement.Base.z", "-1")
-    cylinder(body, "HeadPocket", True, f"{P}head_d / 2", f"{P}slot_h + {P}head_h", "0", "0", "-0.5")
+    # recess underneath for the horn plate, 0.1 shallower than the plate so the crank bears on its top
+    horn_outline(body, "Recess", True, P + "horn_clear", "-1", f"{P}recess_h + 1")
+    cylinder(body, "HeadPocket", True, f"{P}head_d / 2", f"{P}recess_h + {P}head_h + 0.5", "0", "0", "-0.5")
     for name, length, width in (("CrossX", "hole_d", "hole_w"), ("CrossY", "hole_w", "hole_d")):
         box(body, name, True, P + length, P + width, f"{H} + 1",
             x=f"-{P}{length} / 2", y=f"-{P}{width} / 2", z="0")
-    for i, (sx, sy) in enumerate(((1, 1), (-1, 1), (-1, -1), (1, -1)), start=1):
-        x, y = f"{sx} * {P}screw_r * {COS45}", f"{sy} * {P}screw_r * {COS45}"
-        cylinder(body, f"Screw{i}", True, f"{P}screw_d / 2", f"{H} + 2", x, y, "-1")
-        cylinder(body, f"Screw{i}Cb", True, f"{P}screw_cb_d / 2", f"{P}screw_cb_h + 1", x, y,
-                 f"{H} - {P}screw_cb_h")
+    # 4 M2 self-tapping screws from the top into the horn's 1st and 3rd holes each way; deep counterbores
+    # leave screw_grip of crank under the heads, so M2 x 5 just passes through the horn plate
+    for i, x in enumerate((f"{P}screw_r1", f"{P}screw_r2", f"-{P}screw_r1", f"-{P}screw_r2"), start=1):
+        cylinder(body, f"Screw{i}", True, f"{P}screw_d / 2", f"{H} + 2", x, "0", "-1")
+        cylinder(body, f"Screw{i}Cb", True, f"{P}screw_cb_d / 2", f"{H} - {P}recess_h - {P}screw_grip + 1", x, "0",
+                 f"{P}recess_h + {P}screw_grip")
     for t, s in (("R", 1), ("L", -1)):
         vertical_hole(body, f"RodPin{t}", f"{s} * {P}crank_c", P + "crank_j", rel, H)
     core.finish(doc, body, stem)

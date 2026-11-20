@@ -1,5 +1,5 @@
 """Reference assembly of the MG90S front steering at straight ahead: side-loading servo holder, stand-in MG90S
-and horn, crank, tie rods, knuckles, 56 x 26 stand-in wheels and the steering frame.
+and the printed double-arm horn, crank, tie rods, knuckles, 56 x 26 stand-in wheels and the steering frame.
 
 `posed_parts(theta)` places everything for a crank angle theta (deg, + = counter-clockwise seen from above)
 using the linkage solver in ../tools/linkage.py; checks use it to sweep the steering range.
@@ -24,7 +24,10 @@ import mg90s_side_assembly as servo_parts  # noqa: E402
 OUT = HERE.parent / "out"
 HOLDER = ROOT / "tt_motor_adapter" / "out"
 Z_TAB = 31.8              # servo tab underside (holder bottom 8 above the ground)
-Z_CRANK = Z_TAB + 15.2    # horn arms' underside
+# printed double-arm horn (../../mg90s_arm): boss down on the servo spline, its flat plate on top
+HORN_STEP = ROOT / "mg90s_arm" / "out" / "mg90s_arm_double.step"
+HORN_TOP = 13.5 - 3.0 + 2.0 + 2.0   # plate top above the tab underside: spline top - spline hole depth + boss + plate
+Z_CRANK = Z_TAB + HORN_TOP - 1.9    # crank underside: its recess (1.9, horn plate 2 - 0.1) sits on the plate
 Z_ROD = 40.2
 KP = 40.0
 WHEEL_D, WHEEL_W = 56.0, 26.0
@@ -55,7 +58,9 @@ def posed_parts(theta: float = 0.0):
         "holder base": labeled(holder_to_vehicle(read_step(str(HOLDER / "mg90s_side_base.step"))), "holder base", "lightgray"),
         "holder cover": labeled(holder_to_vehicle(read_step(str(HOLDER / "mg90s_side_cover.step"))), "holder cover", "steelblue"),
         "servo": labeled(holder_to_vehicle(servo_parts.servo()), "MG90S (not printed)", "#4b2a7a"),
-        "horn": labeled(holder_to_vehicle(servo_parts.horn(), theta), "cross horn (not printed)", "white"),
+        # built plate-down (z 0..2, boss 2..4): flip it so the boss points down onto the servo
+        "horn": labeled(bd.Pos(0, 0, Z_TAB + HORN_TOP) * bd.Rot(0, 0, theta) * bd.Rot(180, 0, 0) *
+                        read_step(str(HORN_STEP)), "servo horn (double arm)", "white"),
         "crank": labeled(bd.Pos(0, 0, Z_CRANK) * bd.Rot(0, 0, theta) * read_step(str(OUT / "steer_crank.step")),
                          "crank", "orange"),
         "frame": labeled(read_step(str(OUT / "steer_frame.step")), "steering frame", "dimgray"),
