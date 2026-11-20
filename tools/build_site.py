@@ -164,6 +164,7 @@ dl.specs dd { margin: 0; }
 .demo { display: inline-block; margin-top: 16px; background: var(--blue); color: #fff; border-radius: 10px;
   padding: 10px 18px; font-weight: 600; }
 .demo:hover { text-decoration: none; filter: brightness(1.1); }
+.demo + .demo { margin-left: 8px; }
 .secs { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin: 28px 0; }
 .sec { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
 .sec ul { margin: 0; padding-left: 1.2em; }
@@ -371,6 +372,8 @@ def build():
         demo = ""
         if p.get("demo"):
             demo = f'<a class="demo" href="../demo/{os.path.basename(p["demo"][0])}">{esc(p["demo"][1])} ↗</a>'
+        for url, label in p.get("videos", []):  # external videos (YouTube), opened in a new tab
+            demo += f'<a class="demo" href="{html.escape(url)}" target="_blank" rel="noopener">{esc(label)} ↗</a>'
         secs = "".join(f'<section class="sec"><h2>{esc(h)}</h2><ul>' + "".join(f"<li>{esc(b)}</li>" for b in items)
                        + "</ul></section>" for h, items in p["sections"])
         if files:

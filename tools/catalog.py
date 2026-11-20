@@ -614,6 +614,7 @@ PROJECTS = [
                    ("file", "car_model/preview/car_top_preview.png"),
                    ("file", "car_model/preview/car_side_preview.png")],
         "demo": ("car_model/animation/car_animation.html", "開啟 3D 動畫：組裝與行駛"),
+        "videos": [("https://youtube.com/shorts/h26kSPG2I84", "觀看 YouTube 影片")],
         # Component works reused as-is; each links to its own page (print files, source, checks live there).
         "parts": [("electric-differential", "後軸驅動",
                    "冠狀齒輪、小齒輪、行星架、十字銷、行星／半軸齒輪與軸承塔設計，整組轉 180° 放到後軸"),
