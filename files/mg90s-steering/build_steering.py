@@ -16,7 +16,7 @@ tools/linkage.py, Ackermann for a 160 wheelbase):
   - tie rods (2, identical): 26.45 between pin holes, at z 40.2-47.6, 2L frictionless pins at both ends
   - crank: sized to the printed double-arm horn (../mg90s_arm, measured from MG90SSovoArm.3mf): the horn's
     plate sits in a recess under the crank, 2 M2 self-tapping screws go down through the crank into the horn's
-    4th D1.5 hole each way, a D4 hole over the centre; two tie-rod pin holes at (+-8, 27), the arm relieved
+    4th D1.5 hole each way, a D5 hole over the centre; two tie-rod pin holes at (+-8, 27), the arm relieved
     underneath so the tie rods clear it by 0.6
   - crank_direct (steer_crank_direct, alternative): no horn; the horn's measured 20-tooth spline hole is in the
     crank's hub, which sits straight on the servo shaft, fixed by the servo's own horn screw; same pin holes
@@ -86,8 +86,8 @@ PARAMS = [
     ("head_h", "2", "舵臂中心螺絲頭讓位高度 (mm)"),
     ("screw_r", "11.05", "固定螺絲：舵臂第 4 孔離中心（5.5 + 3 × 1.85），左右各 1 顆 (mm)"),
     ("screw_d", "2.2", "固定螺絲穿孔直徑：M2 自攻螺絲鎖進舵臂 Ø1.5 孔 (mm)"),
-    ("screw_cb_d", "5.2", "固定螺絲頭沉孔直徑 (mm)"),
-    ("center_d", "4", "曲柄中心圓孔直徑：可從上面看到／碰到舵臂中心螺絲 (mm)"),
+    ("screw_cb_d", "6.2", "固定螺絲頭沉孔直徑 (mm)"),
+    ("center_d", "5", "曲柄中心圓孔直徑：可從上面看到／碰到舵臂中心螺絲 (mm)"),
     ("screw_grip", "3", "螺絲頭下方曲柄留的厚度：M2 × 5 剛好穿過舵臂 (mm)"),
     # direct crank (steer_crank_direct): no horn, the 20-tooth spline hole measured from the horn is in the crank
     ("shaft_top", "13.5", "伺服輸出軸頂離舵機耳下緣：照片推估，請實測 (mm)"),
