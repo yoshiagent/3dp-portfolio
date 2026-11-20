@@ -85,7 +85,10 @@ def align(old_v, new_v, new_t, size_tol=0.15):
     return best
 
 
-def replace(path: Path, meshes: dict, vol_tol: float = 0.03, med_tol: float = 0.02) -> None:
+def replace(path: Path, meshes: dict, vol_tol: float = 0.03, med_tol: float = 0.02, same_part: bool = True) -> None:
+    """same_part=False swaps in a reshaped part on purpose: the bounding boxes may differ by up to 1 mm and the
+    same-part test is only reported; the rotation is still the one that best fits the old vertices (keep the
+    holes unchanged so they pick the orientation)."""
     path = Path(path)
     with zipfile.ZipFile(path) as z:
         infos = z.infolist()
@@ -96,14 +99,14 @@ def replace(path: Path, meshes: dict, vol_tol: float = 0.03, med_tol: float = 0.
         old_v = np.array(VERT.findall(xml), float)
         old_t = np.array(TRI.findall(xml), int)
         new_t = np.asarray(new_t)
-        got = align(old_v, np.asarray(new_v, float), new_t)
+        got = align(old_v, np.asarray(new_v, float), new_t, 0.15 if same_part else 1.0)
         if got is None:
             raise SystemExit(f"{path.name} {sub}: no rotation matches the old bounding box {np.ptp(old_v, 0)}")
         nv, med, mx = got
         v_old, v_new = volume(old_v, old_t), volume(nv, np.asarray(new_t))
         print(f"  {sub}: {len(old_t)} -> {len(new_t)} triangles, old vertices off new surface median {med:.3f} "
               f"max {mx:.3f} mm, volume {v_old:.1f} -> {v_new:.1f} mm3")
-        if med > med_tol or abs(v_new - v_old) > vol_tol * abs(v_old):
+        if same_part and (med > med_tol or abs(v_new - v_old) > vol_tol * abs(v_old)):
             raise SystemExit(f"{path.name} {sub}: not the same part (refused)")
         vx = "\n".join(f'     <vertex x="{a:.6g}" y="{b:.6g}" z="{c:.6g}"/>' for a, b, c in nv)
         tx = "\n".join(f'     <triangle v1="{a}" v2="{b}" v3="{c}"/>' for a, b, c in new_t)

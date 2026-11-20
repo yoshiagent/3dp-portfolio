@@ -48,6 +48,12 @@ COUPLER_PARAMS = [
     ("length", "=tt_depth + web + axle_depth", "聯軸器總長（自動計算）"),
     ("hole_d", "=axle_d + 2 * lego_clear", "十字孔外徑（自動計算）"),
     ("hole_w", "=axle_arm + 2 * lego_clear", "十字孔臂寬（自動計算）"),
+    ("wall", "=od / 2 - tt_d / 2 - tt_clear", "壁厚：外形沿內孔等距外擴，外形與內孔同形（自動計算）"),
+    ("outer_flat", "=tt_flat + 2 * tt_clear + 2 * wall", "TT 段外形雙平面距，平面與 TT 孔平面平行（自動計算）"),
+    ("cross_len", "=hole_d + 2 * wall", "LEGO 段十字外形臂長，臂與十字孔同向（自動計算）"),
+    ("cross_w", "=hole_w + 2 * wall", "LEGO 段十字外形臂寬（自動計算）"),
+    ("chamfer_r", "=sqrt((od / 2) ^ 2 - (cross_w / 2) ^ 2)",
+     "十字臂端 45° 倒角起點：從 TT 段外緣往上斜出，TT 端朝下列印不懸空（自動計算）"),
 ]
 
 P = "Params."
@@ -97,9 +103,34 @@ def build_coupler():
     doc = core.make_doc("tt_technic_coupler", COUPLER_PARAMS)
     body = doc.addObject("PartDesign::Body", "Coupler")
 
+    # The outside follows the hole inside it, with an even wall, so the part shows its own orientation:
+    # the LEGO end is a cross lined up with the cross hole (from the web up), the TT end a double-D whose
+    # flats are parallel to the TT shaft flats.
+    for name, length, width in (("CrossOuterX", "cross_len", "cross_w"), ("CrossOuterY", "cross_w", "cross_len")):
+        box(body, name, False, P + length, P + width, f"{P}length - {P}tt_depth",
+            x=f"-{P}{length} / 2", y=f"-{P}{width} / 2", z=P + "tt_depth")
+    # the cross arms stick out past the double-D below them: bevel each arm end at 45 deg from the
+    # double-D's edge so nothing hangs in the air when printed TT end down. Made before the double-D exists,
+    # so the cutters' lower parts take nothing away from it.
+    for k in range(4):
+        cut = body.newObject("PartDesign::SubtractiveBox", f"TipChamfer{k}")
+        for prop, value in (("Length", "20"), ("Width", "20"), ("Height", "5")):
+            bind(cut, prop, value)
+        # local x runs up and outward at 45 deg; the box's top face is the bevel through (chamfer_r, tt_depth)
+        cut.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(0, 0, 1), 90 * k).multiply(
+            App.Rotation(App.Vector(0, 1, 0), -45)))
+        bx, by = [(f"{P}chamfer_r", "-10"), ("10", f"{P}chamfer_r"), (f"-{P}chamfer_r", "10"),
+                  ("-10", f"-{P}chamfer_r")][k]
+        bind(cut, ".Placement.Base.x", bx)
+        bind(cut, ".Placement.Base.y", by)
+        bind(cut, ".Placement.Base.z", f"{P}tt_depth - 5 * sqrt(2)")
+
     shell = body.newObject("PartDesign::AdditiveCylinder", "Shell")
     bind(shell, "Radius", f"{P}od / 2")
-    bind(shell, "Height", P + "length")
+    bind(shell, "Height", P + "tt_depth")
+    for tag, s in (("A", 1), ("B", -1)):
+        box(body, f"OuterFlat{tag}", True, "5", f"{P}od + 2", f"{P}tt_depth + 1",
+            x=f"{P}outer_flat / 2" if s > 0 else f"-{P}outer_flat / 2 - 5", y=f"-({P}od / 2 + 1)", z="-1")
 
     # TT double-D socket from the bottom: a round bore, then the two flats added back
     bore = body.newObject("PartDesign::SubtractiveCylinder", "TTBore")
