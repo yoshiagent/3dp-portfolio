@@ -309,22 +309,6 @@ def rear_tyre(s: int) -> bd.Part:
     return place(t, (s * WHEEL_X0, REAR_Y, AXLE_Z), (0, 0, 1), (s, 0, 0))
 
 
-# front wheels, in the steering's knuckle frame (see steering_assembly.py: wheel inner face WHEEL_IN off the kingpin)
-FRONT_TYRE_R, FRONT_TYRE_W = 28.0, 26.0  # LEGO tyre 55976 (56 x 26 balloon)
-FRONT_RIM_R, FRONT_RIM_W = 15.2, 20.0  # LEGO rim 56145 (30.4 x 20), centred in the tyre
-
-
-def front_rim_local() -> bd.Part:
-    """LEGO rim 56145 stand-in along +z, tyre inner face at z = 0: dished on both faces, hub with the cross hole."""
-    z0, w = (FRONT_TYRE_W - FRONT_RIM_W) / 2, FRONT_RIM_W
-    rim = cyl(FRONT_RIM_R, w, z0) - cyl(12.6, 7.0, z0 - 0.1) - cyl(12.6, 7.0, z0 + w - 6.9)
-    return rim.fuse(cyl(4.5, w, z0)).clean() - cross_bore(z0, z0 + w)
-
-
-def front_tyre_local() -> bd.Part:
-    return knobby_tyre(FRONT_TYRE_R, FRONT_RIM_R + 0.05, FRONT_TYRE_W, 2.2, 20)
-
-
 def rear_axle(s: int) -> bd.Part:
     """LEGO 10L cross axle (or printed): from 2.5 off the cross pin to the wheel's outer face."""
     return place(d.lego_axle(d.AXLE_IN, AXLE_10L), (0, REAR_Y, AXLE_Z), (0, 0, 1), (s, 0, 0))

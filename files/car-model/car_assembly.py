@@ -90,29 +90,17 @@ def body_parts() -> dict[str, bd.Part]:
 
 
 def steering_parts(theta: float = 0.0) -> dict[str, bd.Part]:
-    """The steering module as in ../../mg90s_steering, but with the LEGO front wheels drawn as rim + tyre."""
-    import math
+    """The steering module as in ../../mg90s_steering (LEGO front wheels drawn there as rim + tyre)."""
+    from steering_assembly import posed_parts as steer
 
-    import steering_assembly as sa
-
-    p = sa.posed_parts(theta)
     out = {}
-    for k, shape in p.items():
-        if k.startswith("wheel"):
-            continue
-        if k.endswith(("left", "right")):
-            base, _, side = k.rpartition(" ")
-            shape.label = f"{shape.label.replace(' ' + side, '')}:{side}"
-        out[k] = shape
-    link = sa.linkage.Linkage(**sa.linkage.CHOSEN)
-    rim, tyre = c.front_rim_local(), c.front_tyre_local()
-    for s in (1, -1):
-        side = SIDE[s]
-        delta, _ = link.wheel_angle(s, math.radians(theta))
-        kp = bd.Pos(s * sa.KP, sa.linkage.YK, 0) * bd.Rot(0, 0, delta)
-        at = bd.Location(bd.Plane(origin=(s * sa.WHEEL_IN, 0, sa.WHEEL_Z), x_dir=(0, 0, 1), z_dir=(s, 0, 0)))
-        out[f"front wheel {side}"] = labeled(kp * at * rim, f"wheel (LEGO, not printed):{side}", "#a0a5a9")
-        out[f"front tyre {side}"] = labeled(kp * at * tyre, f"front tyre (LEGO, not printed):{side}", TYRE)
+    for k, shape in steer(theta).items():
+        name = k.replace("wheel", "front wheel").replace("tyre", "front tyre")
+        if name.endswith(("left", "right")):
+            side = name.rpartition(" ")[2]
+            label = shape.label.replace(" " + side, "")
+            shape.label = f"{'front ' if k.startswith('tyre') else ''}{label}:{side}"
+        out[name] = shape
     return out
 
 

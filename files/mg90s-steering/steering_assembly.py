@@ -1,5 +1,6 @@
 """Reference assembly of the MG90S front steering at straight ahead: side-loading servo holder, stand-in MG90S
-and the printed double-arm horn, crank, tie rods, knuckles, 56 x 26 stand-in wheels and the steering frame.
+and the printed double-arm horn, crank, tie rods, knuckles, the steering frame, and stand-ins for the LEGO front
+wheels (balloon tyre 55976, 56 x 26, on rim 56145, 30.4 x 20), each drawn as rim + tyre.
 
 `posed_parts(theta)` places everything for a crank angle theta (deg, + = counter-clockwise seen from above)
 using the linkage solver in ../tools/linkage.py; checks use it to sweep the steering range.
@@ -47,9 +48,43 @@ def holder_to_vehicle(shape, turn=0.0):
     return bd.Pos(0, 0, Z_TAB) * bd.Rot(0, 0, 90 + turn) * shape
 
 
+RIM_D, RIM_W = 30.4, 20.0       # LEGO rim 56145 (30.4 x 20) in tyre 55976 (56 x 26 balloon), centred
+
+
+def _cyl(r, h, z=0.0):
+    return bd.Pos(0, 0, z) * bd.Cylinder(r, h, align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+
+
+def _cross_bore(z0, z1, clear=0.15):
+    """LEGO cross hole (axle 4.8, arms 1.8) along z, `clear` per side."""
+    d, w = 4.8 + 2 * clear, 1.8 + 2 * clear
+    prof = bd.Face(bd.Wire.make_circle(d / 2)) & (bd.Rectangle(d + 2, w) + bd.Rectangle(w, d + 2))
+    return bd.Pos(0, 0, z0 - 0.1) * bd.extrude(prof, z1 - z0 + 0.2)
+
+
+def _on_axle(s, shape):
+    """Local wheel frame (axis +z, tyre inner face z = 0) -> knuckle frame of side s at straight ahead."""
+    return bd.Location(bd.Plane(origin=(s * WHEEL_IN, 0, WHEEL_Z), x_dir=(0, 0, 1), z_dir=(s, 0, 0))) * shape
+
+
 def wheel(s) -> bd.Part:
-    w = bd.Rot(0, 90, 0) * bd.Cylinder(WHEEL_D / 2, WHEEL_W)
-    return bd.Pos(s * (WHEEL_IN + WHEEL_W / 2), 0, WHEEL_Z) * w
+    """Stand-in for the LEGO rim 56145: dished on both faces, hub with the cross hole for the axle with stop."""
+    z0, r = (WHEEL_W - RIM_W) / 2, RIM_D / 2
+    rim = _cyl(r, RIM_W, z0) - _cyl(12.6, 7.0, z0 - 0.1) - _cyl(12.6, 7.0, z0 + RIM_W - 6.9)
+    return _on_axle(s, rim.fuse(_cyl(4.5, RIM_W, z0)).clean() - _cross_bore(z0, z0 + RIM_W))
+
+
+def tyre(s, knob_h=2.2, n=20) -> bd.Part:
+    """Stand-in for the LEGO balloon tyre 55976 (56 x 26): a core with two staggered rows of tread blocks."""
+    r_out, w = WHEEL_D / 2, WHEEL_W
+    core = _cyl(r_out - knob_h, w) - _cyl(RIM_D / 2 + 0.05, w + 0.2, -0.1)
+    gap = 1.2
+    row_w = (w - gap) / 2
+    block_w = 2 * math.pi * r_out / n * 0.55
+    blocks = [bd.Rot(0, 0, (i + 0.5 * k) * 360.0 / n) * bd.Pos(r_out - knob_h - 0.3, 0, k * (row_w + gap)) *
+              bd.Box(knob_h + 0.6, block_w, row_w, align=(bd.Align.MIN, bd.Align.CENTER, bd.Align.MIN))
+              for k in range(2) for i in range(n)]
+    return _on_axle(s, core.fuse(*blocks).clean() & _cyl(r_out, w))
 
 
 def posed_parts(theta: float = 0.0, direct: bool = False):
@@ -76,7 +111,8 @@ def posed_parts(theta: float = 0.0, direct: bool = False):
         kp = bd.Pos(s * KP, linkage.YK, 0) * bd.Rot(0, 0, delta)
         parts[f"knuckle {side}"] = labeled(kp * read_step(str(OUT / f"steer_knuckle_{side}.step")),
                                            f"knuckle {side}", "gold")
-        parts[f"wheel {side}"] = labeled(kp * wheel(s), f"wheel {side} (LEGO, not printed)", "#222222")
+        parts[f"wheel {side}"] = labeled(kp * wheel(s), f"wheel {side} (LEGO, not printed)", "#a0a5a9")
+        parts[f"tyre {side}"] = labeled(kp * tyre(s), f"tyre {side} (LEGO, not printed)", "#1c1c1c")
         # tie rod from the crank pin to the arm end
         jx, jy = linkage.rot((s * link.c, link.j), th)
         a0 = link.arm0[s]

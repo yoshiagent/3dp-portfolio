@@ -503,7 +503,7 @@ PROJECTS = [
             ("檢查（build123d）", [
                 "伺服機在 −17.5、−8.8、0、8.8、17.5° 五個姿勢下，全部零件兩兩檢查：沒有任何重疊",
                 "最小間隙：拉桿與伺服座頂面 0.4 mm（打到底時），其他都在 0.6 mm 以上；曲柄壓在舵臂板上（凹槽四周 0.2 mm 間隙），曲柄離伺服機 1.0 mm",
-                "各零件的孔位與沉頭用探測點逐一確認；FreeCAD 組立圖由組裝 STEP 匯入，12 個零件保留名稱與顏色",
+                "各零件的孔位與沉頭用探測點逐一確認；FreeCAD 組立圖由組裝 STEP 匯入，14 個零件保留名稱與顏色（LEGO 輪子分成輪框和輪胎）",
             ]),
             ("3D 動畫頁", [
                 "組裝步驟：9 步，從爆炸圖依實際組裝方向逐一裝回（伺服機從側面滑入、轉向節與輪子從外側裝上）",
@@ -516,7 +516,7 @@ PROJECTS = [
                 "直接用 FreeCAD 匯出的封閉網格排盤，9 件都是 0 條開放邊",
             ]),
             ("待實測", [
-                "伺服機耳片以上的高度依照片推估（輸出軸頂離耳片下緣 13.5 mm 決定舵臂與曲柄的高度）；輪子以 Ø56 × 26 估算",
+                "伺服機耳片以上的高度依照片推估（輸出軸頂離耳片下緣 13.5 mm 決定舵臂與曲柄的高度）；輪子是 LEGO 氣球胎 55976（Ø56 × 26）配淺灰輪框 56145（Ø30.4 × 20），和整車影片裡的實車相同；模型裡的胎紋與輪框只是示意形狀",
                 "打到底的位置沒有機械擋塊，程式裡要把伺服機限制在 ±17.5° 以內",
             ]),
         ],
@@ -527,7 +527,7 @@ PROJECTS = [
                    ("render", "mg90s_steering/steer_crank.FCStd"),
                    ("render", "mg90s_steering/steer_crank_direct.FCStd")],
         "demo": ("mg90s_steering/animation/steering_animation.html", "開啟 3D 動畫：組裝與轉向"),
-        "files": [("mg90s_steering/steering_assembly.FCStd", "FreeCAD 組立圖（12 個零件）"),
+        "files": [("mg90s_steering/steering_assembly.FCStd", "FreeCAD 組立圖（14 個零件）"),
                   ("mg90s_steering/3MF/steering_plate.3mf",
                    "全部零件一盤：3MF（車架、左右轉向節、拉桿 ×2、曲柄、雙臂舵臂、伺服座底座與側蓋，共 9 件，已轉好列印方向）"),
                   ("mg90s_steering/steer_frame.FCStd", "轉向車架：FreeCAD 參數化模型"),
