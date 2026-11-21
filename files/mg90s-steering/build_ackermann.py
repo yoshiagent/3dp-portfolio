@@ -578,7 +578,8 @@ PORTFOLIO_NAV = ('<a href="../works/mg90s-steering.html">← MG90S 前輪轉向�
                  '<a href="/MechanicalAI/Mechanism/linkage/">MechanicalAI 機構學：連桿 ↗</a>')
 MECHANICALAI_NAV = ('<a href="../../">MechanicalAI</a><span>/</span><a href="../">機構學</a><span>/</span>'
                     '<a href="../linkage/">連桿</a><span>/</span><span>阿克曼轉向</span>'
-                    '<span class="sep"></span><a href="/3dp-portfolio/demo/steering_animation.html">3D 動畫 ↗</a>'
+                    '<span class="sep"></span><a href="../fourbar/">四連桿分析</a>'
+                    '<a href="/3dp-portfolio/demo/steering_animation.html">3D 動畫 ↗</a>'
                     '<a href="/3dp-portfolio/works/mg90s-steering.html">模型與列印檔 ↗</a>')
 MECHANICALAI_OUT = Path("C:/CludeHome/MechanicalAI/Mechanism/ackermann/index.html")
 
