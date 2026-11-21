@@ -721,6 +721,47 @@ PROJECTS = [
                   ("mg90s_arm/tmp/compare.py", "與原檔網格比對的腳本")],
     },
     {
+        "id": "battery-18650-technic",
+        "title": "18650 電池盒 Technic 底座",
+        "en": "18650 Battery Holder Technic Tray",
+        "date": "2026-11-21",
+        "kind": "own",
+        "tools": ["FreeCAD PartDesign", "FreeCAD 腳本", "build123d"],
+        "summary": "仿「麵包板 Technic 底座」：把單節 18650 電池盒（78 × 22 × 18 mm）嵌進 12 × 5 × 2 格的 Technic 框，上、下、四周都能用銷接到 LEGO Technic 結構上。",
+        "specs": [("外形", "95.4 × 39.4 × 15.8 mm"), ("格數", "12 × 5 × 2 Technic（和麵包板底座同高）"),
+                  ("電池盒", "78 × 22 × 18 mm，四周各留 0.4 mm"), ("銷孔", "60 垂直＋60 側面")],
+        "sections": [
+            ("放電池盒", [
+                "頂部開口的槽 78.8 × 22.8 mm，電池盒四周各留 0.4 mm 間隙，靠緊配固定，需要時可加雙面膠",
+                "底板 2.2 mm，框高 2 格（15.8 mm）和麵包板底座相同，電池盒頂面高出框頂約 4.4 mm，手指捏得到",
+                "不開出線槽：紅黑線從頂部開口拉出，四周牆和孔都保持完整",
+                "取出：從底板的孔往上推",
+            ]),
+            ("垂直孔", [
+                "外圈 30 個垂直孔上下貫穿（長邊各 12、短邊各 3），兩端都有 Ø6.2 × 0.8 沉頭，銷的凸緣能沉進去",
+                "底板 10 × 3 個貫穿孔，整個底面是完整的 12 × 5 Technic 格；底板只有 2.2 mm，不做沉頭，主要用來把電池盒推出",
+                "長邊 12 格是偶數，孔位落在中心兩側各半格（±4、±12 … ±44）；短邊 5 格，中心有孔",
+            ]),
+            ("側面孔", [
+                "四邊各兩排水平孔（中心上下 ±4 mm），和垂直孔直角交叉，像十字交叉孔磚",
+                "牆厚 8.3 mm，側孔直接穿透到槽內；短邊跳過角落兩列，那裡已有長邊的孔",
+            ]),
+            ("建模與檢查", [
+                "照麵包板底座的建模腳本改寫：每種孔只建一次，再用 PartDesign LinearPattern 複製；格數、電池盒尺寸、間隙、底板厚都在 Params 試算表",
+                "用 build123d 探測 420 個點：每個孔沿軸向都是空的；78 × 22 × 18 的電池盒放進槽裡不會碰到框",
+                "3MF 網格封閉、沒有非流形邊；Bambu Studio 命令列切片成功，預設設定約 3 小時，開口朝上平放即可、不需支撐",
+            ]),
+            ("待實測", [
+                "電池盒尺寸用 78 × 22 × 18 mm；不同廠牌的單節 18650 盒外形略有差異，太緊時把 Params 的 hd_clear 調大再重建",
+            ]),
+        ],
+        "images": [("file", TT + "preview/battery18650_with_holder_preview.png"),
+                   ("render", TT + "battery18650_technic.FCStd")],
+        "files": [(TT + "battery18650_technic.FCStd", "FreeCAD 參數化模型"),
+                  (TT + "battery18650_technic.FCStd", "3MF（由最新 FCStd 匯出）", "export"),
+                  (TT + "build_18650_technic.py", "建模腳本")] + TT_SRC,
+    },
+    {
         "id": "hello-kitty-keyring",
         "title": "Hello Kitty Mini 鑰匙圈改裝",
         "en": "Keyring Loop Added to a Figure",
