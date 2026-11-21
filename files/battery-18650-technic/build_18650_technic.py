@@ -5,10 +5,10 @@ Run:  freecadcmd.exe build_18650_technic.py
 
 The holder sits in a pocket that is open at the top, on a thin floor; the frame is 2 Technic units high like the
 breadboard tray, so the holder stands about 4.4 mm proud of the frame top. No wire slot: the leads come out over
-the open top. It is held by a close fit (0.4 mm all round, double-sided tape optional); push it out from below
+the open top. The pocket is exactly 78 x 22 (no clearance, as asked), so the holder is a snug fit; push it out from below
 through the floor holes.
 Frame: 13 x 5 x 2 Technic units (103.4 x 39.4 x 15.8), as long as the breadboard tray; origin at the centre, x along
-the holder, z up. The end walls are 12.3 thick. Hole positions follow nx / ny in Params (centred on the grid), and the
+the holder, z up. The long walls are 8.7 and the end walls 12.7 thick. Hole positions follow nx / ny in Params (centred on the grid), and the
 pattern counts are bound to them, so a different length or width only needs those two numbers.
 Pin holes, all on the 8 mm grid:
   - top: one ring of vertical holes through the walls, top to bottom, counterbored at both ends
@@ -44,7 +44,7 @@ PARAMS = [
     ("hd_l", "78", "18650 電池盒長 (mm)"),
     ("hd_w", "22", "18650 電池盒寬 (mm)"),
     ("hd_h", "18", "18650 電池盒高 (mm)"),
-    ("hd_clear", "0.4", "電池盒四周各留間隙 (mm)"),
+    ("hd_clear", "0", "電池盒四周各留間隙：0，槽剛好 78 × 22；太緊時調大 (mm)"),
     ("pocket_l", "=hd_l + 2 * hd_clear", "槽長（自動計算）"),
     ("pocket_w", "=hd_w + 2 * hd_clear", "槽寬（自動計算）"),
     ("floor_t", "2.2", "底板厚：電池盒頂高出框頂約 4.4 mm (mm)"),
