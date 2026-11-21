@@ -7,11 +7,14 @@ The holder sits in a pocket that is open at the top, on a thin floor; the frame 
 breadboard tray, so the holder stands about 4.4 mm proud of the frame top. No wire slot: the leads come out over
 the open top. It is held by a close fit (0.4 mm all round, double-sided tape optional); push it out from below
 through the floor holes.
-Frame: 12 x 5 x 2 Technic units (95.4 x 39.4 x 15.8), origin at the centre, x along the holder, z up.
-Pin holes, all on the 8 mm grid (12 columns along x sit half a pitch off the centre, 5 rows along y on it):
+Frame: 13 x 5 x 2 Technic units (103.4 x 39.4 x 15.8), as long as the breadboard tray; origin at the centre, x along
+the holder, z up. The end walls are 12.3 thick. Hole positions follow nx / ny in Params (centred on the grid), and the
+pattern counts are bound to them, so a different length or width only needs those two numbers.
+Pin holes, all on the 8 mm grid:
   - top: one ring of vertical holes through the walls, top to bottom, counterbored at both ends
-  - floor: through holes on every grid point inside that ring (10 x 3), so the whole bottom is a 12 x 5 grid; the
-    floor is too thin for a counterbore, they are plain holes (for pushing the holder out, or a pin's tip)
+  - floor: through holes on every grid point inside that ring (11 x 3), so the whole bottom is a 13 x 5 grid; the
+    floor is too thin for a counterbore, they are plain holes (for pushing the holder out, or a pin's tip). The
+    column next to each end wall (x = +-40) lies partly under the wall: there the hole is a 2.2 mm recess
   - sides: two rows of horizontal holes (z = +-4) on all four sides, through the 8.3 mm walls into the pocket;
     the short ends skip the corner rows, where the long-side holes already are
 Each hole is built once and copied with a PartDesign LinearPattern.
@@ -28,10 +31,10 @@ from tt_adapter_core import bind, box  # noqa: E402
 PARAMS = [
     # frame on the Technic grid
     ("pitch", "8", "Technic 孔距 (mm)"),
-    ("nx", "12", "長邊格數（偶數：孔位偏中心半格）"),
-    ("ny", "5", "短邊格數（奇數：中心有孔）"),
-    ("frame_l", "=nx * pitch - 0.6", "框總長：12 格（自動計算）"),
-    ("frame_w", "=ny * pitch - 0.6", "框總寬：5 格（自動計算）"),
+    ("nx", "13", "長邊格數：13 格和麵包板底座同長"),
+    ("ny", "5", "短邊格數"),
+    ("frame_l", "=nx * pitch - 0.6", "框總長（自動計算）：13 格 103.4"),
+    ("frame_w", "=ny * pitch - 0.6", "框總寬（自動計算）：5 格 39.4"),
     ("frame_h", "15.8", "框總高：2 格，和麵包板底座同高 (mm)"),
     ("corner_r", "3.7", "框四角圓角半徑 (mm)"),
     ("pin_d", "4.94", "銷孔直徑 (mm)"),
@@ -108,30 +111,39 @@ def build(stem):
     box(body, "Pocket", True, P + "pocket_l", P + "pocket_w", f"{P}frame_h",
         x=f"-{P}pocket_l / 2", y=f"-{P}pocket_w / 2", z=P + "pocket_z")
 
-    # grid: columns along x at (i + 0.5) * pitch for i = -nx/2 .. nx/2 - 1, rows along y at j * pitch
-    gx = lambda i: f"({i} + 0.5) * {P}pitch"   # noqa: E731
-    gy = lambda j: f"{j} * {P}pitch"            # noqa: E731
-    # floor: plain through holes inside the ring (10 x 3)
-    core.pattern(body, "FloorGrid", vertical_hole(body, "Floor", gx(-5), gy(-1), Z0, P + "pocket_z", False),
-                 "X", 10, f"9 * {P}pitch", "Y", 3, f"2 * {P}pitch")
-    # top: vertical holes through the walls in a ring; long walls 12, end walls 3 (corners are in the long walls)
+    # grid centred on the frame: column i (0 .. nx - 1) at (i - (nx - 1) / 2) * pitch, row j likewise with ny.
+    # Each hole is made at its first position and repeated by a LinearPattern whose count is bound to nx / ny.
+    gx = lambda i: f"({i} - ({P}nx - 1) / 2) * {P}pitch"   # noqa: E731
+    gy = lambda j: f"({j} - ({P}ny - 1) / 2) * {P}pitch"   # noqa: E731
+
+    def grid(name, feats, axis, count, axis2=None, count2=None):
+        """Pattern with its counts bound to Params (count / count2 are expressions in nx, ny)."""
+        n = lambda e: f"({e} - 1) * {P}pitch"  # noqa: E731
+        pat = core.pattern(body, name, feats, axis, 2, n(count), axis2, 2 if axis2 else 1, n(count2) if axis2 else "0")
+        bind(pat, "Occurrences", count)
+        if axis2:
+            bind(pat, "Occurrences2", count2)
+        return pat
+
+    nx, ny = P + "nx", P + "ny"
+    # floor: plain through holes inside the ring ((nx - 2) x (ny - 2))
+    grid("FloorGrid", vertical_hole(body, "Floor", gx(1), gy(1), Z0, P + "pocket_z", False),
+         "X", f"{nx} - 2", "Y", f"{ny} - 2")
+    # top: vertical holes through the walls in a ring; long walls nx each, end walls ny - 2 (corners are in the long walls)
     for t, s in (("L", 1), ("R", -1)):
-        core.pattern(body, f"TopLong{t}", vertical_hole(body, f"Top{t}", gx(-6), gy(2 * s), Z0, ZT),
-                     "X", 12, f"11 * {P}pitch")
+        grid(f"TopLong{t}", vertical_hole(body, f"Top{t}", gx(0), f"{s} * {gy(0)}", Z0, ZT), "X", nx)
     for t, s in (("F", 1), ("B", -1)):
-        core.pattern(body, f"TopEnd{t}", vertical_hole(body, f"Top{t}", f"{s} * {gx(5)}", gy(-1), Z0, ZT),
-                     "Y", 3, f"2 * {P}pitch")
+        grid(f"TopEnd{t}", vertical_hole(body, f"Top{t}", f"{s} * {gx(0)}", gy(1), Z0, ZT), "Y", f"{ny} - 2")
     # two rows of side holes, half a pitch above and below the middle, through the walls into the pocket
     for row, rz in (("U", 1), ("D", -1)):
         z = f"{rz} * {P}pitch / 2"
         for t, s in (("L", 1), ("R", -1)):
-            core.pattern(body, f"Side{row}{t}", drilled_hole(body, f"Side{row}{t}h", (1, 0, 0), 90 * s, gx(-6),
-                                                             f"{s} * ({P}frame_w / 2 + 0.5)", z, P + "side_depth"),
-                         "X", 12, f"11 * {P}pitch")
+            grid(f"Side{row}{t}", drilled_hole(body, f"Side{row}{t}h", (1, 0, 0), 90 * s, gx(0),
+                                               f"{s} * ({P}frame_w / 2 + 0.5)", z, P + "side_depth"), "X", nx)
         for t, s in (("F", 1), ("B", -1)):
-            core.pattern(body, f"End{row}{t}", drilled_hole(body, f"End{row}{t}h", (0, 1, 0), -90 * s,
-                                                            f"{s} * ({P}frame_l / 2 + 0.5)", gy(-1), z, P + "end_depth"),
-                         "Y", 3, f"2 * {P}pitch")
+            grid(f"End{row}{t}", drilled_hole(body, f"End{row}{t}h", (0, 1, 0), -90 * s,
+                                              f"{s} * ({P}frame_l / 2 + 0.5)", gy(1), z, P + "end_depth"),
+                 "Y", f"{ny} - 2")
 
     core.finish(doc, body, stem)
 
