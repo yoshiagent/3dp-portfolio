@@ -482,6 +482,12 @@ PROJECTS = [
                 "掃描轉向臂長、內傾角與曲柄銷位置，找阿克曼誤差最小、傳動角夠大（≥ 37°）、曲柄銷不會壓到伺服座的組合",
                 "取捨：伺服機轉角越小、阿克曼越準；若要求 ±22° 的轉角，誤差會增加到約 3°",
             ]),
+            ("阿克曼理論分析（另開分析頁，附圖）", [
+                "低速不打滑時，四輪輪軸線要交在後軸延長線上的同一點，推得阿克曼條件 **cot δo − cot δi = 主銷距 ÷ 軸距 = 80 ÷ 160 = 0.5**",
+                "打到底時內輪 32.3°、外輪 25.9°，理想外輪是 25.7°；全行程最大誤差 0.83°（內輪約 23° 時），兩條輪軸線在後軸上只差 3.8 mm",
+                "經驗法則「轉向臂延長線交在後軸中點」是 β = 14°，套在這組伺服曲柄＋兩支拉桿上誤差 1.8°；掃描後選 β = 19°，誤差降到 0.8°，傳力角仍有 37°",
+                "分析頁用同一套連桿程式算出平面圖、外輪對內輪曲線、不同 β 的誤差曲線與逐角度數據表",
+            ]),
             ("高度分層", [
                 "零件依 8 mm 一層疊放：下耳 16.2、車架 24.2、上耳與轉向臂 32.2、拉桿 40.2、曲柄臂 48.2（mm，離地）",
                 "雙臂舵臂凸台朝下套進伺服軸，板頂離地 46.3；曲柄底部的凹槽比舵臂板淺 0.1 mm，壓在板頂上，曲柄底面在 44.4，所以曲柄臂下方讓位 3.8 mm",
@@ -527,6 +533,7 @@ PROJECTS = [
                    ("render", "mg90s_steering/steer_crank.FCStd"),
                    ("render", "mg90s_steering/steer_crank_direct.FCStd")],
         "demo": ("mg90s_steering/animation/steering_animation.html", "開啟 3D 動畫：組裝與轉向"),
+        "pages": [("mg90s_steering/analysis/ackermann_analysis.html", "阿克曼機構理論分析")],
         "files": [("mg90s_steering/steering_assembly.FCStd", "FreeCAD 組立圖（14 個零件）"),
                   ("mg90s_steering/3MF/steering_plate.3mf",
                    "全部零件一盤：3MF（車架、左右轉向節、拉桿 ×2、曲柄、雙臂舵臂、伺服座底座與側蓋，共 9 件，已轉好列印方向）"),
@@ -551,6 +558,7 @@ PROJECTS = [
                   (TT + "build_mg90s_side.py", "伺服座建模腳本（FreeCAD）"),
                   ("mg90s_steering/src/print_plate.py", "一盤 3MF 的排盤腳本（Python）"),
                   ("mg90s_steering/tools/linkage.py", "連桿解算與最佳化（Python）"),
+                  ("mg90s_steering/analysis/build_ackermann.py", "阿克曼理論分析頁產生腳本：所有圖與數據由 linkage.py 算出"),
                   ("mg90s_steering/src/steering_assembly.py", "組裝模型（build123d）"),
                   ("mg90s_steering/tools/check_steering.py", "轉向範圍干涉檢查與探測"),
                   ("mg90s_steering/freecad/build_assembly.py", "產生 FreeCAD 組立圖的腳本")] + TT_SRC,

@@ -372,6 +372,8 @@ def build():
         demo = ""
         if p.get("demo"):
             demo = f'<a class="demo" href="../demo/{os.path.basename(p["demo"][0])}">{esc(p["demo"][1])} ↗</a>'
+        for path, label in p.get("pages", []):  # extra pages of our own (analysis), copied into demo/
+            demo += f'<a class="demo" href="../demo/{os.path.basename(path)}">{esc(label)} ↗</a>'
         for url, label in p.get("videos", []):  # external videos (YouTube), opened in a new tab
             demo += f'<a class="demo" href="{html.escape(url)}" target="_blank" rel="noopener">{esc(label)} ↗</a>'
         secs = "".join(f'<section class="sec"><h2>{esc(h)}</h2><ul>' + "".join(f"<li>{esc(b)}</li>" for b in items)
@@ -428,6 +430,8 @@ document.querySelectorAll('.strip button').forEach(function (b) {{
             fh.write(page(f"{p['title']}｜3D 列印作品集", body, 1))
         if p.get("demo"):
             copy(os.path.join(ROOT, p["demo"][0]), os.path.join(WEB, "demo", os.path.basename(p["demo"][0])))
+        for path, _ in p.get("pages", []):
+            copy(os.path.join(ROOT, path), os.path.join(WEB, "demo", os.path.basename(path)))
 
     # index
     cards = ""
