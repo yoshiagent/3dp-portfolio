@@ -39,7 +39,7 @@ def bb_near(a, b, tol):
 INSIDE = [{"servo", "holder base"}, {"servo", "holder cover"}, {"servo", "horn"}, {"horn", "holder base"},
           {"horn", "holder cover"}, {"holder base", "holder cover"}, {"horn", "crank"}]
 STEER_MOVING = {"crank", "horn", "knuckle left", "knuckle right", "front wheel left", "front wheel right",
-                "tie rod left", "tie rod right"}
+                "front tyre left", "front tyre right", "tie rod left", "tie rod right"}
 
 print("== 1. static, straight ahead")
 parts = posed_parts(0.0, 0.0)

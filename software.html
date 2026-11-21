@@ -74,7 +74,7 @@
 <p>以 OpenCascade 核心為基礎的 Python CAD 函式庫，能直接做出 B-rep 實體並匯出 STEP。齒形計算這類需要大量數學的零件用它最方便。</p>
 <dl class="specs"><dt>本機版本</dt><dd><strong>隨外掛提供</strong></dd>
 <dt>安裝位置</dt><dd><code>Claude Code 的 text-to-cad 外掛（cadgen 執行環境，%LOCALAPPDATA%\cadgen）</code></dd></dl>
-<div class="subs"><div class="sub"><h3>本站的用法</h3><ul><li>差速器的所有零件：直齒傘齒輪用 Tredgold 近似，漸開線齒形放樣到錐頂，再做變位避免根切</li><li>行星齒輪 v2／v2.1 的零件與組裝模型，用來做試裝檢查（Fit Check），並和 .scad 保持同步</li><li>差速器動畫用的網格也是從這個環境匯出（export_meshes.py），再放進 Three.js 網頁</li><li>電動差速器：匯入 FreeCAD 做好的馬達外框、電池盒、麵包板 STEP，組成整台模型，再跑干涉與齒輪嚙合檢查</li><li>MG90S 轉向機構：依連桿解算結果擺出各個轉向角度，掃描整個轉向範圍檢查零件干涉</li><li>差速轉向車：整車底盤、Ø80 後輪與平台建模，組合兩個模組後檢查干涉、轉向掃掠、齒輪嚙合與 140 個插銷孔</li></ul></div><div class="sub"><h3>注意</h3><ul><li>它跑在外掛自己的 Python 裡，不在系統 Python 的套件清單中；腳本要用該環境的 python 執行</li></ul></div></div>
+<div class="subs"><div class="sub"><h3>本站的用法</h3><ul><li>差速器的所有零件：直齒傘齒輪用 Tredgold 近似，漸開線齒形放樣到錐頂，再做變位避免根切</li><li>行星齒輪 v2／v2.1 的零件與組裝模型，用來做試裝檢查（Fit Check），並和 .scad 保持同步</li><li>差速器動畫用的網格也是從這個環境匯出（export_meshes.py），再放進 Three.js 網頁</li><li>電動差速器：匯入 FreeCAD 做好的馬達外框、電池盒、麵包板 STEP，組成整台模型，再跑干涉與齒輪嚙合檢查</li><li>MG90S 轉向機構：依連桿解算結果擺出各個轉向角度，掃描整個轉向範圍檢查零件干涉</li><li>差速轉向車：整車底盤、立柱與 LEGO 輪子替身建模，組合兩個模組後檢查干涉、轉向掃掠、齒輪嚙合與 140 個插銷孔</li></ul></div><div class="sub"><h3>注意</h3><ul><li>它跑在外掛自己的 Python 裡，不在系統 Python 的套件清單中；腳本要用該環境的 python 執行</li></ul></div></div>
 <div class="sub"><h3>用在這些作品（5 件）</h3><ul class="works"><li><a href="works/car-model.html">差速轉向車模型（電動差速器＋MG90S 轉向）</a></li><li><a href="works/mg90s-steering.html">MG90S 伺服機前輪轉向機構（阿克曼）</a></li><li><a href="works/electric-differential.html">電動差速器教學模型</a></li><li><a href="works/differential-model.html">開放式差速器教學模型</a></li><li><a href="works/planetary-gear-model.html">行星齒輪教學模型</a></li></ul></div>
 </section>
 

@@ -8,7 +8,8 @@ settings are copied so the file opens with that printer):
   3 steering     steering frame, knuckles, tie rods x2, crank, servo holder base and cover
   4 motor+power  TT motor frame (SideTop), TT coupler, battery box, battery lid, breadboard frame
 Not printed (LEGO / standard parts): Technic pins, cross axles (3L, 10L x2, front axles with stop), half bushes
-x2 and bushes x2 on the rear axles, LEGO wheels front (56 x 26) and rear (81.6 x 38 R), M2 screws.
+x4 and bushes x2 on the rear axles, LEGO wheels front (tyre 55976 56 x 26 on rim 56145) and rear (motorcycle
+tyre 2902 81.6 x 15 on rim 2903), M2 screws.
 
 Poses: car parts as in print_parts.py, drive train as in ../../electric_differential/src/print_parts.py, steering
 as in ../../mg90s_steering/src/print_plate.py; FreeCAD parts (steering, motor frame, coupler, battery box, lid,

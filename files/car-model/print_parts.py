@@ -3,8 +3,8 @@
 Plate 1 (car_drive_base): the drive module's base alone, flat bottom down (103.4 x 139.4 mm, towers 39 mm high).
 Plate 2 (car_chassis): the middle-level chassis alone, a flat 7.8 mm Technic plate (103.4 x 143.4 mm).
 Plate 3 (car_parts): the two posts.
-LEGO standard parts are not printed: 81.6 x 38 R rear tyres on rims, 10L cross axles x2, half bushes x2 (the
-axle collars), bushes x2 (the wheel spacers); car_parts.py keeps their shapes as stand-ins.
+LEGO standard parts are not printed: 81.6 x 15 motorcycle rear tyres on rims, 10L cross axles x2, half bushes x4
+(the axle collars, inside the outer towers and outside the hubs), bushes x2 (the wheel spacers); car_parts.py keeps their shapes as stand-ins.
 After rebuilding, close the mesher's T-junctions:
     python ../../web/tools/fix_tjunctions.py ../3MF/car_drive_base.3mf ../3MF/car_chassis.3mf ../3MF/car_parts.3mf ../STL/car_drive_base.stl ../STL/car_chassis.stl
 Everything else is an existing print: the steering parts (../../mg90s_steering), the differential parts and

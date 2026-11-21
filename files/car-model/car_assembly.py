@@ -26,6 +26,7 @@ import car_parts as c  # noqa: E402
 from car_parts import d, e  # noqa: E402
 
 SIDE = {1: "right", -1: "left"}
+TYRE = "#1c1c1c"
 
 
 def labeled(shape: bd.Part, label: str, color: str) -> bd.Part:
@@ -66,8 +67,9 @@ def rear_parts() -> dict[str, bd.Part]:
         p[f"rear axle {side}"] = labeled(c.rear_axle(s), f"rear axle 10L:{side}", "silver")
         p[f"collar {side}"] = labeled(c.collar(s), f"axle collar:{side}", "khaki")
         p[f"spacer {side}"] = labeled(c.spacer(s), f"wheel spacer:{side}", "khaki")
-        p[f"rear wheel {side}"] = labeled(c.rear_wheel(s), f"rear wheel LEGO 81.6:{side}",
-                                          "royalblue" if s > 0 else "magenta")
+        p[f"rear wheel {side}"] = labeled(c.rear_rim(s), f"rear wheel LEGO 81.6:{side}", "white")
+        p[f"rear tyre {side}"] = labeled(c.rear_tyre(s), f"rear tyre LEGO 81.6:{side}", TYRE)
+        p[f"outer collar {side}"] = labeled(c.collar(s, outer=True), f"outer collar:{side}", "gold")
     return p
 
 
@@ -88,16 +90,29 @@ def body_parts() -> dict[str, bd.Part]:
 
 
 def steering_parts(theta: float = 0.0) -> dict[str, bd.Part]:
-    from steering_assembly import posed_parts as steer
+    """The steering module as in ../../mg90s_steering, but with the LEGO front wheels drawn as rim + tyre."""
+    import math
 
-    p = steer(theta)
+    import steering_assembly as sa
+
+    p = sa.posed_parts(theta)
     out = {}
     for k, shape in p.items():
-        name = k.replace("wheel", "front wheel")
-        if name.endswith(("left", "right")):
-            base, _, side = name.rpartition(" ")
+        if k.startswith("wheel"):
+            continue
+        if k.endswith(("left", "right")):
+            base, _, side = k.rpartition(" ")
             shape.label = f"{shape.label.replace(' ' + side, '')}:{side}"
-        out[name] = shape
+        out[k] = shape
+    link = sa.linkage.Linkage(**sa.linkage.CHOSEN)
+    rim, tyre = c.front_rim_local(), c.front_tyre_local()
+    for s in (1, -1):
+        side = SIDE[s]
+        delta, _ = link.wheel_angle(s, math.radians(theta))
+        kp = bd.Pos(s * sa.KP, sa.linkage.YK, 0) * bd.Rot(0, 0, delta)
+        at = bd.Location(bd.Plane(origin=(s * sa.WHEEL_IN, 0, sa.WHEEL_Z), x_dir=(0, 0, 1), z_dir=(s, 0, 0)))
+        out[f"front wheel {side}"] = labeled(kp * at * rim, f"wheel (LEGO, not printed):{side}", "#a0a5a9")
+        out[f"front tyre {side}"] = labeled(kp * at * tyre, f"front tyre (LEGO, not printed):{side}", TYRE)
     return out
 
 

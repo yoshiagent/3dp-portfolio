@@ -6,8 +6,9 @@ the z axis. Front axle (kingpins) at y = 40; wheelbase 160 as the steering's Ack
 rear axle is at y = -120.
 
 Why the rear is different from the bench model: the 44-tooth ring reaches 33.3 mm below the axle, so the rear
-wheels are the large LEGO 81.6 x 38 R tyres (axle 40.8 above the ground) and the plate gets a slot the ring
-turns in (ring 7.5 mm above the ground). The front keeps the LEGO 56 x 26 wheels and the steering module unchanged.
+wheels are the large LEGO motorcycle wheels, tyre 2902 81.6 x 15 on rim 2903 (axle 40.8 above the ground), and the
+plate gets a slot the ring turns in (ring 7.5 mm above the ground). The front keeps the LEGO 56 x 26 wheels (tyre
+55976 on rim 56145) and the steering module unchanged.
 
 Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, all vertical, from above)
 * drive module: drive base (Technic plate z 8 - 15.8, 8 mm grid, x = 0, y = 0 mod 8, the lowest level at the
@@ -21,8 +22,8 @@ Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, al
 * upper level: the breadboard frame itself (its bottom is a full 13 x 9 Technic grid), pinned straight onto the
   battery box top (stood on edge, lid outward) and two posts (front post on the chassis, rear post on the drive
   base: the motor leaves no chassis there). No separate deck plate.
-* nothing on the rear axle line is printed: LEGO 81.6 x 38 R tyres on their rims, 10L axles, half bushes (the
-  collars, 4 mm) and bushes (the spacers, 8 mm). Their shapes here are stand-ins for the assembly and checks.
+* nothing on the rear axle line is printed: LEGO motorcycle tyres on their rims, 10L axles, half bushes (the
+  collars, 4 mm, inside the outer towers and outside the hubs) and bushes (the spacers, 8 mm). Their shapes here are stand-ins for the assembly and checks.
 
 Why three levels: the TT motor frame's lower side is 20.3 above the ground, so the drive base must stay at the
 bottom (z 8 - 15.8) and the chassis that joins it to the steering goes one level up, clear of the motor.
@@ -31,6 +32,7 @@ Units mm.
 """
 from __future__ import annotations
 
+import math
 import sys
 from functools import reduce
 from pathlib import Path
@@ -52,9 +54,10 @@ PITCH = 8.0
 PIN_D, CB_D, CB_DEPTH = e.PIN_D, e.CB_D, e.CB_DEPTH
 
 # --- rear axle line (|x|) ---
-WHEEL_R, WHEEL_W = 40.8, 38.0  # LEGO 81.6 x 38 R tyre (stand-in shape)
+WHEEL_R, WHEEL_W = 40.8, 13.8  # LEGO motorcycle wheel: rim 2903 (61.6 x 13.8) in tyre 2902 (81.6 x 15)
+RIM_R, TYRE_W = 30.8, 15.0
 AXLE_10L = 10 * PITCH - 0.2
-AXLE_END = d.AXLE_IN + AXLE_10L  # 82.3: 24 mm into the wheel's hub
+AXLE_END = d.AXLE_IN + AXLE_10L  # 82.3: through the 13.8 hub, 10.2 out past its outer face
 BUSH_L = 8.0  # LEGO bush between the outer tower and the wheel
 OUTER_X0, OUTER_X1 = 46.0, 50.0  # outer axle towers
 SPACER_X = (OUTER_X1 + 0.15, OUTER_X1 + 0.15 + BUSH_L)  # LEGO bush, tower -> wheel: no inward slide
@@ -62,6 +65,7 @@ WHEEL_X0 = SPACER_X[1] + 0.15  # 58.3: wheel inner face
 WHEEL_X1 = WHEEL_X0 + WHEEL_W
 COLLAR_L = 4.0
 COLLAR_X = (OUTER_X0 - 0.15 - COLLAR_L, OUTER_X0 - 0.15)  # on the axle inside the outer tower: no outward slide
+OUT_COLLAR_X = (WHEEL_X1 + 0.15, WHEEL_X1 + 0.15 + COLLAR_L)  # half bush outside the hub: the wheel stays on
 TUBE_OD = d.SLEEVE_OD
 
 # --- drive base (lowest level, rear) ---
@@ -273,16 +277,52 @@ def deck_post(yc: float, z0: float) -> bd.Part:
 
 # --- rear axle line ---
 
-def rear_wheel(s: int) -> bd.Part:
-    """Stand-in for the LEGO 81.6 x 38 R tyre on its rim (not printed): tyre, rim with a dished face, hub with the
-    cross hole, and a raised marker on the outer face so the two sides can be compared turning."""
-    tyre = cyl(WHEEL_R, WHEEL_W) - cyl(28.0, WHEEL_W + 0.2, -0.1)
-    rim = cyl(28.0, WHEEL_W) - cyl(24.0, WHEEL_W - 12.0, 6.0) - cyl(24.0, 3.1, WHEEL_W - 3.0)
-    marker = bd.Pos(0, 0, WHEEL_W - 3.0) * bd.extrude(
-        bd.Polygon((8.5, -1.5), (19.0, -1.5), (19.0, -3.5), (23.5, 0.0), (19.0, 3.5), (19.0, 1.5), (8.5, 1.5),
-                   align=None), 1.2)
-    w = tyre + rim + cyl(7.5, WHEEL_W) + marker - cross_bore(0, WHEEL_W)
-    return place(w, (s * WHEEL_X0, REAR_Y, AXLE_Z), (0, 0, 1), (s, 0, 0))
+def knobby_tyre(r_out: float, r_in: float, w: float, knob_h: float, n: int, z0: float = 0.0) -> bd.Part:
+    """Stand-in LEGO off-road tyre along +z (z0 .. z0 + w): a core with two staggered rows of tread blocks."""
+    core = cyl(r_out - knob_h, w, z0) - cyl(r_in, w + 0.2, z0 - 0.1)
+    gap = 1.2
+    row_w = (w - gap) / 2
+    block_w = 2 * math.pi * r_out / n * 0.55
+    blocks = []
+    for k in range(2):
+        for i in range(n):
+            b = bd.Box(knob_h + 0.6, block_w, row_w, align=(bd.Align.MIN, bd.Align.CENTER, bd.Align.MIN))
+            blocks.append(bd.Rot(0, 0, (i + 0.5 * k) * 360.0 / n) *
+                          bd.Pos(r_out - knob_h - 0.3, 0, z0 + k * (row_w + gap)) * b)
+    return core.fuse(*blocks).clean() & cyl(r_out, w, z0)
+
+
+def rear_rim(s: int) -> bd.Part:
+    """Stand-in for the LEGO motorcycle rim 2903 (61.6 x 13.8, not printed): rim ring, six spokes and the hub with
+    the cross hole; its inner face against the spacer bush."""
+    ring = cyl(RIM_R, WHEEL_W) - cyl(RIM_R - 3.8, WHEEL_W + 0.2, -0.1)
+    spokes = [bd.Rot(0, 0, 60.0 * i) * bd.Pos(5.0, 0, WHEEL_W / 2) *
+              bd.Box(RIM_R - 3.0 - 5.0, 4.0, 5.0, align=(bd.Align.MIN, bd.Align.CENTER, bd.Align.CENTER))
+              for i in range(6)]
+    rim = ring.fuse(cyl(6.0, WHEEL_W), *spokes).clean() - cross_bore(0, WHEEL_W)
+    return place(rim, (s * WHEEL_X0, REAR_Y, AXLE_Z), (0, 0, 1), (s, 0, 0))
+
+
+def rear_tyre(s: int) -> bd.Part:
+    """Stand-in for the LEGO motorcycle tyre 2902 (81.6 x 15, not printed), centred on the rim."""
+    t = knobby_tyre(WHEEL_R, RIM_R + 0.05, TYRE_W, 2.2, 26, -(TYRE_W - WHEEL_W) / 2)
+    return place(t, (s * WHEEL_X0, REAR_Y, AXLE_Z), (0, 0, 1), (s, 0, 0))
+
+
+# front wheels, in the steering's knuckle frame (see steering_assembly.py: wheel inner face WHEEL_IN off the kingpin)
+FRONT_TYRE_R, FRONT_TYRE_W = 28.0, 26.0  # LEGO tyre 55976 (56 x 26 balloon)
+FRONT_RIM_R, FRONT_RIM_W = 15.2, 20.0  # LEGO rim 56145 (30.4 x 20), centred in the tyre
+
+
+def front_rim_local() -> bd.Part:
+    """LEGO rim 56145 stand-in along +z, tyre inner face at z = 0: dished on both faces, hub with the cross hole."""
+    z0, w = (FRONT_TYRE_W - FRONT_RIM_W) / 2, FRONT_RIM_W
+    rim = cyl(FRONT_RIM_R, w, z0) - cyl(12.6, 7.0, z0 - 0.1) - cyl(12.6, 7.0, z0 + w - 6.9)
+    return rim.fuse(cyl(4.5, w, z0)).clean() - cross_bore(z0, z0 + w)
+
+
+def front_tyre_local() -> bd.Part:
+    return knobby_tyre(FRONT_TYRE_R, FRONT_RIM_R + 0.05, FRONT_TYRE_W, 2.2, 20)
 
 
 def rear_axle(s: int) -> bd.Part:
@@ -299,8 +339,8 @@ def spacer(s: int) -> bd.Part:
     return _tube(s, x0, x1, round_bore(d.BEARING_D, 0, x1 - x0))
 
 
-def collar(s: int) -> bd.Part:
-    x0, x1 = COLLAR_X
+def collar(s: int, outer: bool = False) -> bd.Part:
+    x0, x1 = OUT_COLLAR_X if outer else COLLAR_X
     return _tube(s, x0, x1, cross_bore(0, x1 - x0))
 
 
