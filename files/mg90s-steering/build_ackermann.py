@@ -383,7 +383,8 @@ a { color:var(--blue-soft); text-decoration:none; } a:hover { text-decoration:un
 .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
 header { border-bottom:1px solid var(--line); background:linear-gradient(180deg,#0d1828,var(--bg)); }
 header .wrap { padding-top: 28px; padding-bottom: 26px; }
-.nav { display:flex; flex-wrap:wrap; gap:8px 16px; font-size:.9rem; margin-bottom: 14px; }
+.nav { display:flex; flex-wrap:wrap; gap:6px 12px; font-size:.9rem; margin-bottom: 14px; color: var(--muted); }
+.nav .sep { flex: 1 0 12px; }
 h1 { font-size: clamp(1.5rem, 4vw, 2.2rem); margin: 0; letter-spacing: .02em; }
 .en { color: var(--muted); font-size: .95rem; }
 .lead { color: var(--muted); margin: 12px 0 0; }
@@ -415,11 +416,11 @@ footer { border-top:1px solid var(--line); color:var(--muted); font-size:.85rem;
 """
 
 
-def build():
+def build(nav, out, title_suffix="MG90S 前輪轉向"):
     deg = math.degrees(LINK.beta)
     body = f"""
 <header><div class="wrap">
-<div class="nav"><a href="../works/mg90s-steering.html">← MG90S 前輪轉向作品頁</a><a href="steering_animation.html">3D 動畫：組裝與轉向 ↗</a></div>
+<div class="nav">{nav}</div>
 <h1>阿克曼轉向機構理論分析</h1>
 <div class="en">Ackermann Steering Geometry · MG90S Servo Front Steering</div>
 <p class="lead">轉彎時內外前輪該轉多少度、這組伺服曲柄＋拉桿機構實際轉多少度，兩者差多少、為什麼這樣選尺寸。所有數字與圖都由轉向機構的連桿程式 linkage.py 直接算出，和 CAD 模型、干涉檢查、3D 動畫用的是同一套幾何。</p>
@@ -556,18 +557,32 @@ cot δo − cot δi = (R + K)/L − (R − K)/L = w / L = {W:.0f} / {L:.0f} = {W
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>阿克曼轉向機構理論分析｜MG90S 前輪轉向</title>
+<title>阿克曼轉向機構理論分析｜{title_suffix}</title>
 <style>{CSS}</style>
 </head>
 <body>{body}</body>
 </html>
 """
-    out = HERE / "ackermann_analysis.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page, encoding="utf-8")
     print(f"wrote {out} ({out.stat().st_size / 1e3:.0f} KB)")
     print(f"full lock {DI_MAX:.2f}/{DO_MAX:.2f} ideal {DO_IDEAL:.2f}  max err {E_MAX:.3f} at di {E_DI:.1f}  "
           f"R {R_MID:.0f}  gap {X_IN - X_OUT:.2f}  ack {ACK_PCT:.0f}%  mu min {MU_MIN:.1f}")
 
 
+# Two copies of the same page: the 3D printing portfolio (next to the steering animation) and MechanicalAI
+# (Mechanism/ackermann/, under 機構學 / 連桿). Only the navigation differs; links between the two sites are
+# root-relative, as on the MechanicalAI home page, so they work on both GitHub Pages and the IIS mirror.
+PORTFOLIO_NAV = ('<a href="../works/mg90s-steering.html">← MG90S 前輪轉向作品頁</a>'
+                 '<a href="steering_animation.html">3D 動畫：組裝與轉向 ↗</a>'
+                 '<a href="/MechanicalAI/Mechanism/linkage/">MechanicalAI 機構學：連桿 ↗</a>')
+MECHANICALAI_NAV = ('<a href="../../">MechanicalAI</a><span>/</span><a href="../">機構學</a><span>/</span>'
+                    '<a href="../linkage/">連桿</a><span>/</span><span>阿克曼轉向</span>'
+                    '<span class="sep"></span><a href="/3dp-portfolio/demo/steering_animation.html">3D 動畫 ↗</a>'
+                    '<a href="/3dp-portfolio/works/mg90s-steering.html">模型與列印檔 ↗</a>')
+MECHANICALAI_OUT = Path("C:/CludeHome/MechanicalAI/Mechanism/ackermann/index.html")
+
 if __name__ == "__main__":
-    build()
+    build(PORTFOLIO_NAV, HERE / "ackermann_analysis.html")
+    if MECHANICALAI_OUT.parent.parent.exists():
+        build(MECHANICALAI_NAV, MECHANICALAI_OUT, "MechanicalAI")

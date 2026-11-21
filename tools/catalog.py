@@ -534,6 +534,7 @@ PROJECTS = [
                    ("render", "mg90s_steering/steer_crank_direct.FCStd")],
         "demo": ("mg90s_steering/animation/steering_animation.html", "開啟 3D 動畫：組裝與轉向"),
         "pages": [("mg90s_steering/analysis/ackermann_analysis.html", "阿克曼機構理論分析")],
+        "links": [("/MechanicalAI/Mechanism/linkage/", "MechanicalAI 機構學：連桿")],
         "files": [("mg90s_steering/steering_assembly.FCStd", "FreeCAD 組立圖（14 個零件）"),
                   ("mg90s_steering/3MF/steering_plate.3mf",
                    "全部零件一盤：3MF（車架、左右轉向節、拉桿 ×2、曲柄、雙臂舵臂、伺服座底座與側蓋，共 9 件，已轉好列印方向）"),

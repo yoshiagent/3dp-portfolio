@@ -374,6 +374,8 @@ def build():
             demo = f'<a class="demo" href="../demo/{os.path.basename(p["demo"][0])}">{esc(p["demo"][1])} ↗</a>'
         for path, label in p.get("pages", []):  # extra pages of our own (analysis), copied into demo/
             demo += f'<a class="demo" href="../demo/{os.path.basename(path)}">{esc(label)} ↗</a>'
+        for url, label in p.get("links", []):  # related pages on our other sites (root-relative), same tab
+            demo += f'<a class="demo" href="{html.escape(url)}">{esc(label)} ↗</a>'
         for url, label in p.get("videos", []):  # external videos (YouTube), opened in a new tab
             demo += f'<a class="demo" href="{html.escape(url)}" target="_blank" rel="noopener">{esc(label)} ↗</a>'
         secs = "".join(f'<section class="sec"><h2>{esc(h)}</h2><ul>' + "".join(f"<li>{esc(b)}</li>" for b in items)
