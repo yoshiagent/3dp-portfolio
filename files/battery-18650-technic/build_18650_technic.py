@@ -4,17 +4,17 @@ Saves battery18650_technic.FCStd (+ STEP/STL in out/).
 Run:  freecadcmd.exe build_18650_technic.py
 
 The holder sits in a pocket that is open at the top, on a thin floor; the frame is 2 Technic units high like the
-breadboard tray. The pocket is 75 x 21.3 with no clearance (the user's figure), a snug fit; push the holder out from
-below through the floor holes. At each of the pocket's four corners a 2 x 2 wire outlet runs into the end wall, from
+breadboard tray. The pocket is 76 x 21.3 with no clearance (the user's figure, 76 long to allow for holders that vary), a snug fit; push the holder out from
+below through the floor holes. At each of the pocket's four corners a wire outlet 5 wide (along y) runs 2 into the end wall, from
 the frame top down to the pocket floor, so the holder's leads can come up beside it.
 Frame: 13 x 5 x 2 Technic units (103.4 x 39.4 x 15.8), as long as the breadboard tray; origin at the centre, x along
-the holder, z up. Long walls 9.05, end walls 14.2 thick. Hole positions follow nx / ny in Params (centred on the
+the holder, z up. Long walls 9.05, end walls 13.7 thick. Hole positions follow nx / ny in Params (centred on the
 grid), and the pattern counts are bound to them.
 Pin holes, all on the 8 mm grid:
   - top: one ring of vertical holes through the walls, top to bottom, counterbored at both ends
   - floor: plain through holes on the grid points under the pocket (floor_nx x (ny - 2) = 9 x 3); the floor is too
-    thin for a counterbore. The columns at x = +-40 are left out: their holes would come within 0.03 mm of the
-    pocket's end walls
+    thin for a counterbore. The columns at x = +-40 are left out: their holes (edge at +-37.53) would straddle the
+    pocket's end walls at +-38
   - sides: two rows of horizontal holes (z = +-4) on all four sides, through the walls into the pocket; the short ends
     skip the corner rows, where the long-side holes already are
 Each hole is built once and copied with a PartDesign LinearPattern.
@@ -41,10 +41,10 @@ PARAMS = [
     ("cb_d", "6.2", "孔沉頭直徑：側孔外端、垂直孔上下兩端 (mm)"),
     ("cb_depth", "0.8", "孔沉頭深度 (mm)"),
     # 18650 holder
-    ("hd_l", "75", "18650 電池盒長：槽 75 mm (mm)"),
+    ("hd_l", "76", "18650 電池盒長：槽 76 mm，電池盒尺寸不一，留長一點 (mm)"),
     ("hd_w", "21.3", "18650 電池盒寬：槽 21.3 mm (mm)"),
     ("hd_h", "18", "18650 電池盒高 (mm)"),
-    ("hd_clear", "0", "電池盒四周各留間隙：0，槽剛好 75 × 21.3；太緊時調大 (mm)"),
+    ("hd_clear", "0", "電池盒四周各留間隙：0，槽剛好 76 × 21.3；太緊時調大 (mm)"),
     ("pocket_l", "=hd_l + 2 * hd_clear", "槽長（自動計算）"),
     ("pocket_w", "=hd_w + 2 * hd_clear", "槽寬（自動計算）"),
     ("floor_t", "2.2", "底板厚：電池盒頂高出框頂約 4.4 mm (mm)"),
@@ -53,7 +53,7 @@ PARAMS = [
     ("end_depth", "=(frame_l - pocket_l) / 2 + 0.5", "短邊側孔深：穿透牆到槽內（自動計算）"),
     ("floor_nx", "=nx - 4", "底板孔的列數：只取槽底下的格點 (9)"),
     # wire outlets at the four corners of the pocket
-    ("wire_w", "2", "出線口寬：沿槽寬方向 (mm)"),
+    ("wire_w", "5", "出線口寬：沿槽寬方向 (mm)"),
     ("wire_d", "2", "出線口深：伸進端牆 (mm)"),
 ]
 
