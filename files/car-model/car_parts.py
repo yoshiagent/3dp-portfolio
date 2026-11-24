@@ -1,5 +1,6 @@
-"""Car model: the motor-driven differential at the rear, the MG90S steering at the front, breadboard on top and
-one 18650 cell on each side. This file holds the new printed parts and the placements of the reused ones.
+"""Car model: the motor-driven differential at the rear, the MG90S steering at the front, and on top the breadboard
+tray pinned back to back to the two-cell 18650 tray. This file holds the new printed parts and the placements of the
+reused ones.
 
 Vehicle frame (same as ../../mg90s_steering): x right, y forward, z up from the ground, steering servo shaft on
 the z axis. Front axle (kingpins) at y = 40; wheelbase 160 as the steering's Ackermann layout assumes, so the
@@ -12,18 +13,16 @@ plate gets a slot the ring turns in (ring 7.5 mm above the ground). The front ke
 
 Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, all vertical, from above)
 * drive module: drive base (Technic plate z 8 - 15.8, 8 mm grid, x = 0, y = 0 mod 8, the lowest level at the
-  rear) with the differential's towers, outer axle towers and the upright motor's pocket; carries the TT motor in its frame,
-  coupler, differential, rear axles, collars, spacers and rear wheels.
+  rear) with the differential's towers, outer axle towers and motor piers; carries the TT motor lying in its frame,
+  centred across the car, the Oldham coupling from its shaft (12 mm left of the centre line) to the input axle,
+  the differential, rear axles, collars, spacers and rear wheels.
 * steering module: the MG90S steering exactly as in ../../mg90s_steering (servo holder hanging from the steering
   frame's bulkhead, frame plate z 24.2 - 31.6 out to the kingpins).
 * chassis (middle level, plate z 16.0 - 23.8): stacked on the drive base's front edge and left side, and under
   the steering frame plate. Pins go down through the chassis into the drive base, and down through the steering
-  frame plate into the chassis. The two battery trays stand on the chassis.
-* TT motor upright (can up) in a pocket of the drive base, held between the two battery trays.
-* batteries: an 18650 tray (12-unit single tray) standing upright on each side of the motor, pocket outward, pinned
-  down into the chassis (2S, 7.4 V; it replaced the first 3xAAA box that stood on the chassis's left rail).
-* upper level: the breadboard frame itself (its bottom is a full 13 x 9 Technic grid), pinned straight onto the two
-  battery trays' top ends. No separate deck plate, no posts.
+  frame plate into the chassis. Three of the four posts stand on it.
+* upper level: the breadboard tray (13 x 9 x 2) on top, pocket up, and the two-cell 18650 tray (13 x 9 x 3, the
+  same footprint) turned over under it, the two bottoms pinned together; the pair sits on four posts.
 * nothing on the rear axle line is printed: LEGO motorcycle tyres on their rims, 10L axles, half bushes (the
   collars, 4 mm, inside the outer towers and outside the hubs) and bushes (the spacers, 8 mm). Their shapes here are stand-ins for the assembly and checks.
 
@@ -83,22 +82,38 @@ PT_Y0, PT_Y1 = REAR_Y - e.PINION_TOWER_Y1, REAR_Y - e.PINION_TOWER_Y0  # pinion 
 MOTOR_Y = REAR_Y - e.MOTOR_C_Y  # -48
 MOTOR_Y0 = MOTOR_Y - 11.9  # -59.9 .. -36.1: motor frame along y
 MOTOR_Y1 = MOTOR_Y + 11.9
-# TT motor upright: motor frame + motor + coupler turned 90 deg about the output shaft (along y at x 0, z AXLE_Z),
-# motor can up, so the shaft, coupler, input axle and pinion stay where they were. The frame then spans
-# x +-19.7 (its two 10 x 3 hole faces facing +-x), z 13.1 .. 92.5: its lower end stands in a pocket in the drive
-# base (floor z 13.1), and the two battery trays stand 0.4 off its side faces, so it is held without pins (the
-# trays' hole rows end up 3.3 mm off the frame's: the shaft height and the Technic stack do not share a grid).
-MOTOR_TURN = -90.0
-MOTOR_HALF = 19.7  # frame half width after turning (its old height 39.4 / 2)
-MOTOR_BOTTOM = AXLE_Z - 27.7  # 13.1: the frame's end, 27.7 behind the shaft
-MOTOR_POCKET = (-MOTOR_HALF - 0.4, MOTOR_HALF + 0.4, MOTOR_Y0 - 0.4, MOTOR_Y1 + 0.4)  # x0, x1, y0, y1
-
+# TT motor lying across the car as in the electric differential, but moved 12 to the left so its frame is centred
+# (x -39.7 .. 39.7); its shaft is then at x -12, 12 left of the input axle, and an Oldham coupling joins the two.
+MOTOR_SHIFT = -12.0
+MOTOR_X = (-27.7 + MOTOR_SHIFT, 51.7 + MOTOR_SHIFT)  # motor frame extent
+TT_SHAFT_X = MOTOR_SHIFT  # -12
+PIER_TOP = AXLE_Z + e.MOTOR_FRAME_Z  # 20.3: motor frame's lower side
+PIER_COLS = tuple(sorted((-c1 + MOTOR_SHIFT, -c0 + MOTOR_SHIFT) for c0, c1 in e.PIER_COLS))  # (-36,-28),(-12,-4),(28,36)
+# Oldham coupling, along -y from the TT gearbox: hub on the TT shaft (a D bore, small boss through the frame's lip,
+# then a disc), the slider (two tongues at right angles), hub on the input axle (cross bore) against the pinion tower.
+# Hub slots: the motor hub's vertical, the axle hub's horizontal; straight ahead the slider's centre is on the TT axis.
+OD_Y0 = -58.9  # front of the motor hub (as the old TT coupler), 1.0 off the gearbox face
+OD_R = 20.0  # hub radius: the slider's 15 mm tongue stays fully in the slot over the whole 12 mm offset
+OD_BOSS_R, OD_BOSS_L = 4.8, 1.4  # boss inside the frame's lip, to y -60.3 (frame face -59.9)
+OD_BORE = 7.5  # TT shaft depth (shaft 8.5 out of the gearbox face, which is 1.0 behind the hub)
+OD_FLOOR = 0.4  # between the shaft's end and the slot
+OD_SLOT_D, OD_SLOT_W = 2.8, 5.3  # slot depth and width (tongue 5.0)
+OD_GAP = 0.3  # hub face -> slider body
+OD_DISC_R, OD_DISC_T = 8.0, 3.0  # slider body: 16 x 16 square, 3 thick
+OD_TONGUE_H, OD_TONGUE_W = 2.5, 5.0  # tongue height (into a slot, 0.3 short of its bottom) and width
+OD_TONGUE_L = 15.0  # tongue length: at 12 mm off centre its corners stay 0.3 inside the hub's 20 mm radius
+OD_A1 = OD_BORE + OD_FLOOR + OD_SLOT_D  # 10.7: motor hub length (local, from OD_Y0 rearward)
+OD_S0 = OD_A1 + OD_GAP  # 11.0: slider body front
+OD_B0 = OD_S0 + OD_DISC_T + OD_GAP  # 14.3: axle hub front
+OD_B1 = PT_Y1 + 0.3  # axle hub back face (y), 0.3 in front of the pinion tower (front face y -81)
+INPUT_AXLE = (-92.0, 2 * PITCH - 0.2)  # LEGO 2L from the pinion's blind hole to the axle hub's slot bottom
 # --- chassis (middle level): one Technic plate stacked on the drive base, under the steering frame plate ---
 MID_Z0, MID_Z1 = Z1 + 0.2, Z1 + 8.0  # 16.0 .. 23.8; steering frame plate bottom 24.2 (0.4 above)
 MID_FRONT = (-35.7, -12.3)  # y: full-width part over the drive base's front edge, 0.4 ahead of the motor frame;
                             # at full lock the front wheels reach y -4.7 (|x| >= 36.9) at this height
-RAIL = (-51.7, -28.3, -99.7, -35.7)  # x0, x1, y0, y1: left rail over the drive base, beside the motor frame
-                                     # (0.6 off x -27.7), ends clear of the left outer tower's ribs (y -105)
+RAIL = (-51.7, MOTOR_X[0] - 0.6, -99.7, -35.7)  # x0, x1, y0, y1: left rail over the drive base, beside the
+                                     # centred motor frame (0.6 off x -39.7: one column of holes, x -48), ends clear
+                                     # of the left outer tower's ribs (y -105)
 ARM = (20.3, 27.7)  # |x| of the two arms beside the servo holder and bulkhead (inner edge 0.6 off them)
 NOSE = (28.3, 43.7)  # y: block under the steering frame plate, ahead of the bulkhead (y <= 27.7) up to the
                      # plate's front edge; |x| <= ARM[1], well inside the knuckles' lower ears (|x| >= 36.3)
@@ -106,28 +121,34 @@ STEER_PINS = [(x, y) for x in (-24.0, -16.0, -8.0, 0.0, 8.0, 16.0, 24.0) for y i
     (-24.0, 24.0), (24.0, 24.0)]  # steering frame plate holes over the chassis (plate holes in build_steering.py)
 
 # --- electronics ---
-# chassis -> drive base pins on the left rail (x -48, -40, -32)
+# chassis -> drive base pins on the left rail (x -48)
 RAIL_PIN_ROWS = (-96.0, -80.0, -64.0, -48.0, -32.0, -16.0)
 
-# --- batteries: one single-cell 18650 holder each side of the upright TT motor, upright (cell axis vertical), in
-# the 12-unit single tray of ../tt_motor_adapter (battery18650_12_technic: 95.4 x 39.4 x 15.8, pocket 76 x 21.3 open
-# on its top face) stood on end, pocket outward, its floor 0.4 off the motor frame's side face. The tray stands on
-# the chassis (0.6 above it) on vertical pins in its bottom end's holes, and the breadboard frame sits on its top end
-# (no posts). Tray x +-(20.1 .. 35.9), y -59.7 .. -20.3 (beside the whole motor frame), z 24.4 .. 119.8.
-SB_GAP = 0.4  # motor frame side face -> tray floor
-SB_T, SB_L, SB_W = 15.8, 12 * PITCH - 0.6, 5 * PITCH - 0.6  # tray thickness (x), length (z), width (y)
-SB_XC = MOTOR_HALF + SB_GAP + SB_T / 2  # 28.0: the end holes (tray z = +-4) land on x = 24 and 32
-SB_YC = -40.0  # end holes (tray y = -8, 0, 8) at y -48, -40, -32
-SB_Z0 = MID_Z1 + 0.6  # 24.4
-SB_ZC = SB_Z0 + SB_L / 2  # 72.1
-SB_FLOOR = 2.2  # tray floor (pocket bottom 2.2 above its back face)
-HD_L, HD_W, HD_H = 76.0, 21.3, 18.0  # 18650 holder: pocket length (z) and width (y), holder height (x)
-# vertical pins: tray bottom -> chassis (right: the chassis's front part; left: rail and front part, skipping the
-# rail's chassis -> drive base rows), tray top -> breadboard frame
-SB_PINS_DOWN = {1: [(24.0, -32.0), (32.0, -32.0)], -1: [(-32.0, -40.0), (-24.0, -32.0)]}
-SB_PINS_UP = {s: [(s * x, y) for x in (24.0, 32.0) for y in (-48.0, -40.0, -32.0)] for s in (1, -1)}
-TOP_Z0 = SB_Z0 + SB_L + 0.6  # 120.4: breadboard frame bottom, on the trays (over the motor top 92.5)
-BREADBOARD_C = (0.0, -56.0, TOP_Z0 + 7.9)  # frame 15.8 high, origin at its centre
+# --- upper level: breadboard tray (13 x 9 x 2, 15.8) on top, pocket up; the two-cell 18650 tray of
+# ../tt_motor_adapter (battery18650x2_technic, 13 x 9 x 3, 23.6, pocket 76 x 42.6 on a 7.8 floor) turned over under
+# it, bottoms 0.2 apart and pinned together. One pitch further forward than the old breadboard (centre y -48), so
+# the pair clears the ring gear (top 74.1 at y <= -86.7). The holder sticks 2.2 out of the turned-over tray, down
+# over the motor (frame top 60.5) and the coupling hubs (top 60.8), and the cells 2.5 more: tray face at z 66.4.
+STACK_YC = -48.0
+TRAY_FACE = 66.4  # underside of the pair (the battery tray's open face)
+TRAY_H, TRAY_FLOOR = 23.6, 7.8
+TRAY_C = (0.0, STACK_YC, TRAY_FACE + TRAY_H / 2)  # 75.8
+TOP_Z0 = TRAY_FACE + TRAY_H + 0.2  # 87.8: breadboard frame bottom
+BREADBOARD_C = (0.0, STACK_YC, TOP_Z0 + 7.9)  # frame 15.8 high, origin at its centre
+HD2_L, HD2_W, HD_H = 76.0, 42.6, 18.0  # two-cell holder and its height
+# pins between the two bottoms (both full 13 x 9 grids where the battery tray has holes)
+STACK_PINS = [(x, STACK_YC + y) for x in (-40.0, 40.0) for y in (-32.0, 32.0)] + [
+    (-48.0, STACK_YC), (48.0, STACK_YC), (0.0, STACK_YC - 32.0), (0.0, STACK_YC + 32.0)]
+# four posts at x = +-48 under the battery tray's ring holes (two each, y +-4 about the post)
+POSTS_Y = (STACK_YC + 28.0, STACK_YC - 28.0)  # -20 (front), -76 (rear)
+POSTS_Z0 = {(1, 0): MID_Z1, (1, 1): Z1, (-1, 0): MID_Z1, (-1, 1): MID_Z1}  # (side, rear): right rear post on the
+                              # drive base (the motor leaves no chassis there), the other three on the chassis
+POST_X = (44.3, 51.7)  # |x|
+POST_TOP = TRAY_FACE - 0.6  # 63.4
+# post feet: the left rail's x = -48 holes at RAIL_PIN_ROWS carry chassis -> drive base pins, so the left posts
+# pin down through their other hole only
+POST_PINS_DOWN = {(1, 0): [(48.0, -24.0), (48.0, -16.0)], (1, 1): [(48.0, -80.0), (48.0, -72.0)],
+                  (-1, 0): [(-48.0, -24.0)], (-1, 1): [(-48.0, -72.0)]}
 
 
 def to_vehicle(shape: bd.Part) -> bd.Part:
@@ -135,9 +156,9 @@ def to_vehicle(shape: bd.Part) -> bd.Part:
     return bd.Pos(0, REAR_Y, AXLE_Z) * bd.Rot(0, 0, 180) * shape
 
 
-def motor_upright(shape: bd.Part) -> bd.Part:
-    """Vehicle-placed motor frame / motor / coupler -> upright: turned about the output shaft, can up."""
-    return bd.Pos(0, 0, AXLE_Z) * bd.Rot(0, MOTOR_TURN, 0) * bd.Pos(0, 0, -AXLE_Z) * shape
+def motor_place(shape: bd.Part) -> bd.Part:
+    """Vehicle-placed motor frame / motor (as in the electric differential) -> centred across the car."""
+    return bd.Pos(MOTOR_SHIFT, 0, 0) * shape
 
 
 def box(x0, x1, y0, y1, z0, z1) -> bd.Part:
@@ -201,10 +222,26 @@ def towers() -> tuple[bd.Part, list[tuple]]:
         foot.append((xa, xb, REAR_Y - T / 2, REAR_Y + T / 2))
     hw = e.PTOWER_HALF_W
     parts.append(box(-hw, hw, PT_Y0, PT_Y1, z - EMBED, TOWER_TOP))
-    parts.append(gusset((-T / 2, PT_Y1, z), (0, 1, 0), 8.0, 12.0, (1, 0, 0)))  # motor side
+    parts.append(gusset((-T / 2, PT_Y1, z), (0, 1, 0), 8.0, 4.5, (1, 0, 0)))  # motor side: low, under the axle hub
     parts.append(gusset((-T / 2, PT_Y0, z), (0, -1, 0), 8.0, 10.0, (1, 0, 0)))  # pinion side
     foot.append((-hw, hw, PT_Y0 - 8, PT_Y1 + 8))
     return reduce(lambda a, b: a + b, parts), foot
+
+
+def piers() -> tuple[bd.Part, list[tuple]]:
+    out, foot = [], []
+    y0, y1 = MOTOR_Y - 11.8, MOTOR_Y + 11.8
+    spans = []  # piers under the frame's hole columns; neighbours closer than 10 mm join into one block
+    for c0, c1 in PIER_COLS:
+        x0, x1 = max(c0 - 4.0, MOTOR_X[0]), min(c1 + 4.0, MOTOR_X[1])
+        if spans and x0 - spans[-1][1] < 10.0:
+            spans[-1] = (spans[-1][0], x1)
+        else:
+            spans.append((x0, x1))
+    for x0, x1 in spans:
+        out.append(box(x0, x1, y0, y1, Z1 - EMBED, PIER_TOP))
+        foot.append((x0, x1, y0, y1))
+    return reduce(lambda a, b: a + b, out), foot
 
 
 def base_grid(foot: list[tuple]) -> list[tuple[float, float]]:
@@ -230,14 +267,18 @@ def drive_base() -> bd.Part:
     body = box(-HALF_W, HALF_W, Y_REAR, Y_FRONT, Z0, Z1)
     body -= box(-HOLDER_HALF, HOLDER_HALF, HOLDER_Y0, Y_FRONT + 1, Z0 - 1, Z1 + 1)
     tw, foot = towers()
-    body = body + tw
-    foot += [SLOT, MOTOR_POCKET]
+    pr, pfoot = piers()
+    body = body + tw + pr
+    foot += pfoot + [SLOT]
     # bearings: rear axle line (all four axle towers), pinion line
     body -= bd.Pos(0, REAR_Y, AXLE_Z) * bd.Rot(0, 90, 0) * bd.Cylinder(d.BEARING_D / 2, 2 * HALF_W + 2)
     body -= bd.Pos(0, (PT_Y0 + PT_Y1) / 2, AXLE_Z) * bd.Rot(90, 0, 0) * bd.Cylinder(d.BEARING_D / 2, 20)
     body -= box(SLOT[0], SLOT[1], SLOT[2], SLOT[3], Z0 - 1, Z1 + 1)
-    body -= box(*MOTOR_POCKET, MOTOR_BOTTOM, Z1 + 1)  # the upright motor frame's lower end stands in it
     tools = [vhole(x, y, Z0, Z1) for x, y in base_grid(foot)]
+    for c0, c1 in PIER_COLS:  # through pier and plate, under the motor frame's side holes
+        for x in (c0, c1):
+            for y in (MOTOR_Y - PITCH, MOTOR_Y, MOTOR_Y + PITCH):
+                tools.append(vhole(x, y, Z0, PIER_TOP))
     return body - bd.Compound(tools)
 
 
@@ -268,37 +309,107 @@ def chassis_grid() -> list[tuple[float, float]]:
 
 
 def chassis() -> bd.Part:
-    """Middle level: joins the drive module (below) to the steering module (above), carries the battery trays."""
+    """Middle level: joins the drive module (below) to the steering module (above), carries three of the posts."""
     body = reduce(lambda a, b: a + b, [box(x0, x1, y0, y1, MID_Z0, MID_Z1) for x0, x1, y0, y1 in chassis_outline()])
     body = body.clean()
     return body - bd.Compound([vhole(x, y, MID_Z0, MID_Z1) for x, y in chassis_grid()])
 
 
-# --- side battery trays ---
-
-def battery_tray_location(s: int = 1) -> bd.Location:
-    """Tray coordinates -> vehicle: tray length (x) up, tray top (+z, the pocket opening) outward (+x on the right),
-    tray y -> -y on the right, +y on the left (the left tray is the right one turned 180 deg about z)."""
-    return bd.Location(bd.Plane(origin=(s * SB_XC, SB_YC, SB_ZC), x_dir=(0, 0, 1), z_dir=(s, 0, 0)))
-
-
-def battery_tray(s: int = 1) -> bd.Part:
-    """12-unit single 18650 tray (../tt_motor_adapter), upright on side s (1 right, -1 left)."""
-    return battery_tray_location(s) * e._read("battery18650_12_technic")
+def deck_post(yc: float, z0: float, s: int = 1) -> bd.Part:
+    """Post under the battery tray's edge (s = 1 right, -1 left), from z0 up to 0.6 under the tray."""
+    x0, x1 = sorted((s * POST_X[0], s * POST_X[1]))
+    body = box(x0, x1, yc - 7.7, yc + 7.7, z0, POST_TOP)
+    tools = [vhole(s * 48.0, yc + dy, z0, POST_TOP) for dy in (-4.0, 4.0)]
+    return body - bd.Compound(tools)
 
 
-def battery_holder(s: int = 1) -> bd.Part:
-    """Stand-in for a bought single-cell 18650 holder (not printed): open box on the tray floor, opening outward."""
-    z0 = -SB_T / 2 + SB_FLOOR
-    shell = box(-HD_L / 2, HD_L / 2, -HD_W / 2, HD_W / 2, z0, z0 + HD_H)
-    shell -= box(-34.0, 34.0, -9.3, 9.3, z0 + 2.0, z0 + HD_H + 1)
-    return battery_tray_location(s) * shell
+# --- upper level: breadboard tray + two-cell 18650 tray back to back ---
+
+def battery_tray_location() -> bd.Location:
+    """Battery tray coordinates -> vehicle: turned over (about x), open face down at TRAY_FACE."""
+    return bd.Pos(*TRAY_C) * bd.Rot(180, 0, 0)
 
 
-def battery_cell(s: int = 1) -> bd.Part:
-    """18650 cell (18.5 x 65) standing in the holder."""
-    z0 = -SB_T / 2 + SB_FLOOR + 2.0 + 9.25
-    return battery_tray_location(s) * (bd.Pos(0, 0, z0) * bd.Rot(0, 90, 0) * bd.Cylinder(9.25, 65.0))
+def battery_tray() -> bd.Part:
+    return battery_tray_location() * e._read("battery18650x2_technic")
+
+
+def battery_holder() -> bd.Part:
+    """Stand-in for a bought two-cell 18650 holder (not printed), in the turned-over tray, opening down."""
+    z0 = -TRAY_H / 2 + TRAY_FLOOR
+    shell = box(-HD2_L / 2, HD2_L / 2, -HD2_W / 2, HD2_W / 2, z0, z0 + HD_H)
+    for y in (-HD2_W / 4, HD2_W / 4):
+        shell -= box(-34.0, 34.0, y - 9.3, y + 9.3, z0 + 2.0, z0 + HD_H + 1)
+    return battery_tray_location() * shell
+
+
+def battery_cells() -> list[bd.Part]:
+    """The two 18650 cells (18.5 x 65), side by side in the holder."""
+    z0 = -TRAY_H / 2 + TRAY_FLOOR + 2.0 + 9.25
+    return [battery_tray_location() * (bd.Pos(0, y, z0) * bd.Rot(0, 90, 0) * bd.Cylinder(9.25, 65.0))
+            for y in (-HD2_W / 4, HD2_W / 4)]
+
+
+# --- Oldham coupling: TT shaft (x -12) -> input axle (x 0) ---
+
+def _along_y(shape: bd.Part, x: float) -> bd.Part:
+    """Coupling-local (axis +z, rearward from OD_Y0, local y up) -> vehicle at shaft position x."""
+    return place(shape, (x, OD_Y0, AXLE_Z), (1, 0, 0), (0, -1, 0))
+
+
+def oldham_hub_motor() -> bd.Part:
+    """On the TT shaft: boss through the frame's lip, disc with a vertical slot in its back face, D bore."""
+    hub = cyl(OD_BOSS_R, OD_BOSS_L) + cyl(OD_R, OD_A1 - OD_BOSS_L, OD_BOSS_L)
+    hub -= bd.Pos(0, 0, OD_A1 - OD_SLOT_D) * bd.Box(OD_SLOT_W, 2 * OD_R + 2, OD_SLOT_D + 1,
+                                                   align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+    shaft = bd.Face(bd.Wire.make_circle(2.7 + 0.1)) & bd.Rectangle(3.7 + 0.15, 7)  # TT double-D, +0.1 / +0.075
+    hub -= bd.Pos(0, 0, -0.1) * bd.extrude(shaft, OD_BORE + 0.1)
+    return _along_y(hub, TT_SHAFT_X)
+
+
+def oldham_slider_local() -> bd.Part:
+    """Slider in coupling-local coordinates, centred on z = 0's axis: a square body (it prints standing on an edge,
+    the body's edge flat on the bed, no supports), vertical tongue forward (into the
+    motor hub's slot), horizontal tongue rearward (into the axle hub's slot)."""
+    body = bd.Pos(0, 0, OD_S0) * bd.Box(2 * OD_DISC_R, 2 * OD_DISC_R, OD_DISC_T,
+                                        align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+    front = bd.Pos(0, 0, OD_S0 - OD_TONGUE_H) * bd.Box(OD_TONGUE_W, OD_TONGUE_L, OD_TONGUE_H + 0.01,
+                                                      align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+    back = bd.Pos(0, 0, OD_S0 + OD_DISC_T - 0.01) * bd.Box(OD_TONGUE_L, OD_TONGUE_W, OD_TONGUE_H + 0.01,
+                                                          align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+    return body.fuse(front, back).clean()
+
+
+def oldham_slider(phi: float = 0.0) -> bd.Part:
+    """Slider with the coupling turned phi degrees (same sense for both shafts, about +y). Its centre lies on both
+    slots: straight ahead on the TT axis; it orbits on a 12 mm circle through both axes."""
+    a = math.radians(phi)
+    e_off = -TT_SHAFT_X  # 12: the axle hub is 12 to the right of the motor hub
+    # vehicle x / z of the slider centre (see the derivation in check_car.py): x = -12 + 12 sin^2, z = 12 sin cos
+    dx, dz = e_off * math.sin(a) ** 2, e_off * math.sin(a) * math.cos(a)
+    s = _along_y(oldham_slider_local(), TT_SHAFT_X)
+    return bd.Pos(dx, 0, dz) * spin_y(s, TT_SHAFT_X, phi)
+
+
+def oldham_hub_axle() -> bd.Part:
+    """On the input axle: horizontal slot in its front face, cross bore, back 0.3 off the pinion tower."""
+    length = (OD_Y0 - OD_B1) - OD_B0
+    hub = cyl(OD_R, length, OD_B0)
+    hub -= bd.Pos(0, 0, OD_B0 - 1) * bd.Box(2 * OD_R + 2, OD_SLOT_W, OD_SLOT_D + 1,
+                                           align=(bd.Align.CENTER, bd.Align.CENTER, bd.Align.MIN))
+    hub -= cross_bore(OD_B0, OD_B0 + length)
+    return _along_y(hub, 0.0)
+
+
+def spin_y(shape: bd.Part, x: float, phi: float) -> bd.Part:
+    """Turn a part phi degrees about the line along y through (x, AXLE_Z), the sense of three.js makeRotationY."""
+    return bd.Pos(x, 0, AXLE_Z) * bd.Rot(0, phi, 0) * bd.Pos(-x, 0, -AXLE_Z) * shape
+
+
+def input_axle() -> bd.Part:
+    """LEGO 2L cross axle from the pinion's blind hole to the axle hub's slot bottom."""
+    y0, length = INPUT_AXLE
+    return place(d.lego_axle(0, length), (0, y0, AXLE_Z), (1, 0, 0), (0, 1, 0))
 
 
 # --- rear axle line ---
@@ -356,5 +467,5 @@ def collar(s: int, outer: bool = False) -> bd.Part:
 
 # --- reused parts, placed ---
 
-def breadboard_frame() -> bd.Part:
+def breadboard_frame() -> bd.Part:  # noqa: D103
     return bd.Pos(*BREADBOARD_C) * e._read("breadboard_technic")

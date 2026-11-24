@@ -3,8 +3,8 @@
 Three groups, each assembled on its own and then pinned together with vertical LEGO Technic 2L pins:
   drive module     drive base + motor, coupler, differential, rear axle line, rear wheels (drive_parts)
   steering module  servo holder + steering frame + linkage + front wheels (steering_parts)
-  body             chassis (middle level), an upright 18650 tray each side of the upright TT motor, standing on
-                   the chassis, and the breadboard frame on the two trays (body_parts)
+  body             chassis (middle level), four posts, and on them the breadboard tray with the two-cell 18650
+                   tray pinned back to back under it (body_parts)
 `posed_parts(theta, spin)` places every part: theta = steering crank angle (deg, + = counter-clockwise from above,
 as in ../../mg90s_steering), spin = differential carrier turned about the rear axle (deg), for the checks.
 `exploded()` pulls the groups apart along z to show the pin joints.
@@ -49,10 +49,12 @@ def diff_parts(spin: float = 0.0) -> dict[str, bd.Part]:
         "spider top": labeled(carried(d.spider(1)), "spider gear:top", "deepskyblue"),
         "spider bottom": labeled(carried(d.spider(-1)), "spider gear:bottom", "deepskyblue"),
         "pinion": labeled(v(bd.Rot(0, 4 * spin, 0) * e.pinion()), "pinion 11T", "red"),
-        "input axle": labeled(v(e.pinion_shaft()), "input axle 3L", "silver"),
-        "coupler": labeled(c.motor_upright(v(e.coupler())), "TT coupler", "white"),
-        "motor frame": labeled(c.motor_upright(v(e.motor_frame())), "TT motor frame", "lightgray"),
-        "tt motor": labeled(c.motor_upright(v(e.tt_motor())), "TT motor (not printed)", "yellow"),
+        "input axle": labeled(c.spin_y(c.input_axle(), 0.0, 4 * spin), "input axle 2L", "silver"),
+        "hub motor": labeled(c.spin_y(c.oldham_hub_motor(), c.TT_SHAFT_X, 4 * spin), "Oldham hub (motor side)", "white"),
+        "slider": labeled(c.oldham_slider(4 * spin), "Oldham slider", "tomato"),
+        "hub axle": labeled(c.spin_y(c.oldham_hub_axle(), 0.0, 4 * spin), "Oldham hub (axle side)", "white"),
+        "motor frame": labeled(c.motor_place(v(e.motor_frame())), "TT motor frame", "lightgray"),
+        "tt motor": labeled(c.motor_place(v(e.tt_motor())), "TT motor (not printed)", "yellow"),
     }
     for ds in (1, -1):
         side = SIDE[-ds]
@@ -81,19 +83,22 @@ def drive_parts(spin: float = 0.0) -> dict[str, bd.Part]:
 
 def body_parts() -> dict[str, bd.Part]:
     p = {"chassis": labeled(c.chassis(), "chassis", "#5a6470")}
+    for s in (1, -1):
+        side = SIDE[s]
+        for r, where in enumerate(("front", "rear")):
+            p[f"post {where} {side}"] = labeled(c.deck_post(c.POSTS_Y[r], c.POSTS_Z0[(s, r)], s),
+                                                f"deck post {where}:{side}", "gray")
     p.update(battery_parts())
     p["breadboard frame"] = labeled(c.breadboard_frame(), "breadboard frame", "steelblue")
     return p
 
 
 def battery_parts() -> dict[str, bd.Part]:
-    """The two 18650 trays beside the upright motor, with their holders and cells."""
-    p = {}
-    for s in (1, -1):
-        side = SIDE[s]
-        p[f"battery tray {side}"] = labeled(c.battery_tray(s), f"battery tray 18650:{side}", "slategray")
-        p[f"battery holder {side}"] = labeled(c.battery_holder(s), f"18650 holder (not printed):{side}", "#202020")
-        p[f"battery cell {side}"] = labeled(c.battery_cell(s), f"18650 cell (not printed):{side}", "#2f6fd6")
+    """The two-cell 18650 tray turned over under the breadboard tray, with its holder and cells."""
+    p = {"battery tray": labeled(c.battery_tray(), "battery tray 2x18650", "slategray"),
+         "battery holder": labeled(c.battery_holder(), "2x18650 holder (not printed)", "#202020")}
+    for i, cell in enumerate(c.battery_cells()):
+        p[f"battery cell {i + 1}"] = labeled(cell, f"18650 cell {i + 1} (not printed)", "#2f6fd6")
     return p
 
 
@@ -116,22 +121,22 @@ def posed_parts(theta: float = 0.0, spin: float = 0.0) -> dict[str, bd.Part]:
     return {**body_parts(), **steering_parts(theta), **drive_parts(spin)}
 
 
-EXPLODE = {"drive": -60.0, "chassis": 0.0, "steering": 50.0, "top": 110.0}  # z offset of each group
-EXPLODE_SIDE = 40.0  # battery trays also pulled outward, along their horizontal pins
+EXPLODE = {"drive": -60.0, "chassis": 0.0, "steering": 50.0, "posts": 70.0, "battery": 110.0, "top": 150.0}
 
 
 def exploded() -> dict[str, bd.Part]:
-    """Groups pulled apart along z: drive module down, steering module up, posts/breadboard/batteries further up
-    (the batteries also outward)."""
-    groups = [(drive_parts(), lambda k: "drive"), (steering_parts(), lambda k: "steering"),
-              (body_parts(), lambda k: "chassis" if k == "chassis" else "top")]
+    """Groups pulled apart along z: drive module down, steering module up, then posts, the battery tray and the
+    breadboard tray further up, so the vertical pin joints between them can be seen."""
+    def body_group(k):
+        if k == "chassis":
+            return "chassis"
+        return "posts" if k.startswith("post") else "battery" if k.startswith("battery") else "top"
+
+    groups = [(drive_parts(), lambda k: "drive"), (steering_parts(), lambda k: "steering"), (body_parts(), body_group)]
     out = {}
     for parts, group in groups:
         for k, s in parts.items():
-            dx = 0.0
-            if k.startswith("battery"):
-                dx = EXPLODE_SIDE if k.endswith("right") else -EXPLODE_SIDE
-            m = bd.Pos(dx, 0, EXPLODE[group(k)]) * s
+            m = bd.Pos(0, 0, EXPLODE[group(k)]) * s
             m.label, m.color = s.label, s.color
             out[k] = m
     return out
