@@ -1,9 +1,10 @@
-"""Car model, full assembly: MG90S front steering + motor-driven differential + battery box + breadboard.
+"""Car model, full assembly: MG90S front steering + motor-driven differential + breadboard + two 18650 cells.
 
 Three groups, each assembled on its own and then pinned together with vertical LEGO Technic 2L pins:
   drive module     drive base + motor, coupler, differential, rear axle line, rear wheels (drive_parts)
   steering module  servo holder + steering frame + linkage + front wheels (steering_parts)
-  body             chassis (middle level), battery box, posts, breadboard frame on top (body_parts)
+  body             chassis (middle level), four posts, breadboard frame on top, and an 18650 tray hung on each
+                   side of the breadboard frame by horizontal pins (body_parts)
 `posed_parts(theta, spin)` places every part: theta = steering crank angle (deg, + = counter-clockwise from above,
 as in ../../mg90s_steering), spin = differential carrier turned about the rear axle (deg), for the checks.
 `exploded()` pulls the groups apart along z to show the pin joints.
@@ -79,14 +80,26 @@ def drive_parts(spin: float = 0.0) -> dict[str, bd.Part]:
 
 
 def body_parts() -> dict[str, bd.Part]:
-    return {
-        "chassis": labeled(c.chassis(), "chassis", "#5a6470"),
-        "battery box": labeled(c.battery_box(), "battery box 3xAAA", "slategray"),
-        "battery lid": labeled(c.battery_lid(), "battery lid", "lightslategray"),
-        "post front": labeled(c.deck_post(c.POSTS_Y[0], c.POSTS_Z0[0]), "deck post:front", "gray"),
-        "post rear": labeled(c.deck_post(c.POSTS_Y[1], c.POSTS_Z0[1]), "deck post:rear", "gray"),
-        "breadboard frame": labeled(c.breadboard_frame(), "breadboard frame", "steelblue"),
-    }
+    p = {"chassis": labeled(c.chassis(), "chassis", "#5a6470")}
+    for s in (1, -1):
+        side = SIDE[s]
+        for r, where in enumerate(("front", "rear")):
+            p[f"post {where} {side}"] = labeled(c.deck_post(c.POSTS_Y[r], c.POSTS_Z0[(s, r)], s),
+                                                f"deck post {where}:{side}", "gray")
+    p["breadboard frame"] = labeled(c.breadboard_frame(), "breadboard frame", "steelblue")
+    p.update(battery_parts())
+    return p
+
+
+def battery_parts() -> dict[str, bd.Part]:
+    """The two 18650 side trays with their holders and cells (they go on sideways, after the breadboard frame)."""
+    p = {}
+    for s in (1, -1):
+        side = SIDE[s]
+        p[f"battery tray {side}"] = labeled(c.battery_tray(s), f"battery tray 18650:{side}", "slategray")
+        p[f"battery holder {side}"] = labeled(c.battery_holder(s), f"18650 holder (not printed):{side}", "#202020")
+        p[f"battery cell {side}"] = labeled(c.battery_cell(s), f"18650 cell (not printed):{side}", "#2f6fd6")
+    return p
 
 
 def steering_parts(theta: float = 0.0) -> dict[str, bd.Part]:
@@ -109,16 +122,21 @@ def posed_parts(theta: float = 0.0, spin: float = 0.0) -> dict[str, bd.Part]:
 
 
 EXPLODE = {"drive": -60.0, "chassis": 0.0, "steering": 50.0, "top": 110.0}  # z offset of each group
+EXPLODE_SIDE = 40.0  # battery trays also pulled outward, along their horizontal pins
 
 
 def exploded() -> dict[str, bd.Part]:
-    """Groups pulled apart along z: drive module down, steering module up, battery/posts/breadboard further up."""
+    """Groups pulled apart along z: drive module down, steering module up, posts/breadboard/batteries further up
+    (the batteries also outward)."""
     groups = [(drive_parts(), lambda k: "drive"), (steering_parts(), lambda k: "steering"),
               (body_parts(), lambda k: "chassis" if k == "chassis" else "top")]
     out = {}
     for parts, group in groups:
         for k, s in parts.items():
-            m = bd.Pos(0, 0, EXPLODE[group(k)]) * s
+            dx = 0.0
+            if k.startswith("battery"):
+                dx = EXPLODE_SIDE if k.endswith("right") else -EXPLODE_SIDE
+            m = bd.Pos(dx, 0, EXPLODE[group(k)]) * s
             m.label, m.color = s.label, s.color
             out[k] = m
     return out

@@ -1,5 +1,5 @@
-"""Car model: the motor-driven differential at the rear, the MG90S steering at the front, 3xAAA battery box and
-breadboard. This file holds the new printed parts and the placements of the reused ones.
+"""Car model: the motor-driven differential at the rear, the MG90S steering at the front, breadboard on top and
+one 18650 cell on each side. This file holds the new printed parts and the placements of the reused ones.
 
 Vehicle frame (same as ../../mg90s_steering): x right, y forward, z up from the ground, steering servo shaft on
 the z axis. Front axle (kingpins) at y = 40; wheelbase 160 as the steering's Ackermann layout assumes, so the
@@ -18,10 +18,11 @@ Modules (each is assembled on its own, then joined with LEGO Technic 2L pins, al
   frame's bulkhead, frame plate z 24.2 - 31.6 out to the kingpins).
 * chassis (middle level, plate z 16.0 - 23.8): stacked on the drive base's front edge and left side, and under
   the steering frame plate. Pins go down through the chassis into the drive base, and down through the steering
-  frame plate into the chassis. Battery box and front post stand on the chassis.
-* upper level: the breadboard frame itself (its bottom is a full 13 x 9 Technic grid), pinned straight onto the
-  battery box top (stood on edge, lid outward) and two posts (front post on the chassis, rear post on the drive
-  base: the motor leaves no chassis there). No separate deck plate.
+  frame plate into the chassis. Three of the four posts stand on the chassis.
+* upper level: the breadboard frame itself (its bottom is a full 13 x 9 Technic grid), pinned straight onto four
+  posts (the right rear one on the drive base: the motor leaves no chassis there). No separate deck plate.
+* batteries: an 18650 tray hung on each end face of the breadboard frame by horizontal 2L pins, holder pocket
+  outward, above the wheels (2S, 7.4 V; it replaced the first 3xAAA box that stood on the chassis's left rail).
 * nothing on the rear axle line is printed: LEGO motorcycle tyres on their rims, 10L axles, half bushes (the
   collars, 4 mm, inside the outer towers and outside the hubs) and bushes (the spacers, 8 mm). Their shapes here are stand-ins for the assembly and checks.
 
@@ -98,15 +99,34 @@ STEER_PINS = [(x, y) for x in (-24.0, -16.0, -8.0, 0.0, 8.0, 16.0, 24.0) for y i
     (-24.0, 24.0), (24.0, 24.0)]  # steering frame plate holes over the chassis (plate holes in build_steering.py)
 
 # --- electronics ---
-BATT_C = (-40.0, -52.0, MID_Z1 + 27.7)  # box stood on its long edge, lid facing -x, on the chassis rail
-TOP_Z0 = MID_Z1 + 55.4 + 0.6  # 79.8: breadboard frame bottom, one pitch above the box top
-POSTS_Y = (-28.0, -84.0)  # posts at x = 48, two holes each (y +/- 4), under the frame's bottom holes (y -88..-24)
-POSTS_Z0 = (MID_Z1, Z1)  # front post on the chassis, rear post on the drive base
-POST_X = (44.3, 51.7)
-# pin rows under the battery box (x -48, -40, -32): the box and the chassis->drive base pins take turns
-BATT_PIN_ROWS = (-88.0, -72.0, -56.0, -40.0, -24.0)
+TOP_Z0 = MID_Z1 + 55.4 + 0.6  # 79.8: breadboard frame bottom (as high as the 3xAAA box it first stood on), clear
+                              # of the ring gear (top 74.1)
+POSTS_Y = (-28.0, -84.0)  # posts at x = +-48, two holes each (y +/- 4), under the frame's bottom holes (y -88..-24)
+POSTS_Z0 = {(1, 0): MID_Z1, (1, 1): Z1, (-1, 0): MID_Z1, (-1, 1): MID_Z1}  # (side, rear): right rear post on the
+                              # drive base (the motor leaves no chassis there), the other three on the chassis
+POST_X = (44.3, 51.7)  # |x|
+# chassis -> drive base pins on the left rail (x -48, -40, -32); the left posts pin down at y -88 and -24 only
 RAIL_PIN_ROWS = (-96.0, -80.0, -64.0, -48.0, -32.0, -16.0)
+LEFT_POST_PINS = (-88.0, -24.0)
 BREADBOARD_C = (0.0, -56.0, TOP_Z0 + 7.9)  # frame 15.8 high, origin at its centre
+
+# --- side batteries: one single-cell 18650 holder on each side, in a tray hung from the breadboard frame's end
+# faces (x = +-51.7) on horizontal 2L pins. Tray 13 x 5 x 3 Technic units: 103.4 along y, 39.4 high, 23.6 thick
+# (x); a 7.8 back wall against the frame, the 76 x 21.3 holder pocket (as in tt_motor_adapter's single tray)
+# opening outward. Height: the back wall's middle hole row (z 83.7) and the one above it line up with the frame's
+# two side-hole rows (83.7, 91.7), so the tray spans z 64.0 - 103.4: 8 above the front tyres (top 55.9) and,
+# 13 units long, from y -83.7 (rear corner 3.7 off the rear tyre, rounded r 3.7) to y 19.7, over the front wheels.
+SB_GAP = 0.6  # frame end face -> tray back face
+SB_X0 = HALF_W + SB_GAP  # 52.3
+SB_T, SB_L, SB_H = 3 * PITCH - 0.4, 13 * PITCH - 0.6, 5 * PITCH - 0.6  # 23.6 (x), 103.4 (y), 39.4 (z)
+SB_BACK = 7.8  # back wall: one pin half
+SB_YC = -32.0  # on the frame's 8 mm grid (frame holes y -80 .. -32)
+SB_ZC = BREADBOARD_C[2] - PITCH / 2  # 83.7
+SB_R = 3.7  # corner radius
+HD_L, HD_W, HD_H = 76.0, 21.3, 18.0  # 18650 holder pocket (snug, as the single tray) and holder height
+SB_WIRE_W, SB_WIRE_D = 5.0, 2.0  # wire outlet at each pocket corner
+SB_SIDE_DEPTH = 8.4  # blind holes in the top, bottom and end faces: one pin deep
+SB_PINS = [(y, z) for y in (-64.0, -40.0) for z in (SB_ZC, SB_ZC + PITCH)]  # pins into the frame, per side
 
 
 def to_vehicle(shape: bd.Part) -> bd.Part:
@@ -262,17 +282,74 @@ def chassis_grid() -> list[tuple[float, float]]:
 
 
 def chassis() -> bd.Part:
-    """Middle level: joins the drive module (below) to the steering module (above), carries the battery box."""
+    """Middle level: joins the drive module (below) to the steering module (above), carries three posts."""
     body = reduce(lambda a, b: a + b, [box(x0, x1, y0, y1, MID_Z0, MID_Z1) for x0, x1, y0, y1 in chassis_outline()])
     body = body.clean()
     return body - bd.Compound([vhole(x, y, MID_Z0, MID_Z1) for x, y in chassis_grid()])
 
 
-def deck_post(yc: float, z0: float) -> bd.Part:
-    """Post under the breadboard frame's right edge, as high as the battery box."""
-    body = box(*POST_X, yc - 7.7, yc + 7.7, z0, TOP_Z0 - 0.6)
-    tools = [vhole(48.0, yc + dy, z0, TOP_Z0 - 0.6) for dy in (-4.0, 4.0)]
+def deck_post(yc: float, z0: float, s: int = 1) -> bd.Part:
+    """Post under the breadboard frame's edge (s = 1 right, -1 left), from z0 up to 0.6 under the frame."""
+    x0, x1 = sorted((s * POST_X[0], s * POST_X[1]))
+    body = box(x0, x1, yc - 7.7, yc + 7.7, z0, TOP_Z0 - 0.6)
+    tools = [vhole(s * 48.0, yc + dy, z0, TOP_Z0 - 0.6) for dy in (-4.0, 4.0)]
     return body - bd.Compound(tools)
+
+
+# --- side battery trays ---
+
+def battery_tray(s: int = 1) -> bd.Part:
+    """18650 side tray on side s (1 right, -1 left); the left one is the right one mirrored (the same part)."""
+    x0, x1 = SB_X0, SB_X0 + SB_T
+    y0, y1 = SB_YC - SB_L / 2, SB_YC + SB_L / 2
+    z0, z1 = SB_ZC - SB_H / 2, SB_ZC + SB_H / 2
+    body = box(x0, x1, y0, y1, z0, z1)
+    body = body.fillet(SB_R, body.edges().filter_by(bd.Axis.X))
+    xp = x0 + SB_BACK  # pocket floor
+    py, pz = HD_L / 2, HD_W / 2
+    cut = [box(xp, x1 + 1, SB_YC - py, SB_YC + py, SB_ZC - pz, SB_ZC + pz)]
+    for sy in (1, -1):  # wire outlets: SB_WIRE_D into each end wall, SB_WIRE_W tall, floor to the outer face
+        ya, yb = sorted((SB_YC + sy * (py - 0.5), SB_YC + sy * (py + SB_WIRE_D)))
+        for sz in (1, -1):
+            za, zb = sorted((SB_ZC + sz * pz, SB_ZC + sz * (pz - SB_WIRE_W)))
+            cut.append(box(xp, x1 + 1, ya, yb, za, zb))
+    body -= bd.Compound(cut)
+    X = (1.0, 0.0, 0.0)
+    tools = []
+    # back wall: grid points behind the pocket (9 x 3), counterbored on the back face for the pins' collars;
+    # columns yc +-40 left out (their holes would straddle the pocket's end walls at yc +-38)
+    for i in range(-4, 5):
+        for j in (-1, 0, 1):
+            tools.append(hole((x0, SB_YC + i * PITCH, SB_ZC + j * PITCH), X, SB_BACK))
+    # ring through the whole thickness, counterbored at both faces
+    ring = [(SB_YC + i * PITCH, SB_ZC + sz * 2 * PITCH) for i in range(-6, 7) for sz in (1, -1)]
+    ring += [(SB_YC + sy * 6 * PITCH, SB_ZC + j * PITCH) for sy in (1, -1) for j in (-1, 0, 1)]
+    tools += [hole((x0, y, z), X, SB_T, cb_end=True) for y, z in ring]
+    # top, bottom and end faces: blind holes one pin deep, three across the thickness
+    xs = [x0 + SB_T / 2 + k * PITCH for k in (-1, 0, 1)]
+    for xm in xs:
+        for i in range(-6, 7):
+            for sz in (1, -1):
+                tools.append(hole((xm, SB_YC + i * PITCH, SB_ZC + sz * SB_H / 2), (0, 0, -sz), SB_SIDE_DEPTH))
+        for j in (-1, 0, 1):
+            for sy in (1, -1):
+                tools.append(hole((xm, SB_YC + sy * SB_L / 2, SB_ZC + j * PITCH), (0, -sy, 0), SB_SIDE_DEPTH))
+    tray = body - bd.Compound(tools)
+    return tray if s > 0 else bd.mirror(tray, bd.Plane.YZ)
+
+
+def battery_holder(s: int = 1) -> bd.Part:
+    """Stand-in for a bought single-cell 18650 holder (not printed): open box in the tray pocket, opening outward."""
+    xp = SB_X0 + SB_BACK
+    shell = box(xp, xp + HD_H, SB_YC - HD_L / 2, SB_YC + HD_L / 2, SB_ZC - HD_W / 2, SB_ZC + HD_W / 2)
+    shell -= box(xp + 2.0, xp + HD_H + 1, SB_YC - 34.0, SB_YC + 34.0, SB_ZC - 9.3, SB_ZC + 9.3)
+    return shell if s > 0 else bd.mirror(shell, bd.Plane.YZ)
+
+
+def battery_cell(s: int = 1) -> bd.Part:
+    """18650 cell (18.5 x 65) lying in the holder."""
+    cell = bd.Pos(SB_X0 + SB_BACK + 2.0 + 9.25, SB_YC, SB_ZC) * bd.Rot(90, 0, 0) * bd.Cylinder(9.25, 65.0)
+    return cell if s > 0 else bd.mirror(cell, bd.Plane.YZ)
 
 
 # --- rear axle line ---
@@ -329,20 +406,6 @@ def collar(s: int, outer: bool = False) -> bd.Part:
 
 
 # --- reused parts, placed ---
-
-def battery_location() -> bd.Location:
-    """Box coordinates -> vehicle: box length (x) along -y, box width (y) up, lid side (+z) facing -x."""
-    return bd.Location(bd.Plane(origin=BATT_C, x_dir=(0, -1, 0), z_dir=(-1, 0, 0)))
-
-
-def battery_box() -> bd.Part:
-    return battery_location() * e._read("aaa3_battery_box_technic")
-
-
-def battery_lid() -> bd.Part:
-    """Same place on the box as in the bench model: over the cells, the last 3 pitches (switch, leads) open."""
-    return battery_location() * bd.Pos(-12.0, 0, 11.9 + 3.9) * bd.Rot(0, 0, -90) * e._read("aaa3_battery_lid_technic")
-
 
 def breadboard_frame() -> bd.Part:
     return bd.Pos(*BREADBOARD_C) * e._read("breadboard_technic")

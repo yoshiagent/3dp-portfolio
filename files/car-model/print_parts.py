@@ -2,13 +2,14 @@
 
 Plate 1 (car_drive_base): the drive module's base alone, flat bottom down (103.4 x 139.4 mm, towers 39 mm high).
 Plate 2 (car_chassis): the middle-level chassis alone, a flat 7.8 mm Technic plate (103.4 x 143.4 mm).
-Plate 3 (car_parts): the two posts.
+The four posts and the two 18650 side trays (small_parts, battery_trays) go into 3MF/car_parts.3mf and
+plates 2 and 4 of 3MF/car_all_plates.3mf through print_all.py, whose meshes are repaired watertight.
 LEGO standard parts are not printed: 81.6 x 15 motorcycle rear tyres on rims, 10L cross axles x2, half bushes x4
 (the axle collars, inside the outer towers and outside the hubs), bushes x2 (the wheel spacers); car_parts.py keeps their shapes as stand-ins.
 After rebuilding, close the mesher's T-junctions:
-    python ../../web/tools/fix_tjunctions.py ../3MF/car_drive_base.3mf ../3MF/car_chassis.3mf ../3MF/car_parts.3mf ../STL/car_drive_base.stl ../STL/car_chassis.stl
+    python ../../web/tools/fix_tjunctions.py ../3MF/car_drive_base.3mf ../3MF/car_chassis.3mf ../STL/car_drive_base.stl ../STL/car_chassis.stl
 Everything else is an existing print: the steering parts (../../mg90s_steering), the differential parts and
-motor frame (../../electric_differential, ../../tt_motor_adapter), battery box + lid, breadboard frame.
+motor frame (../../electric_differential, ../../tt_motor_adapter), breadboard frame.
 """
 from __future__ import annotations
 
@@ -27,11 +28,20 @@ X, Z = (1, 0, 0), (0, 0, 1)
 
 
 def small_parts() -> list[tuple[str, bd.Part]]:
+    """Four posts: the right rear one is longer (it stands on the drive base), the other three are the same."""
     pose = d.print_pose
     out = []
-    for k, yc, z0 in (("post_front", c.POSTS_Y[0], c.POSTS_Z0[0]), ("post_rear", c.POSTS_Y[1], c.POSTS_Z0[1])):
-        out.append((k, pose(c.deck_post(yc, z0), x_dir=(0, 1, 0), z_dir=X)))  # on its side, layers along the length
+    for k, s, r in (("post_front_right", 1, 0), ("post_rear_right", 1, 1), ("post_front_left", -1, 0),
+                    ("post_rear_left", -1, 1)):
+        post = c.deck_post(c.POSTS_Y[r], c.POSTS_Z0[(s, r)], s)
+        out.append((k, pose(post, x_dir=(0, 1, 0), z_dir=X)))  # on its side, layers along the length
     return out
+
+
+def battery_trays() -> list[tuple[str, bd.Part]]:
+    """The two 18650 side trays (the same part), pocket up, back wall on the bed."""
+    tray = d.print_pose(c.battery_tray(1), x_dir=(0, 1, 0), z_dir=X)
+    return [("battery_tray_right", tray), ("battery_tray_left", tray)]
 
 
 def layout(parts: list[tuple[str, bd.Part]], width: float = 220.0, gap: float = 6.0) -> bd.Compound:
@@ -66,12 +76,6 @@ def car_chassis():
     return part
 
 
-@threemf(out="../3MF/car_parts.3mf")
-def car_parts():
-    return layout(small_parts())
-
-
 if __name__ == "__main__":
     car_drive_base()
     car_chassis()
-    car_parts()
