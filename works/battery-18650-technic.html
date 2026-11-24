@@ -31,14 +31,14 @@
 
 <div class="secs"><section class="sec"><h2>放電池盒</h2><ul><li>頂部開口的槽 76 × 21.3 mm，不留間隙，靠緊配固定；長度取 76 mm，因為市售電池盒長度不太一致</li><li>底板 2.2 mm，框高 2 格（15.8 mm）和麵包板底座相同；18 mm 高的電池盒頂面高出框頂約 4.4 mm，手指捏得到</li><li>取出：從底板的孔往上推</li></ul></section><section class="sec"><h2>出線口</h2><ul><li>槽的四個角各有一個出線口：沿槽寬方向 5 mm、往兩端牆內伸 2 mm，外緣和槽的長邊切齊，從槽底一路通到框頂</li><li>電池盒兩端的紅黑線可以從角落沿著出線口拉上來，不用從電池盒上方繞</li><li>兩端牆 y = ±8 的側孔幾乎整個落在出線口裡，電線也可以從側孔穿出去</li></ul></section><section class="sec"><h2>垂直孔</h2><ul><li>外圈 32 個垂直孔上下貫穿（長邊各 13、短邊各 3），兩端都有 Ø6.2 × 0.8 沉頭，銷的凸緣能沉進去</li><li>底板 9 × 3 個貫穿孔，只取槽底下的格點；底板只有 2.2 mm，不做沉頭，主要用來把電池盒推出</li><li>x = ±40 那兩排不開：這兩排孔的孔邊在 ±37.53，會跨在槽的端牆（±38）上</li><li>孔位和麵包板底座一樣落在中心線上（0、±8 … ±48）；長邊牆厚 9.05 mm、兩端牆 13.7 mm（出線口後面還有 11.7 mm）</li></ul></section><section class="sec"><h2>側面孔</h2><ul><li>四邊各兩排水平孔（中心上下 ±4 mm），和垂直孔直角交叉，像十字交叉孔磚</li><li>側孔都直接穿透到槽內；短邊跳過角落兩列，那裡已有長邊的孔</li></ul></section><section class="sec"><h2>建模與檢查</h2><ul><li>照麵包板底座的建模腳本改寫：每種孔只建一次，再用 PartDesign LinearPattern 複製；格數、槽尺寸、間隙、底板厚、出線口大小都在 Params 試算表；孔的排列與陣列數量綁定格數 nx、ny</li><li>用 build123d 探測 450 多個點：槽邊剛好在 ±38、±10.65 mm（76 × 21.3），出線口寬 5、深 2 mm、從槽底通到框頂，每個孔沿軸向都是空的</li><li>3MF 網格封閉、沒有非流形邊；Bambu Studio 命令列切片成功，預設設定約 3.4 小時，開口朝上平放即可、不需支撐</li></ul></section><section class="sec"><h2>待實測</h2><ul><li>槽不留間隙：列印後槽通常會略縮，電池盒可能要壓入；太緊時把 Params 的 hd_clear 改成 0.2 左右再重建</li></ul></section></div>
 <section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td><span class="badge t-fc">FCStd</span></td><td>FreeCAD 參數化模型<br><a class="fn" href="../files/battery-18650-technic/battery18650_technic.FCStd" download>battery18650_technic.FCStd</a></td><td class="sz">4.5 MB</td></tr><tr><td><span class="badge t-mf">3MF</span></td><td>3MF（由最新 FCStd 匯出）<br><a class="fn" href="../files/battery-18650-technic/battery18650_technic.3mf" download>battery18650_technic.3mf</a></td><td class="sz">1.6 MB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>建模腳本<br><a class="fn" href="../files/battery-18650-technic/build_18650_technic.py" download>build_18650_technic.py</a></td><td class="sz">9 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>共用模組：馬達座核心幾何、參數表、匯出與 GUI 重存<br><a class="fn" href="../files/battery-18650-technic/tt_adapter_core.py" download>tt_adapter_core.py</a></td><td class="sz">10 KB</td></tr><tr><td><span class="badge t-src">PY</span></td><td>在 FreeCAD 介面重存檔案，寫入縮圖與顯示狀態<br><a class="fn" href="../files/battery-18650-technic/gui_finish.py" download>gui_finish.py</a></td><td class="sz">2 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
-<nav class="pager"><span></span><a href="mg90s-servo-arms.html">較舊：SG90／MG90S 舵機臂（參數化重建） →</a></nav>
+<nav class="pager"><a href="battery-18650x2-technic.html">← 較新：雙 18650 電池盒 Technic 底座</a><a href="mg90s-servo-arms.html">較舊：SG90／MG90S 舵機臂（參數化重建） →</a></nav>
 </div>
 <footer><div class="wrap">
 <strong>資料來源</strong>
 <ul>
 <li>模型、參數與說明：本機專案資料夾 C:\CludeHome\3DP（FreeCAD、OpenSCAD、build123d 原始檔與 Bambu Studio 專案）</li>
 <li>FreeCAD 預覽圖由 FreeCAD 1.1 繪製；3MF 縮圖取自檔案內建的 Bambu Studio 列印盤預覽</li>
-<li>網站產生日期：2026-11-23</li>
+<li>網站產生日期：2026-11-24</li>
 </ul></div></footer>
 <script>
 document.querySelectorAll('.strip button').forEach(function (b) {
