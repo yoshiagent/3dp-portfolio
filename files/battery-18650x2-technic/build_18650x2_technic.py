@@ -1,23 +1,24 @@
-"""LEGO Technic tray for a two-cell (side-by-side) 18650 battery holder: build_18650_technic.py with the pocket twice
-as wide. Saves battery18650x2_technic.FCStd (+ STEP/STL in out/).
+"""LEGO Technic tray for a two-cell (side-by-side) 18650 battery holder, made to pin back-to-back to the breadboard
+tray (breadboard_technic): same 13 x 9 footprint, so every hole of its bottom faces one of the breadboard tray's
+full 13 x 9 bottom grid. Saves battery18650x2_technic.FCStd (+ STEP/STL in out/).
 
 Run:  freecadcmd.exe build_18650x2_technic.py
 
-Same design as the single tray: the holder sits in a pocket open at the top, on a thin floor; the frame is 2 Technic
-units high like the breadboard tray. The pocket is 76 x 42.6 (the single tray's 21.3 doubled, the user's choice) with no
-clearance, a snug fit; push the holder out from below through the floor holes. At each of the pocket's four corners a
-wire outlet 5 wide (along y) runs 2 into the end wall, from the frame top down to the pocket floor.
-Frame: 13 x 8 x 2 Technic units (103.4 x 63.4 x 15.8). 8 units wide rather than 7: at 7 the top pin holes of the long
-walls (y +-24, edge at 21.53) would leave only 0.23 mm to the pocket (21.3); at 8 they sit at y +-28 with 4.2 mm to the
-pocket and 1.23 mm to the outside, as in the single tray. Origin at the centre, x along the holder, z up.
-Long walls 10.4, end walls 13.7 thick.
+The holder sits in a pocket open at the top: 76 x 42.6 (the single tray's 21.3 doubled), no clearance, a snug fit.
+At each of the pocket's four corners a wire outlet 5 wide (along y) runs 2 into the end wall, from the pocket floor up
+through the top.
+Frame: 13 x 9 x 3 Technic units (103.4 x 71.4 x 23.6), one unit wider and one higher than the first 13 x 8 x 2
+version (user's request, 2026-11-24): 9 wide matches the breadboard tray (and puts a hole row on the centre line), 3
+high gives a 7.8 floor, one pin half, so a 2L pin in a floor hole stays out of the pocket. The 18 mm holder stands
+2.2 above the frame top. Origin at the centre, x along the holder, z up. Long walls 14.4, end walls 13.7 thick.
 Pin holes, all on the 8 mm grid:
   - top: one ring of vertical holes through the walls, top to bottom, counterbored at both ends
-  - floor: plain through holes on the grid points under the pocket (floor_nx x floor_ny = 9 x 4, y +-4 and +-12).
-    The rows at y = +-20 are left out: their holes (edge at +-22.47) would straddle the pocket's long walls at +-21.3,
-    as the columns at x = +-40 would the end walls at +-38
-  - sides: two rows of horizontal holes (z = +-4) on all four sides, through the walls into the pocket; the short ends
-    skip the corner rows, where the long-side holes already are
+  - floor: through holes on the grid points under the pocket (floor_nx x floor_ny = 9 x 5: x = 0 .. +-32,
+    y = 0, +-8, +-16), counterbored on the bottom face for the pins' collars. The rows at y = +-24 and the columns
+    at x = +-40 are left out: their holes would straddle the pocket's walls (+-21.3, +-38)
+  - sides: three rows of horizontal holes (z = 0, +-8) on all four sides, through the walls (into the pocket where
+    it is there, blind in the floor for the lowest row); the short ends skip the corner rows, where the long-side
+    holes already are
 Each hole is built once and copied with a PartDesign LinearPattern.
 """
 import os
@@ -33,10 +34,10 @@ PARAMS = [
     # frame on the Technic grid
     ("pitch", "8", "Technic 孔距 (mm)"),
     ("nx", "13", "長邊格數：13 格和麵包板底座同長"),
-    ("ny", "8", "短邊格數：8 格（7 格時頂面銷孔離槽只剩 0.23 mm）"),
+    ("ny", "9", "短邊格數：9 格，和麵包板底座同寬，可以背對背用銷接"),
     ("frame_l", "=nx * pitch - 0.6", "框總長（自動計算）：13 格 103.4"),
-    ("frame_w", "=ny * pitch - 0.6", "框總寬（自動計算）：8 格 63.4"),
-    ("frame_h", "15.8", "框總高：2 格，和麵包板底座同高 (mm)"),
+    ("frame_w", "=ny * pitch - 0.6", "框總寬（自動計算）：9 格 71.4"),
+    ("frame_h", "23.6", "框總高：3 格 (mm)"),
     ("corner_r", "3.7", "框四角圓角半徑 (mm)"),
     ("pin_d", "4.94", "銷孔直徑 (mm)"),
     ("cb_d", "6.2", "孔沉頭直徑：側孔外端、垂直孔上下兩端 (mm)"),
@@ -48,12 +49,12 @@ PARAMS = [
     ("hd_clear", "0", "電池盒四周各留間隙：0，槽剛好 76 × 42.6；太緊時調大 (mm)"),
     ("pocket_l", "=hd_l + 2 * hd_clear", "槽長（自動計算）"),
     ("pocket_w", "=hd_w + 2 * hd_clear", "槽寬（自動計算）"),
-    ("floor_t", "2.2", "底板厚：電池盒頂高出框頂約 4.4 mm (mm)"),
+    ("floor_t", "7.8", "底板厚：一根銷的一半，2L 銷插底板孔不會伸進槽；電池盒頂高出框頂 2.2 mm (mm)"),
     ("pocket_z", "=-frame_h / 2 + floor_t", "槽底 z（自動計算）"),
     ("side_depth", "=(frame_w - pocket_w) / 2 + 0.5", "長邊側孔深：穿透牆到槽內（自動計算）"),
     ("end_depth", "=(frame_l - pocket_l) / 2 + 0.5", "短邊側孔深：穿透牆到槽內（自動計算）"),
     ("floor_nx", "=nx - 4", "底板孔的列數：只取槽底下的格點 (9)"),
-    ("floor_ny", "=ny - 4", "底板孔的行數：只取槽底下的格點 (4)"),
+    ("floor_ny", "=ny - 4", "底板孔的行數：只取槽底下的格點 (5)"),
     # wire outlets at the four corners of the pocket
     ("wire_w", "5", "出線口寬：沿槽寬方向 (mm)"),
     ("wire_d", "2", "出線口深：伸進端牆 (mm)"),
@@ -89,13 +90,14 @@ def drilled_hole(body, name, axis, angle, x, y, z, depth):
     return feats
 
 
-def vertical_hole(body, name, x, y, z_bot, z_top, counterbore=True):
+def vertical_hole(body, name, x, y, z_bot, z_top, counterbore=True, top_cb=True):
     cb_h = f"{P}cb_depth + {CB_OVERLAP} + 1"
     feats = [cylinder(body, name, True, f"{P}pin_d / 2", f"({z_top}) - ({z_bot}) + 2", x, y, f"{z_bot} - 1")]
     if counterbore:
-        feats += [cylinder(body, f"{name}CbB", True, f"{P}cb_d / 2", cb_h, x, y, f"{z_bot} - 1"),
-                  cylinder(body, f"{name}CbT", True, f"{P}cb_d / 2", cb_h, x, y,
-                           f"{z_top} - {P}cb_depth - {CB_OVERLAP}")]
+        feats.append(cylinder(body, f"{name}CbB", True, f"{P}cb_d / 2", cb_h, x, y, f"{z_bot} - 1"))
+        if top_cb:
+            feats.append(cylinder(body, f"{name}CbT", True, f"{P}cb_d / 2", cb_h, x, y,
+                                  f"{z_top} - {P}cb_depth - {CB_OVERLAP}"))
     return feats
 
 
@@ -138,18 +140,18 @@ def build(stem):
         return pat
 
     nx, ny = P + "nx", P + "ny"
-    # floor: plain through holes on the grid points under the pocket (floor_nx x floor_ny), centred
+    # floor: through holes on the grid points under the pocket (floor_nx x floor_ny), centred, counterbored below
     grid("FloorGrid", vertical_hole(body, "Floor", f"-({P}floor_nx - 1) / 2 * {P}pitch",
-                                    f"-({P}floor_ny - 1) / 2 * {P}pitch", Z0, P + "pocket_z", False),
+                                    f"-({P}floor_ny - 1) / 2 * {P}pitch", Z0, P + "pocket_z", True, False),
          "X", P + "floor_nx", "Y", P + "floor_ny")
     # top: vertical holes through the walls in a ring; long walls nx each, end walls ny - 2 (corners are in the long walls)
     for t, s in (("L", 1), ("R", -1)):
         grid(f"TopLong{t}", vertical_hole(body, f"Top{t}", gx(0), f"{s} * {gy(0)}", Z0, ZT), "X", nx)
     for t, s in (("F", 1), ("B", -1)):
         grid(f"TopEnd{t}", vertical_hole(body, f"Top{t}", f"{s} * {gx(0)}", gy(1), Z0, ZT), "Y", f"{ny} - 2")
-    # two rows of side holes, half a pitch above and below the middle, through the walls into the pocket
-    for row, rz in (("U", 1), ("D", -1)):
-        z = f"{rz} * {P}pitch / 2"
+    # three rows of side holes (z = 0, +-pitch), through the walls into the pocket (blind in the floor)
+    for row, rz in (("U", 1), ("M", 0), ("D", -1)):
+        z = f"{rz} * {P}pitch"
         for t, s in (("L", 1), ("R", -1)):
             grid(f"Side{row}{t}", drilled_hole(body, f"Side{row}{t}h", (1, 0, 0), 90 * s, gx(0),
                                                f"{s} * ({P}frame_w / 2 + 0.5)", z, P + "side_depth"), "X", nx)
