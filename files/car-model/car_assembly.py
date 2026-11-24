@@ -3,8 +3,8 @@
 Three groups, each assembled on its own and then pinned together with vertical LEGO Technic 2L pins:
   drive module     drive base + motor, coupler, differential, rear axle line, rear wheels (drive_parts)
   steering module  servo holder + steering frame + linkage + front wheels (steering_parts)
-  body             chassis (middle level), four posts, breadboard frame on top, and an 18650 tray hung on each
-                   side of the breadboard frame by horizontal pins (body_parts)
+  body             chassis (middle level), an upright 18650 tray each side of the upright TT motor, standing on
+                   the chassis, and the breadboard frame on the two trays (body_parts)
 `posed_parts(theta, spin)` places every part: theta = steering crank angle (deg, + = counter-clockwise from above,
 as in ../../mg90s_steering), spin = differential carrier turned about the rear axle (deg), for the checks.
 `exploded()` pulls the groups apart along z to show the pin joints.
@@ -50,9 +50,9 @@ def diff_parts(spin: float = 0.0) -> dict[str, bd.Part]:
         "spider bottom": labeled(carried(d.spider(-1)), "spider gear:bottom", "deepskyblue"),
         "pinion": labeled(v(bd.Rot(0, 4 * spin, 0) * e.pinion()), "pinion 11T", "red"),
         "input axle": labeled(v(e.pinion_shaft()), "input axle 3L", "silver"),
-        "coupler": labeled(v(e.coupler()), "TT coupler", "white"),
-        "motor frame": labeled(v(e.motor_frame()), "TT motor frame", "lightgray"),
-        "tt motor": labeled(v(e.tt_motor()), "TT motor (not printed)", "yellow"),
+        "coupler": labeled(c.motor_upright(v(e.coupler())), "TT coupler", "white"),
+        "motor frame": labeled(c.motor_upright(v(e.motor_frame())), "TT motor frame", "lightgray"),
+        "tt motor": labeled(c.motor_upright(v(e.tt_motor())), "TT motor (not printed)", "yellow"),
     }
     for ds in (1, -1):
         side = SIDE[-ds]
@@ -81,18 +81,13 @@ def drive_parts(spin: float = 0.0) -> dict[str, bd.Part]:
 
 def body_parts() -> dict[str, bd.Part]:
     p = {"chassis": labeled(c.chassis(), "chassis", "#5a6470")}
-    for s in (1, -1):
-        side = SIDE[s]
-        for r, where in enumerate(("front", "rear")):
-            p[f"post {where} {side}"] = labeled(c.deck_post(c.POSTS_Y[r], c.POSTS_Z0[(s, r)], s),
-                                                f"deck post {where}:{side}", "gray")
-    p["breadboard frame"] = labeled(c.breadboard_frame(), "breadboard frame", "steelblue")
     p.update(battery_parts())
+    p["breadboard frame"] = labeled(c.breadboard_frame(), "breadboard frame", "steelblue")
     return p
 
 
 def battery_parts() -> dict[str, bd.Part]:
-    """The two 18650 side trays with their holders and cells (they go on sideways, after the breadboard frame)."""
+    """The two 18650 trays beside the upright motor, with their holders and cells."""
     p = {}
     for s in (1, -1):
         side = SIDE[s]
