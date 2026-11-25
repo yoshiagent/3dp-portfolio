@@ -82,6 +82,30 @@ def collect(p):
     return files, images
 
 
+def file_thumb(pid, rel, images):
+    """Picture for a download row: the file's own (tools/file_thumbs.py), an FCStd's FreeCAD render, or the
+    picture of a model with the same stem in this work; None for source files."""
+    name = os.path.basename(rel)
+    stem, ext = os.path.splitext(name)
+    own = f"img/{pid}/files/{name}.jpg"
+    if os.path.exists(os.path.join(WEB, own)):
+        return own
+    if ext.lower() not in (".fcstd", ".scad"):
+        return None
+    render = f"img/{pid}/{stem}.png"
+    if render in images:
+        return render
+    # a model of this work whose stem matches, or one stem extends the other (lego4x4_duplo2x2 ->
+    # lego4x4_duplo2x2_od9.55.3mf); the longest shared stem wins
+    best, best_len = None, 0
+    tdir = os.path.join(WEB, "img", pid, "files")
+    for f in sorted(os.listdir(tdir)) if os.path.isdir(tdir) else []:
+        other = os.path.splitext(f[:-4])[0]  # "<stem>.<ext>.jpg" -> "<stem>"
+        if (other.startswith(stem) or stem.startswith(other)) and min(len(other), len(stem)) > best_len:
+            best, best_len = f"img/{pid}/files/{f}", min(len(other), len(stem))
+    return best
+
+
 def caption(rel):
     name = os.path.basename(rel)
     if "__" in name:
@@ -174,6 +198,13 @@ table.files th, table.files td { text-align: left; padding: 10px 8px; border-bot
 table.files th { color: var(--muted); font-weight: 500; font-size: .85rem; }
 table.files .fn { font-family: ui-monospace, Consolas, monospace; font-size: .85rem; word-break: break-all; }
 table.files .sz { color: var(--muted); white-space: nowrap; font-size: .85rem; }
+table.files td.pv { width: 112px; padding-right: 4px; }
+.fthumb { display: block; width: 104px; height: 78px; object-fit: contain; background: #eef2f7;
+  border: 1px solid var(--line); border-radius: 8px; }
+a.fthumb-link:hover .fthumb { border-color: var(--blue); }
+.fthumb-none { display: flex; align-items: center; justify-content: center; width: 104px; height: 78px;
+  border: 1px dashed var(--line); border-radius: 8px; color: #3b4f68; font: 600 .8rem ui-monospace, Consolas, monospace; }
+@media (max-width: 560px) { table.files td.pv { width: 76px; } .fthumb, .fthumb-none { width: 68px; height: 51px; } }
 .tablewrap { overflow-x: auto; }
 .none { color: var(--muted); }
 .parts { margin: 28px 0; }
@@ -384,10 +415,14 @@ def build():
             rows = ""
             for rel, label, size in files:
                 name, cls = FILE_TYPES.get(os.path.splitext(rel)[1].lower(), ("檔案", "src"))
-                rows += (f'<tr><td><span class="badge t-{cls}">{name}</span></td><td>{esc(label)}<br>'
+                th = file_thumb(p["id"], rel, images)
+                pv = (f'<a class="fthumb-link" href="../{th}" target="_blank" rel="noopener">'
+                      f'<img class="fthumb" src="../{th}" alt="{esc(os.path.basename(rel))} 預覽" loading="lazy"></a>'
+                      if th else f'<span class="fthumb-none" aria-hidden="true">{name}</span>')
+                rows += (f'<tr><td class="pv">{pv}</td><td><span class="badge t-{cls}">{name}</span></td><td>{esc(label)}<br>'
                          f'<a class="fn" href="../{rel}" download>{html.escape(os.path.basename(rel))}</a></td>'
                          f'<td class="sz">{size_str(size)}</td></tr>')
-            ftable = ('<div class="tablewrap"><table class="files"><thead><tr><th>類型</th><th>說明／下載</th>'
+            ftable = ('<div class="tablewrap"><table class="files"><thead><tr><th>預覽</th><th>類型</th><th>說明／下載</th>'
                       f'<th>大小</th></tr></thead><tbody>{rows}</tbody></table></div>'
                       '<p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p>')
         else:
