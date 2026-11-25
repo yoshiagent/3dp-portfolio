@@ -17,6 +17,16 @@ As in the adapter, the motor slides in from the open back under the lips until i
 The lips sit on the solid side walls (no slits), so the frame top is one flat face.
 
 Frame: origin at the frame centre, x toward the front (tab end), z up; the motor shaft points up.
+
+Two trial variants of SideTop (2026-11-25), both with the motor moved toward the solid front end and the
+second row of vertical holes behind the front end (the row next to the motor pocket) left out:
+  tt_motor_technic_SideTop_9L     motor one pitch forward and the frame one pitch shorter at the open back:
+                                  9 x 5 x 3, 71.4 long, shaft on a hole column (x = 16), stop face x = 27.5,
+                                  front wall 8.2 so the front end holes are 7.6 deep
+  tt_motor_technic_SideTop_fwd45  frame unchanged (10 x 5 x 3), stop face moved 4.5 forward to x = 28 (the
+                                  centre line of the old second row), shaft at x = 16.5 (between hole columns)
+In both the front end's middle vertical hole is a blind pair (top and bottom, one pin deep) and its middle
+front hole is left out: the gearbox tab hole now lies under / behind them.
 """
 import os
 import sys
@@ -43,9 +53,10 @@ PARAMS = [
     ("motor_t", "18.8", "TT 馬達厚度 (mm)"),
     ("motor_z", "=frame_h / 2 - lip_h - lip_gap - motor_t",
      "馬達底面 z（架橋頂面）：比原框低 1.7，讓卡扣唇與框頂平齊（自動計算）"),
-    ("bridge1_x", "-13.2", "後架橋起點 x (mm)"),
+    ("bridge1_x", "=stop_fx - 36.7", "後架橋起點 x：跟著擋面（原版 -13.2）(mm)"),
     ("bridge1_l", "10.2", "後架橋長 (mm)"),
-    ("bridge2_x", "17", "前架橋起點 x（到擋面）(mm)"),
+    ("bridge2_x", "=stop_fx - 6.5", "前架橋起點 x（到擋面）：跟著擋面（原版 17）(mm)"),
+    ("front_depth", "=(frame_w - pocket_w) / 2", "前端面孔深（預設同側牆厚）(mm)"),
     # motor retention, taken over from tt_motor_adapter.FCStd
     ("stop_w", "21.22", "adapter 擋面凸台寬，決定圓弧伸出長度 (mm)"),
     ("fillet_r", "3.65", "擋面兩側內角圓弧半徑 (mm)"),
@@ -90,10 +101,10 @@ def cylinder(body, name, cut, radius, height, x, y, z):
     bind(cyl, ".Placement.Base.z", z)
 
 
-def drilled_hole(body, name, axis, angle, x, y, z):
-    """Pin hole (depth = side wall thickness) with counterbore, drilled from (x, y, z) just outside a face.
-    Cylinders grow along +z; App.Rotation(axis, angle) tips that axis to point into the part."""
-    for suffix, dia, depth in (("", "pin_d", f"({P}frame_w - {P}pocket_w) / 2 + 0.5"),
+def drilled_hole(body, name, axis, angle, x, y, z, depth=f"({P}frame_w - {P}pocket_w) / 2"):
+    """Pin hole (depth = side wall thickness unless given) with counterbore, drilled from (x, y, z) just outside
+    a face. Cylinders grow along +z; App.Rotation(axis, angle) tips that axis to point into the part."""
+    for suffix, dia, depth in (("", "pin_d", f"{depth} + 0.5"),
                                ("Cb", "cb_d", f"{P}cb_depth + 0.5")):
         cyl = body.newObject("PartDesign::SubtractiveCylinder", f"{name}{suffix}")
         cyl.Placement = App.Placement(App.Vector(), App.Rotation(App.Vector(*axis), angle))
@@ -112,11 +123,19 @@ def side_hole(body, name, x, z, s):
 
 def front_hole(body, name, y, z):
     """Blind hole from the front end face (+x), as deep as the side holes."""
-    drilled_hole(body, name, (0, 1, 0), -90, f"{P}frame_l / 2 + 0.5", y, z)
+    drilled_hole(body, name, (0, 1, 0), -90, f"{P}frame_l / 2 + 0.5", y, z, depth=f"{P}front_depth")
 
 
-def build(stem, top_holes, side_holes, front_holes):
-    doc = core.make_doc(stem, PARAMS)
+def build(stem, top_holes, side_holes, front_holes, units=10, stop_fx=None, front_depth=None, second_row=True):
+    """units: frame length in pitches; stop_fx: motor stop face x (default 23.5, shaft 11.5 behind it);
+    second_row False: no vertical holes in the row next to the motor pocket, the front end's middle vertical
+    hole a blind pair and no middle front hole (the tab hole sits there)."""
+    over = {"frame_l": f"{units * 8 - 0.6:g}"}
+    if stop_fx is not None:
+        over["stop_fx"] = f"{stop_fx:g}"
+    if front_depth is not None:
+        over["front_depth"] = f"{front_depth:g}"
+    doc = core.make_doc(stem, [(n, over.get(n, v), c) for n, v, c in PARAMS])
     body = doc.addObject("PartDesign::Body", "Frame")
 
     # outline with rounded vertical corners: cut each corner square, add back a quarter-round cylinder
@@ -149,17 +168,24 @@ def build(stem, top_holes, side_holes, front_holes):
     box(body, "TabHole", True, f"{P}hole_d + 1", P + "hole_w", P + "hole_h",
         x=f"{P}stop_fx - 1", y=f"-{P}hole_w / 2", z=f"{P}motor_z + {P}hole_up")
 
-    # x in half pitches (odd: holes sit between grid lines of the 10-unit length), y and z in pitches
+    # x in half pitches (odd for a 10-unit length, even for 9: holes sit on the grid columns), y and z in pitches
+    cols = [2 * i - (units - 1) for i in range(units)]
+    f = units - 1  # front column
     if top_holes:
-        # 25 vertical pin holes: 10 along each long side, 3 more across the front, 2 behind them
-        holes = [(k, s * 2) for s in (1, -1) for k in range(-9, 10, 2)]
-        holes += [(9, -1), (9, 0), (9, 1), (7, -1), (7, 1)]
+        # vertical pin holes along each long side, plus the front end's columns between them
+        holes = [(k, s * 2) for s in (1, -1) for k in cols]
+        if second_row:  # 3 across the front, 2 behind them; the 26th (middle behind) is a blind pair
+            holes += [(f, -1), (f, 0), (f, 1), (f - 2, -1), (f - 2, 1)]
+            mid = f - 2
+        else:  # the row next to the pocket left out; the front middle is the blind pair
+            holes += [(f, -1), (f, 1)]
+            mid = f
         for i, (hx, hy) in enumerate(holes):
             cylinder(body, f"Pin{i + 1:02d}", True, f"{P}pin_d / 2", f"{P}frame_h + 2",
                      f"{hx} * {P}pitch / 2", f"{hy} * {P}pitch", f"{Z0} - 1")
-        # the 26th spot (x = 28, y = 0) sits right over the gearbox tab hole: blind holes, one pin deep,
-        # from the top and from the bottom, so the tab hole stays closed
-        cx = f"7 * {P}pitch / 2"
+        # the middle spot over the gearbox tab hole: blind holes, one pin deep, from the top and from the
+        # bottom, so the tab hole stays closed
+        cx = f"{mid} * {P}pitch / 2"
         cylinder(body, "PinMidTop", True, f"{P}pin_d / 2", f"{P}top_depth + 1", cx, "0",
                  f"{ZT} - {P}top_depth")
         cylinder(body, "PinMidBottom", True, f"{P}pin_d / 2", f"{P}top_depth + 1", cx, "0", f"{Z0} - 1")
@@ -167,14 +193,16 @@ def build(stem, top_holes, side_holes, front_holes):
         # 10 columns x 3 rows on each long side (the frame is 3 pitches high, rows centred on it)
         for tag, s in (("L", 1), ("R", -1)):
             for row in (-1, 0, 1):
-                for k in range(-9, 10, 2):
-                    side_hole(body, f"Side{tag}{row + 2}_{(k + 11) // 2:02d}",
+                for k in cols:
+                    side_hole(body, f"Side{tag}{row + 2}_{(k + units + 1) // 2:02d}",
                               f"{k} * {P}pitch / 2", f"{row} * {P}pitch", s)
     if front_holes:
         # 3 columns x 3 rows in the front end face; columns at y = +-16 would break out through the
         # rounded corners and cross the side holes, so they are left out
         for row in (-1, 0, 1):
             for col in (-1, 0, 1):
+                if not second_row and row == 0 and col == 0:
+                    continue  # would run into the gearbox tab hole
                 front_hole(body, f"Front{row + 2}_{col + 3}", f"{col} * {P}pitch", f"{row} * {P}pitch")
 
     # floor under the back of the motor with the adapter's spring tab: two slits, a thinner free end,
@@ -213,7 +241,9 @@ def build(stem, top_holes, side_holes, front_holes):
 # tt_motor_technic_Top.FCStd (top holes only) is the earlier output of build("...", True, False);
 # it is not rebuilt here so the existing file stays as it is
 # (stem, top holes, side holes, front end holes); env TT_VARIANTS="stem;stem" rebuilds only those
-VARIANTS = [("tt_motor_technic_Side", False, True, False), ("tt_motor_technic_SideTop", True, True, True)]
+VARIANTS = [("tt_motor_technic_Side", False, True, False), ("tt_motor_technic_SideTop", True, True, True),
+            ("tt_motor_technic_SideTop_9L", True, True, True, 9, 27.5, 7.6, False),
+            ("tt_motor_technic_SideTop_fwd45", True, True, True, 10, 28.0, None, False)]
 only = [s for s in os.environ.get("TT_VARIANTS", "").split(";") if s]
 todo = [v for v in VARIANTS if not only or v[0] in only]
 for variant in todo:
