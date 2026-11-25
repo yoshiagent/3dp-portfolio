@@ -2,13 +2,15 @@
 
 1. every pair of parts, straight ahead: no overlap; gaps under 1 mm listed
 2. steering sweep (5 crank angles): the moving steering parts against everything else
-3. differential: carrier + ring turned in steps, against the drive base and the parts beside it; ring/pinion mesh
-4. pin holes: steering frame plate -> chassis, chassis -> drive base, motor frame -> piers, posts -> chassis /
-   drive base and battery tray, battery tray <-> breadboard frame (back to back) each line up with an open hole in the part they pin to (probe points along the shared axis)
+3. differential: carrier + ring turned in steps, against the chassis (ring and carrier openings) and the parts
+   beside it; ring/pinion mesh; pinion, 3L axle and coupler (4x the carrier) against the fixed parts
+4. pin holes: steering frame plate -> chassis risers, motor frame -> chassis, posts -> chassis and battery tray,
+   battery tray <-> breadboard frame (back to back) each line up with an open hole in the part they pin to
+   (probe points along the shared axis)
 5. ground clearance and wheel contact
-6. assembly order: chassis onto the drive module, steering module onto both, then the posts, then the breadboard
-   + battery tray pair, each lowered straight down (vertical pins) without hitting anything already in place
-3 also turns the Oldham coupling (4x the carrier) against itself and the fixed parts
+6. assembly order on the chassis: motor (frame, motor, coupler) down; 3L axle in from behind through the pinion
+   tower; pinion on from behind; differential down (turned into mesh: the ring/pinion pair is left out);
+   rear axles in from outside; steering module down; posts down; breadboard + battery tray pair down
 """
 import itertools
 import math
@@ -87,8 +89,8 @@ for (na, nb), (g, th) in sorted(tight.items(), key=lambda kv: kv[1][0]):
     print(f"   {g:5.2f}  {na} / {nb}  at crank {th:.1f}")
 
 print("== 3. differential turning")
-fixed = {k: parts[k] for k in ("drive base", "chassis", "inner sleeve left", "inner sleeve right", "input axle",
-                               "motor frame", "post rear left", "post rear right")}  # side gears: bench model
+fixed = {k: parts[k] for k in ("chassis", "inner sleeve left", "inner sleeve right", "motor frame", "tt motor",
+                               "post rear left", "post rear right")}  # side gears: bench model
 tooth = 360.0 / 44
 for spin in (tooth / 2, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0, 3 * tooth, 3.5 * tooth):
     dp = diff_parts(spin)
@@ -101,24 +103,21 @@ for spin in (tooth / 2, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0, 3 * tooth, 3.5 * too
     v = overlap(dp["ring gear"], dp["pinion"])
     if v > 1e-3:
         bad.append(("ring gear", "pinion", round(v, 3)))
-    # Oldham coupling (input turns 4x the carrier): hubs and slider against each other and the fixed parts
-    co = {k: dp[k] for k in ("hub motor", "slider", "hub axle", "input axle")}
-    for (na, a), (nb, b) in itertools.combinations(co.items(), 2):
-        v = overlap(a, b)
-        if v > 1e-3:
-            bad.append((na, nb, round(v, 3)))
+    # input line (turns 4x the carrier): pinion, 3L axle, coupler against the fixed parts (the coupler sits on the
+    # TT shaft, so not against the motor)
+    co = {k: dp[k] for k in ("pinion", "input axle", "coupler")}
     for (na, a), (nb, b) in itertools.product(co.items(), fixed.items()):
-        if nb == "input axle":  # the fixed list's straight-ahead copy of the turning input axle
+        if na == "coupler" and nb == "tt motor":
             continue
         v = overlap(a, b)
         if v > 1e-3:
             bad.append((na, nb, round(v, 3)))
-    gap = dp["ring gear"].distance_to(fixed["drive base"])
+    gap = min(dp[k].distance_to(fixed["chassis"]) for k in ("ring gear", "carrier"))
     ok &= not bad
-    print(f"spin {spin:6.2f}: overlaps {bad or 'none'}   ring-chassis gap {gap:.2f}")
+    print(f"spin {spin:6.2f}: overlaps {bad or 'none'}   ring/carrier-chassis gap {gap:.2f}")
 
 print("== 4. pin holes line up")
-ch, db = parts["chassis"], parts["drive base"]
+ch = parts["chassis"]
 
 
 def open_along(shape, p, d, depth, n=5):
@@ -143,22 +142,20 @@ def probe(name, shape_a, shape_b, pts, d, depth_a, depth_b):
     print(f"{name:42s} {len(pts):3d} holes  {'OK' if not miss else 'BLOCKED ' + str(miss)}")
 
 
-# steering module -> chassis: down through the steering frame plate
-probe("steering frame plate <- chassis", parts["frame"], ch,
-      [(x, y, c.MID_Z1 + 0.2) for x, y in c.STEER_PINS], (0, 0, 1), 6.0, 6.0)
-# chassis -> drive base: every chassis hole over the drive base
-over = [(x, y) for x, y in c.chassis_grid() if y <= c.Y_FRONT - 3.7]
-probe("chassis -> drive base", ch, db, [(x, y, c.Z1 + 0.1) for x, y in over], (0, 0, 1), 6.0, 6.0)
-mx = [(x, y) for cols in c.PIER_COLS for x in cols for y in (-56.0, -48.0, -40.0)]
-probe("motor frame lower side <- drive base piers", parts["motor frame"], db,
-      [(x, y, c.PIER_TOP) for x, y in mx], (0, 0, 1), 6.0, 6.0)
+# steering module -> chassis: down through the steering frame plate into the arms and nose
+probe("steering frame plate <- chassis risers", parts["frame"], ch,
+      [(x, y, c.RISER_TOP + 0.2) for x, y in c.STEER_PINS], (0, 0, 1), 6.0, 6.0)
+probe("motor frame lower side <- chassis", parts["motor frame"], ch,
+      [(x, y, c.Z1) for x, y in c.MOTOR_PINS], (0, 0, 1), 6.0, 6.0)
+mx = [(x, y) for x in range(-32, 33, 8) for y in (-56.0, -48.0, -40.0)]  # every hole of the frame's lower side
+probe("  (all 27 frame side holes over chassis holes)", parts["motor frame"], ch,
+      [(x, y, c.Z1) for x, y in mx], (0, 0, 1), 6.0, 6.0)
 tray = parts["battery tray"]
 for s, side in ((1, "right"), (-1, "left")):
     for r, where in enumerate(("front", "rear")):
-        k, z0 = f"post {where} {side}", c.POSTS_Z0[(s, r)]
-        below, bn = (db, "drive base") if z0 == c.Z1 else (ch, "chassis")
-        probe(f"{k} <- {bn}", parts[k], below, [(x, y, z0) for x, y in c.POST_PINS_DOWN[(s, r)]], (0, 0, 1), 6.0, 6.0)
+        k = f"post {where} {side}"
         pts = [(s * 48.0, c.POSTS_Y[r] + dy) for dy in (-4.0, 4.0)]
+        probe(f"{k} <- chassis", parts[k], ch, [(x, y, c.Z1) for x, y in pts], (0, 0, 1), 6.0, 6.0)
         probe(f"{k} -> battery tray", tray, parts[k], [(x, y, c.POST_TOP + 0.3) for x, y in pts], (0, 0, 1), 6.0, 6.0)
 # back to back: the battery tray's bottom (up) into the breadboard tray's bottom
 probe("battery tray <-> breadboard frame (back to back)", parts["breadboard frame"], tray,
@@ -171,20 +168,24 @@ for zmin, k in low[:8]:
 allbb = bd.Compound(children=list(parts.values())).bounding_box()
 print(f"car envelope x {allbb.min.X:.1f}..{allbb.max.X:.1f}  y {allbb.min.Y:.1f}..{allbb.max.Y:.1f}  z {allbb.min.Z:.1f}..{allbb.max.Z:.1f}")
 
-print("== 6. assembly order: each group goes on straight down")
+print("== 6. assembly order on the chassis")
 from car_assembly import body_parts, drive_parts, steering_parts  # noqa: E402
-drive = list(drive_parts().values())
-chassis_only = [body_parts()["chassis"]]
-steer = list(steering_parts().values())
+dr = drive_parts()
 body_all = body_parts()
+chassis_only = [body_all["chassis"]]
+motor = [dr[k] for k in ("motor frame", "tt motor", "coupler")]
+diff_group = [dr[k] for k in ("carrier", "ring gear", "cross pin", "spider top", "spider bottom", "side gear left",
+                              "side gear right", "inner sleeve left", "inner sleeve right")]
+steer = list(steering_parts().values())
 posts = [v for k, v in body_all.items() if k.startswith("post")]
 stack = [v for k, v in body_all.items() if k.startswith("battery") or k == "breadboard frame"]
 
 
 def lift_clear(name, moving, fixed_parts, d=(0, 0, 1)):
+    """Parts in place, moved away along d: nothing already there in the way (reversed, they go on along -d)."""
     global ok
     bad = []
-    for t in (0.5, 2.0, 5.0, 10.0, 20.0, 40.0):
+    for t in (0.5, 2.0, 5.0, 10.0, 20.0, 40.0, 60.0):
         for a in moving:
             am = bd.Pos(d[0] * t, d[1] * t, d[2] * t) * a
             for b in fixed_parts:
@@ -192,11 +193,19 @@ def lift_clear(name, moving, fixed_parts, d=(0, 0, 1)):
                 if v > 1e-3:
                     bad.append((t, a.label, b.label, round(v, 2)))
     ok &= not bad
-    print(f"{name:52s} {'OK' if not bad else bad[:6]}")
+    print(f"{name:56s} {'OK' if not bad else bad[:6]}")
 
 
-lift_clear("chassis onto drive module", chassis_only, drive)
-lift_clear("steering module onto chassis + drive module", steer, drive + chassis_only)
-lift_clear("posts onto the chassis / drive base", posts, drive + chassis_only + steer)
-lift_clear("breadboard + battery trays (pinned) onto the posts", stack, drive + chassis_only + steer + posts)
+lift_clear("motor (frame + motor + coupler) down onto the chassis", motor, chassis_only)
+lift_clear("3L axle in from behind through the pinion tower", [dr["input axle"]], chassis_only + motor, (0, -1, 0))
+lift_clear("pinion on to the axle from behind", [dr["pinion"]], chassis_only + motor, (0, -1, 0))
+lift_clear("differential down between the towers (turned into mesh)", diff_group,
+           chassis_only + motor + [dr["input axle"]])
+for s, side in ((-1, "left"), (1, "right")):
+    lift_clear(f"rear axle {side} in from outside (collar in place)", [dr[f"rear axle {side}"]],
+               chassis_only + diff_group + [dr[f"collar {side}"]], (s, 0, 0))
+drive_all = list(dr.values())
+lift_clear("steering module down onto the nose and arms", steer, chassis_only + drive_all)
+lift_clear("posts down onto the chassis", posts, chassis_only + drive_all + steer)
+lift_clear("breadboard + battery trays (pinned) onto the posts", stack, chassis_only + drive_all + steer + posts)
 print("ALL PASS" if ok else "FAILED")

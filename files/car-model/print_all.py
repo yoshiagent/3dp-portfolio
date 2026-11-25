@@ -2,12 +2,12 @@
 
 Plates (bed 256 x 256, Bambu Lab X2D as in ../../differential_model/differential_model.3mf, whose project
 settings are copied so the file opens with that printer):
-  1 chassis      drive base, middle chassis
+  1 chassis      the one chassis (plate, towers, arms and nose)
   2 drive train  ring 44T, pinion 11T, carrier, cross pin, side gears x2, spider gears x2, inner sleeves x2,
-                 posts x4, Oldham coupling (2 hubs, slider)
+                 posts x4, TT -> LEGO coupler
   3 steering     steering frame, knuckles, tie rods x2, crank, servo holder base and cover
-  4 motor+power  TT motor frame (SideTop), breadboard frame, two-cell 18650 tray
-Not printed (LEGO / standard parts): Technic pins, cross axles (3L, 10L x2, front axles with stop), half bushes
+  4 motor+power  TT motor frame (SideTop 9L), breadboard frame, two-cell 18650 tray
+Not printed (LEGO / standard parts): Technic pins, cross axles (3L, 8L, 12L, front axles with stop), half bushes
 x4 and bushes x2 on the rear axles, LEGO wheels front (tyre 55976 56 x 26 on rim 56145) and rear (motorcycle
 tyre 2902 81.6 x 15 on rim 2903), M2 screws.
 
@@ -16,7 +16,7 @@ as in ../../mg90s_steering/src/print_plate.py; FreeCAD parts (steering, motor fr
 breadboard frame) are their closed STLs, already flat side down. build123d parts are meshed here and their
 T-junctions closed (../../web/tools/fix_tjunctions.py), so every object is watertight.
 
-Also writes 3MF/car_parts.3mf: the four posts and the Oldham coupling on one plate.
+Also writes 3MF/car_parts.3mf: the four posts and the coupler on one plate.
 
 Run with cadgen's python from car_model/:  python src/print_all.py
 """
@@ -41,7 +41,7 @@ import car_parts as c  # noqa: E402
 from fix_tjunctions import boundary, repair  # noqa: E402
 
 OUT = HERE.parent / "3MF" / "car_all_plates.3mf"
-OUT_PARTS = HERE.parent / "3MF" / "car_parts.3mf"  # four posts + Oldham coupling
+OUT_PARTS = HERE.parent / "3MF" / "car_parts.3mf"  # four posts + coupler
 TEMPLATE = ROOT / "differential_model" / "differential_model.3mf"  # project settings (printer, bed)
 TT = ROOT / "tt_motor_adapter" / "out"
 BED, GAP = 256.0, 15.0  # gap: room for both neighbours' 5 mm auto brims
@@ -96,19 +96,22 @@ def plate_parts() -> list[tuple[str, list[tuple[str, np.ndarray, np.ndarray]]]]:
         print(f"  {label:22s} {len(t):7d} triangles")
         return label, flat(v), t
 
+    def stl_part(name, stem):
+        v, t = read_stl(TT / f"{stem}.stl")
+        return name, flat(v), t
+
     gears = dict(ep.gear_plate_parts())
     plates = [
-        ("1 底盤 chassis", [b3d("drive_base", pose(c.drive_base(), x_dir=X, z_dir=Z)),
-                          b3d("chassis", pose(c.chassis(), x_dir=X, z_dir=Z))]),
+        ("1 底盤 chassis", [b3d("chassis", pose(c.chassis(), x_dir=X, z_dir=Z))]),
         ("2 傳動 drive train", [b3d(k, gears[k]) for k in ("ring_half", "pinion", "carrier_left", "cross_pin",
                                                           "side_gear_1", "side_gear_2", "spider_1", "spider_2",
                                                           "sleeve_right", "sleeve_left")]
-         + [b3d(k, small[k]) for k in ("post_front_right", "post_rear_right", "post_front_left", "post_rear_left",
-                                       "oldham_hub_motor", "oldham_hub_axle", "oldham_slider")]),
+         + [b3d(k, small[k]) for k in ("post_front_right", "post_rear_right", "post_front_left", "post_rear_left")]
+         + [stl_part("tt_coupler", "tt_technic_coupler")]),
         ("3 轉向 steering", [(name, flat(v), t) for name, v, t in sp.posed()]),
         ("4 馬達與電路 motor + power",
-         [(name, flat(read_stl(TT / f"{stem}.stl")[0]), read_stl(TT / f"{stem}.stl")[1]) for name, stem in (
-             ("tt_motor_frame_SideTop", "tt_motor_technic_SideTop"), ("breadboard_frame", "breadboard_technic"),
+         [stl_part(name, stem) for name, stem in (
+             ("tt_motor_frame_SideTop_9L", "tt_motor_technic_SideTop_9L"), ("breadboard_frame", "breadboard_technic"),
              ("battery_tray_2x18650", "battery18650x2_technic"))]),
     ]
     return plates
@@ -229,8 +232,8 @@ if __name__ == "__main__":
               f"tallest {max(v[:, 2].max() for _, v, _ in placed):.1f} mm")
     write(plates, OUT)
     print(f"wrote {OUT} ({OUT.stat().st_size / 1e6:.1f} MB), {sum(len(p) for _, p in plates)} parts on {len(plates)} plates")
-    # car_parts.3mf: the posts and the Oldham coupling alone, the same watertight meshes
-    small = [(n, v, t) for _, parts in all_parts for n, v, t in parts if n.startswith(("post_", "oldham_"))]
+    # car_parts.3mf: the posts and the coupler alone, the same watertight meshes
+    small = [(n, v, t) for _, parts in all_parts for n, v, t in parts if n.startswith(("post_", "tt_coupler"))]
     placed, size = pack(small)
-    write([("立柱與聯軸器 posts + Oldham coupling", placed)], OUT_PARTS)
+    write([("立柱與聯軸器 posts + coupler", placed)], OUT_PARTS)
     print(f"wrote {OUT_PARTS}: {len(placed)} parts, footprint {size[0]:.1f} x {size[1]:.1f} mm")

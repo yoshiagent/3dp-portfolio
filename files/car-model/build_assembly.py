@@ -6,6 +6,7 @@ FCStd files, so it still opens after being downloaded on its own.
 Run:  freecad.exe build_assembly.py   (GUI, so the imported parts keep their colours; quits when done)
 Results go to out/assembly_build.log because GUI print output only reaches the report view.
 """
+import json
 import os
 
 import FreeCAD as App
@@ -31,17 +32,14 @@ def main():
     doc.recompute()
     parts = [o for o in doc.Objects if o.TypeId == "Part::Feature" and o.Shape.Solids]
     log(f"imported {len(parts)} parts from {os.path.basename(STEP)}")
-    # Parts that share one shape in the STEP get the first one's name (wheel:left, wheel:left001).
-    # Name each side from where it sits: x > 0 right, z > 0 top, y > -60 front.
+    # Parts that share one shape in the STEP get the first one's name; name each part from where it sits
+    # (STEP/car_assembly_names.json, written by src/car_assembly.py: label -> bounding-box centre).
+    with open(os.path.join(os.path.dirname(HERE), "STEP", "car_assembly_names.json"), encoding="utf-8") as fh:
+        centres = json.load(fh)
     for o in parts:
-        base, _, side = o.Label.rstrip("0123456789").partition(":")
-        c = o.Shape.BoundBox.Center
-        if side in ("left", "right"):
-            o.Label = f"{base}:{'right' if c.x > 0 else 'left'}"
-        elif side in ("top", "bottom"):
-            o.Label = f"{base}:{'top' if c.z > 40 else 'bottom'}"
-        elif side in ("front", "rear"):
-            o.Label = f"{base}:{'front' if c.y > -60 else 'rear'}"
+        bb = o.Shape.BoundBox
+        key = (bb.Center.x, bb.Center.y, bb.Center.z, bb.XLength, bb.YLength, bb.ZLength)
+        o.Label = min(centres, key=lambda k: sum((a - b) ** 2 for a, b in zip(key, centres[k])))
     names = [o.Label for o in parts]
     dup = sorted({n for n in names if names.count(n) > 1})
     log(f"duplicate labels after renaming: {dup or 'none'}")

@@ -1,10 +1,11 @@
 """Car model, full assembly: MG90S front steering + motor-driven differential + breadboard + two 18650 cells.
 
-Three groups, each assembled on its own and then pinned together with vertical LEGO Technic 2L pins:
-  drive module     drive base + motor, coupler, differential, rear axle line, rear wheels (drive_parts)
-  steering module  servo holder + steering frame + linkage + front wheels (steering_parts)
-  body             chassis (middle level), four posts, and on them the breadboard tray with the two-cell 18650
-                   tray pinned back to back under it (body_parts)
+On the one printed chassis, everything goes on with vertical LEGO Technic 2L pins or along its own axle:
+  drive train      TT motor in its 9L frame (pinned on the chassis), coupler, 3L axle, pinion, differential,
+                   rear axle line, rear wheels (drive_parts)
+  steering module  servo holder + steering frame + linkage + front wheels (steering_parts), pinned on the nose
+  body             chassis, four posts, and on them the breadboard tray with the two-cell 18650 tray pinned back
+                   to back under it (body_parts)
 `posed_parts(theta, spin)` places every part: theta = steering crank angle (deg, + = counter-clockwise from above,
 as in ../../mg90s_steering), spin = differential carrier turned about the rear axle (deg), for the checks.
 `exploded()` pulls the groups apart along z to show the pin joints.
@@ -49,12 +50,10 @@ def diff_parts(spin: float = 0.0) -> dict[str, bd.Part]:
         "spider top": labeled(carried(d.spider(1)), "spider gear:top", "deepskyblue"),
         "spider bottom": labeled(carried(d.spider(-1)), "spider gear:bottom", "deepskyblue"),
         "pinion": labeled(v(bd.Rot(0, 4 * spin, 0) * e.pinion()), "pinion 11T", "red"),
-        "input axle": labeled(c.spin_y(c.input_axle(), 0.0, 4 * spin), "input axle 2L", "silver"),
-        "hub motor": labeled(c.spin_y(c.oldham_hub_motor(), c.TT_SHAFT_X, 4 * spin), "Oldham hub (motor side)", "white"),
-        "slider": labeled(c.oldham_slider(4 * spin), "Oldham slider", "tomato"),
-        "hub axle": labeled(c.spin_y(c.oldham_hub_axle(), 0.0, 4 * spin), "Oldham hub (axle side)", "white"),
-        "motor frame": labeled(c.motor_place(v(e.motor_frame())), "TT motor frame", "lightgray"),
-        "tt motor": labeled(c.motor_place(v(e.tt_motor())), "TT motor (not printed)", "yellow"),
+        "input axle": labeled(v(bd.Rot(0, 4 * spin, 0) * e.pinion_shaft()), "input axle 3L", "silver"),
+        "coupler": labeled(v(bd.Rot(0, 4 * spin, 0) * e.coupler()), "TT coupler", "white"),
+        "motor frame": labeled(c.motor_frame(), "TT motor frame 9L", "lightgray"),
+        "tt motor": labeled(c.tt_motor(), "TT motor (not printed)", "yellow"),
     }
     for ds in (1, -1):
         side = SIDE[-ds]
@@ -67,7 +66,7 @@ def rear_parts() -> dict[str, bd.Part]:
     p = {}
     for s in (1, -1):
         side = SIDE[s]
-        p[f"rear axle {side}"] = labeled(c.rear_axle(s), f"rear axle 10L:{side}", "silver")
+        p[f"rear axle {side}"] = labeled(c.rear_axle(s), f"rear axle {c.AXLE_N[s]}L:{side}", "silver")
         p[f"collar {side}"] = labeled(c.collar(s), f"axle collar:{side}", "khaki")
         p[f"spacer {side}"] = labeled(c.spacer(s), f"wheel spacer:{side}", "khaki")
         p[f"rear wheel {side}"] = labeled(c.rear_rim(s), f"rear wheel LEGO 81.6:{side}", "white")
@@ -77,8 +76,8 @@ def rear_parts() -> dict[str, bd.Part]:
 
 
 def drive_parts(spin: float = 0.0) -> dict[str, bd.Part]:
-    """The drive module: everything that comes off the car with the drive base."""
-    return {"drive base": labeled(c.drive_base(), "drive base", "dimgray"), **diff_parts(spin), **rear_parts()}
+    """The drive train on the chassis: motor, coupler, differential, rear axle line."""
+    return {**diff_parts(spin), **rear_parts()}
 
 
 def body_parts() -> dict[str, bd.Part]:
@@ -86,8 +85,7 @@ def body_parts() -> dict[str, bd.Part]:
     for s in (1, -1):
         side = SIDE[s]
         for r, where in enumerate(("front", "rear")):
-            p[f"post {where} {side}"] = labeled(c.deck_post(c.POSTS_Y[r], c.POSTS_Z0[(s, r)], s),
-                                                f"deck post {where}:{side}", "gray")
+            p[f"post {where} {side}"] = labeled(c.deck_post(c.POSTS_Y[r], s), f"deck post {where}:{side}", "gray")
     p.update(battery_parts())
     p["breadboard frame"] = labeled(c.breadboard_frame(), "breadboard frame", "steelblue")
     return p
@@ -121,11 +119,11 @@ def posed_parts(theta: float = 0.0, spin: float = 0.0) -> dict[str, bd.Part]:
     return {**body_parts(), **steering_parts(theta), **drive_parts(spin)}
 
 
-EXPLODE = {"drive": -60.0, "chassis": 0.0, "steering": 50.0, "posts": 70.0, "battery": 110.0, "top": 150.0}
+EXPLODE = {"chassis": -50.0, "drive": 0.0, "steering": 30.0, "posts": 60.0, "battery": 100.0, "top": 140.0}
 
 
 def exploded() -> dict[str, bd.Part]:
-    """Groups pulled apart along z: drive module down, steering module up, then posts, the battery tray and the
+    """Groups pulled apart along z: chassis down, steering module up, then posts, the battery tray and the
     breadboard tray further up, so the vertical pin joints between them can be seen."""
     def body_group(k):
         if k == "chassis":
@@ -147,5 +145,20 @@ def car_assembly():
     return bd.Compound(children=list(posed_parts().values()), label="car_model")
 
 
+def write_names(path="../STEP/car_assembly_names.json"):
+    """Label -> bounding-box centre and size of every part, straight ahead: parts with the same shape (the four posts, the
+    side gears, ...) share one product in the STEP, so their names there are not reliable; the animation export
+    and freecad/build_assembly.py name each part from its position."""
+    import json
+
+    out = {}
+    for sh in posed_parts().values():
+        bb = sh.bounding_box()
+        c, s = bb.center(), bb.size  # size too: a rim and its tyre share the centre
+        out[sh.label] = [round(v, 3) for v in (c.X, c.Y, c.Z, s.X, s.Y, s.Z)]
+    HERE.joinpath(path).write_text(json.dumps(out, indent=1, ensure_ascii=False), encoding="utf-8")
+
+
 if __name__ == "__main__":
+    write_names()
     car_assembly()
