@@ -28,7 +28,7 @@ def want_solid(p):
 
 for p in [(L / 2 - 0.05, 2, 0), (-L / 2 + 0.05, 2, 0), (2, W / 2 - 0.05, 0), (2, -W / 2 + 0.05, 0), (2, 2, PZ + 0.05)]:
     want_empty(p)
-for p in [(L / 2 + 0.05, 2, 0), (2, W / 2 + 0.05, 0), (4, 4, PZ - 0.05), (4, 4, ZB + 0.05)]:
+for p in [(L / 2 + 0.05, 12, 0), (4, W / 2 + 0.05, 0), (4, 4, PZ - 0.05), (4, 4, ZB + 0.05)]:
     want_solid(p)  # (4, 4): floor between holes
 cols = [i * 8 for i in range(-6, 7)]
 rows = [j * 8 for j in range(-4, 5)]
@@ -42,7 +42,17 @@ for x, y in floor:
         want_empty((x, y, z))
 for x in cols[2:-2]:
     for s in (1, -1):
-        want_solid((x, s * 24, ZB + 4))  # rows +-24 left out
+        want_solid((x, s * 24, ZB + 0.6))  # rows +-24 left out (below the lowest side-hole row, z -8)
+# wire outlets: 2 into the end walls, from the pocket floor up through the top; corners 5 wide, middle 10 wide
+for s in (1, -1):
+    for z in (PZ + 0.3, 4, H / 2 - 0.3):
+        for y in (W / 2 - 0.3, W / 2 - 4.7, -W / 2 + 0.3, -W / 2 + 4.7, 4.8, -4.8):
+            want_empty((s * (L / 2 + 1.5), y, z))
+    for y in (5.3, -5.3, W / 2 - 5.3, -W / 2 + 5.3):
+        want_solid((s * (L / 2 + 1.0), y, 4))   # between the outlets (side-hole rows are at z 0, +-8)
+    for y in (0, 3.0, -3.0):
+        want_solid((s * (L / 2 + 2.3), y, 4))   # behind the middle outlet
+        want_solid((s * (L / 2 + 1.0), y, PZ - 0.3))  # floor stays under it
 print(f"probes: {len(empty)} empty OK, {len(solid)} solid OK, bad {bad or 'none'}")
 
 # back to back: the breadboard tray as modelled (z -7.9 .. 7.9), the battery tray turned over below it, bottom

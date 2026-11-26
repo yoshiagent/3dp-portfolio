@@ -6,7 +6,7 @@ Run:  freecadcmd.exe build_18650x2_technic.py
 
 The holder sits in a pocket open at the top: 76 x 42.6 (the single tray's 21.3 doubled), no clearance, a snug fit.
 At each of the pocket's four corners a wire outlet 5 wide (along y) runs 2 into the end wall, from the pocket floor up
-through the top.
+through the top; in the middle of each end wall another one, twice as wide (10, user's request 2026-11-26).
 Frame: 13 x 9 x 3 Technic units (103.4 x 71.4 x 23.6), one unit wider and one higher than the first 13 x 8 x 2
 version (user's request, 2026-11-24): 9 wide matches the breadboard tray (and puts a hole row on the centre line), 3
 high gives a 7.8 floor, one pin half, so a 2L pin in a floor hole stays out of the pocket. The 18 mm holder stands
@@ -58,6 +58,7 @@ PARAMS = [
     # wire outlets at the four corners of the pocket
     ("wire_w", "5", "出線口寬：沿槽寬方向 (mm)"),
     ("wire_d", "2", "出線口深：伸進端牆 (mm)"),
+    ("wire_mid_w", "=2 * wire_w", "短邊中間出線口寬：角落出線口的 2 倍（自動計算）"),
 ]
 
 P = "Params."
@@ -124,6 +125,11 @@ def build(stem):
         y0 = f"{P}pocket_w / 2 - {P}wire_w" if sy > 0 else f"-{P}pocket_w / 2"
         box(body, f"Wire{tag}", True, f"{P}wire_d + 0.5", P + "wire_w", f"{P}frame_h",
             x=x0, y=y0, z=P + "pocket_z")
+    # wider outlet in the middle of each end wall, same depth and height
+    for tag, sx in (("F", 1), ("B", -1)):
+        x0 = f"{P}pocket_l / 2 - 0.5" if sx > 0 else f"-{P}pocket_l / 2 - {P}wire_d"
+        box(body, f"WireMid{tag}", True, f"{P}wire_d + 0.5", P + "wire_mid_w", f"{P}frame_h",
+            x=x0, y=f"-{P}wire_mid_w / 2", z=P + "pocket_z")
 
     # grid centred on the frame: column i (0 .. nx - 1) at (i - (nx - 1) / 2) * pitch, row j likewise with ny.
     # Each hole is made at its first position and repeated by a LinearPattern whose count is bound to nx / ny.
