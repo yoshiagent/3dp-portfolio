@@ -5,12 +5,14 @@
 3. differential: carrier + ring turned in steps, against the chassis (ring and carrier openings) and the parts
    beside it; ring/pinion mesh; pinion, 3L axle and coupler (4x the carrier) against the fixed parts
 4. pin holes: steering frame plate -> chassis risers, motor frame -> chassis, posts -> chassis and battery tray,
-   battery tray <-> breadboard frame (back to back) each line up with an open hole in the part they pin to
+   battery tray <-> breadboard frame (back to back), servo side brackets -> holder (sideways) and -> arms (down)
+   each line up with an open hole in the part they pin to
    (probe points along the shared axis)
 5. ground clearance and wheel contact
 6. assembly order on the chassis: motor (frame, motor, coupler) down; 3L axle in from behind through the pinion
    tower; pinion on from behind; differential down (turned into mesh: the ring/pinion pair is left out);
-   rear axles in from outside; steering module down; posts down; breadboard + battery tray pair down
+   rear axles in from outside; (off the car: servo brackets 8 mm in onto the holder's pins, before the frame,
+   knuckles and tie rods) steering module with its brackets down; posts down; breadboard + battery tray pair down
 """
 import itertools
 import math
@@ -161,6 +163,21 @@ for s, side in ((1, "right"), (-1, "left")):
 probe("battery tray <-> breadboard frame (back to back)", parts["breadboard frame"], tray,
       [(x, y, c.TOP_Z0 - 0.1) for x, y in c.STACK_PINS], (0, 0, 1), 6.0, 6.0)
 
+# servo side brackets: sideways into the holder (right: base back face; left: through the cover into the base),
+# down through the lower unit (and the notch above it) into the arms
+for s, side in ((1, "right"), (-1, "left")):
+    br = parts[f"servo bracket {side}"]
+    pts_all = [(s * 20.0, y, z) for y in c.SB_HOLES_Y for z in c.SB_ROWS]
+    if s > 0:
+        probe("servo bracket right <- holder base back face", br, parts["holder base"], pts_all, (1, 0, 0), 6.0, 6.0)
+    else:
+        pts = [(-20.0, y, z) for y, z in c.SB_PINS_LEFT]
+        probe("servo bracket left <- holder cover", br, parts["holder cover"], pts, (-1, 0, 0), 6.0, 7.0)
+        probe("  holder cover <- base front face (3L pin ends)", parts["holder cover"], parts["holder base"],
+              [(-12.0, y, z) for y, z in c.SB_PINS_LEFT], (-1, 0, 0), 7.0, 6.0)
+    probe(f"servo bracket {side} <- chassis arm (3L, notch above)", br, ch,
+          [(s * c.SB_X_PIN, y, c.RISER_TOP + 0.2) for y in c.SB_PINS_Y], (0, 0, 1), 15.0, 6.0)
+
 print("== 5. ground")
 low = sorted((p.bounding_box().min.Z, k) for k, p in parts.items())
 for zmin, k in low[:8]:
@@ -181,11 +198,11 @@ posts = [v for k, v in body_all.items() if k.startswith("post")]
 stack = [v for k, v in body_all.items() if k.startswith("battery") or k == "breadboard frame"]
 
 
-def lift_clear(name, moving, fixed_parts, d=(0, 0, 1)):
+def lift_clear(name, moving, fixed_parts, d=(0, 0, 1), dist=60.0):
     """Parts in place, moved away along d: nothing already there in the way (reversed, they go on along -d)."""
     global ok
     bad = []
-    for t in (0.5, 2.0, 5.0, 10.0, 20.0, 40.0, 60.0):
+    for t in [t for t in (0.5, 2.0, 5.0, 8.5, 10.0, 20.0, 40.0, 60.0) if t <= dist]:
         for a in moving:
             am = bd.Pos(d[0] * t, d[1] * t, d[2] * t) * a
             for b in fixed_parts:
@@ -205,7 +222,16 @@ for s, side in ((-1, "left"), (1, "right")):
     lift_clear(f"rear axle {side} in from outside (collar in place)", [dr[f"rear axle {side}"]],
                chassis_only + diff_group + [dr[f"collar {side}"]], (s, 0, 0))
 drive_all = list(dr.values())
-lift_clear("steering module down onto the nose and arms", steer, chassis_only + drive_all)
-lift_clear("posts down onto the chassis", posts, chassis_only + drive_all + steer)
-lift_clear("breadboard + battery trays (pinned) onto the posts", stack, chassis_only + drive_all + steer + posts)
+from car_assembly import bracket_parts  # noqa: E402
+brackets = list(bracket_parts().values())
+sp = steering_parts()
+holder = [sp[k] for k in ("holder base", "holder cover", "servo")]
+for s, side in ((1, "right"), (-1, "left")):
+    br = bracket_parts()[f"servo bracket {side}"]
+    lift_clear(f"(off the car) servo bracket {side} 8 mm in onto the holder", [br], holder, (s, 0, 0), 8.5)
+    lift_clear(f"  ... then the steering frame on (bracket in place)", [sp["frame"]], holder + [br], (0, 1, 0), 20.0)
+lift_clear("steering module with its brackets down onto nose and arms", steer + brackets, chassis_only + drive_all)
+lift_clear("posts down onto the chassis", posts, chassis_only + drive_all + steer + brackets)
+lift_clear("breadboard + battery trays (pinned) onto the posts", stack,
+           chassis_only + drive_all + steer + brackets + posts)
 print("ALL PASS" if ok else "FAILED")

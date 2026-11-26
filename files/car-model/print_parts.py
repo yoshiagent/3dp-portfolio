@@ -1,8 +1,10 @@
 """Print files for the car model's new parts.
 
+car_servo_bracket: the MG90S side bracket (47.4 x 15.4 x 7.4, print two), inner face down.
 car_chassis: the one chassis, flat bottom down (103.4 x 195.4 mm, towers 34.5 mm high).
-The four posts (small_parts) go into plate 2 of 3MF/car_all_plates.3mf and 3MF/car_parts.3mf through
-print_all.py, whose meshes are repaired watertight.
+The four posts (small_parts) go into plate 2 of 3MF/car_all_plates.3mf, the two servo side brackets (the same
+part twice, inner face down so the holder pin holes print vertical) into plate 3, all of them into 3MF/car_parts.3mf,
+through print_all.py, whose meshes are repaired watertight.
 LEGO standard parts are not printed: 81.6 x 15 motorcycle rear tyres on rims, cross axles (3L, 8L, 12L), half
 bushes x4 (the axle collars, inside the outer towers and outside the hubs), bushes x2 (the wheel spacers);
 car_parts.py keeps their shapes as stand-ins.
@@ -29,11 +31,13 @@ X, Z = (1, 0, 0), (0, 0, 1)
 
 
 def small_parts() -> list[tuple[str, bd.Part]]:
-    """The four posts (all the same), each on its side so the layers run along its length."""
+    """The four posts (all the same), each on its side so the layers run along its length; the two servo side
+    brackets (the same part), inner face down."""
     pose = d.print_pose
-    return [(k, pose(c.deck_post(c.POSTS_Y[r], s), x_dir=(0, 1, 0), z_dir=X))
-            for k, s, r in (("post_front_right", 1, 0), ("post_rear_right", 1, 1), ("post_front_left", -1, 0),
-                            ("post_rear_left", -1, 1))]
+    posts = [(k, pose(c.deck_post(c.POSTS_Y[r], s), x_dir=(0, 1, 0), z_dir=X))
+             for k, s, r in (("post_front_right", 1, 0), ("post_rear_right", 1, 1), ("post_front_left", -1, 0),
+                             ("post_rear_left", -1, 1))]
+    return posts + [(f"servo_bracket_{i}", pose(c.servo_bracket(1), x_dir=(0, 1, 0), z_dir=X)) for i in (1, 2)]
 
 
 @stl(out="../STL/car_chassis.stl")
@@ -44,5 +48,15 @@ def car_chassis():
     return part
 
 
+@stl(out="../STL/car_servo_bracket.stl")
+@threemf(out="../3MF/car_servo_bracket.3mf")
+def car_servo_bracket():
+    """One servo side bracket, inner face down (print two)."""
+    part = d.print_pose(c.servo_bracket(1), x_dir=(0, 1, 0), z_dir=X)
+    part.label = "car_servo_bracket"
+    return part
+
+
 if __name__ == "__main__":
     car_chassis()
+    car_servo_bracket()

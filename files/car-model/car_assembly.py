@@ -4,6 +4,7 @@ On the one printed chassis, everything goes on with vertical LEGO Technic 2L pin
   drive train      TT motor in its 9L frame (pinned on the chassis), coupler, 3L axle, pinion, differential,
                    rear axle line, rear wheels (drive_parts)
   steering module  servo holder + steering frame + linkage + front wheels (steering_parts), pinned on the nose
+  servo brackets   one each side, pinned sideways into the servo holder and down into the arms (bracket_parts)
   body             chassis, four posts, and on them the breadboard tray with the two-cell 18650 tray pinned back
                    to back under it (body_parts)
 `posed_parts(theta, spin)` places every part: theta = steering crank angle (deg, + = counter-clockwise from above,
@@ -115,8 +116,14 @@ def steering_parts(theta: float = 0.0) -> dict[str, bd.Part]:
     return out
 
 
+def bracket_parts() -> dict[str, bd.Part]:
+    """The two servo side brackets: the MG90S holder pinned sideways to the arms (car_parts.servo_bracket)."""
+    return {f"servo bracket {SIDE[s]}": labeled(c.servo_bracket(s), f"servo side bracket:{SIDE[s]}", "mediumpurple")
+            for s in (1, -1)}
+
+
 def posed_parts(theta: float = 0.0, spin: float = 0.0) -> dict[str, bd.Part]:
-    return {**body_parts(), **steering_parts(theta), **drive_parts(spin)}
+    return {**body_parts(), **steering_parts(theta), **bracket_parts(), **drive_parts(spin)}
 
 
 EXPLODE = {"chassis": -50.0, "drive": 0.0, "steering": 30.0, "posts": 60.0, "battery": 100.0, "top": 140.0}
@@ -130,7 +137,8 @@ def exploded() -> dict[str, bd.Part]:
             return "chassis"
         return "posts" if k.startswith("post") else "battery" if k.startswith("battery") else "top"
 
-    groups = [(drive_parts(), lambda k: "drive"), (steering_parts(), lambda k: "steering"), (body_parts(), body_group)]
+    groups = [(drive_parts(), lambda k: "drive"), (steering_parts(), lambda k: "steering"),
+              (bracket_parts(), lambda k: "steering"), (body_parts(), body_group)]
     out = {}
     for parts, group in groups:
         for k, s in parts.items():

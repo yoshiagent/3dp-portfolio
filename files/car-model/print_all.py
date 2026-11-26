@@ -5,7 +5,7 @@ settings are copied so the file opens with that printer):
   1 chassis      the one chassis (plate, towers, arms and nose)
   2 drive train  ring 44T, pinion 11T, carrier, cross pin, side gears x2, spider gears x2, inner sleeves x2,
                  posts x4, TT -> LEGO coupler
-  3 steering     steering frame, knuckles, tie rods x2, crank, servo holder base and cover
+  3 steering     steering frame, knuckles, tie rods x2, crank, servo holder base and cover, servo side brackets x2
   4 motor+power  TT motor frame (SideTop 9L), breadboard frame, two-cell 18650 tray
 Not printed (LEGO / standard parts): Technic pins, cross axles (3L, 8L, 12L, front axles with stop), half bushes
 x4 and bushes x2 on the rear axles, LEGO wheels front (tyre 55976 56 x 26 on rim 56145) and rear (motorcycle
@@ -16,7 +16,7 @@ as in ../../mg90s_steering/src/print_plate.py; FreeCAD parts (steering, motor fr
 breadboard frame) are their closed STLs, already flat side down. build123d parts are meshed here and their
 T-junctions closed (../../web/tools/fix_tjunctions.py), so every object is watertight.
 
-Also writes 3MF/car_parts.3mf: the four posts and the coupler on one plate.
+Also writes 3MF/car_parts.3mf: the four posts, the coupler and the two servo side brackets on one plate.
 
 Run with cadgen's python from car_model/:  python src/print_all.py
 """
@@ -41,7 +41,7 @@ import car_parts as c  # noqa: E402
 from fix_tjunctions import boundary, repair  # noqa: E402
 
 OUT = HERE.parent / "3MF" / "car_all_plates.3mf"
-OUT_PARTS = HERE.parent / "3MF" / "car_parts.3mf"  # four posts + coupler
+OUT_PARTS = HERE.parent / "3MF" / "car_parts.3mf"  # four posts + coupler + servo side brackets
 TEMPLATE = ROOT / "differential_model" / "differential_model.3mf"  # project settings (printer, bed)
 TT = ROOT / "tt_motor_adapter" / "out"
 BED, GAP = 256.0, 15.0  # gap: room for both neighbours' 5 mm auto brims
@@ -108,7 +108,8 @@ def plate_parts() -> list[tuple[str, list[tuple[str, np.ndarray, np.ndarray]]]]:
                                                           "sleeve_right", "sleeve_left")]
          + [b3d(k, small[k]) for k in ("post_front_right", "post_rear_right", "post_front_left", "post_rear_left")]
          + [stl_part("tt_coupler", "tt_technic_coupler")]),
-        ("3 轉向 steering", [(name, flat(v), t) for name, v, t in sp.posed()]),
+        ("3 轉向 steering", [(name, flat(v), t) for name, v, t in sp.posed()]
+         + [b3d(k, small[k]) for k in ("servo_bracket_1", "servo_bracket_2")]),
         ("4 馬達與電路 motor + power",
          [stl_part(name, stem) for name, stem in (
              ("tt_motor_frame_SideTop_9L", "tt_motor_technic_SideTop_9L"), ("breadboard_frame", "breadboard_technic"),
@@ -233,7 +234,7 @@ if __name__ == "__main__":
     write(plates, OUT)
     print(f"wrote {OUT} ({OUT.stat().st_size / 1e6:.1f} MB), {sum(len(p) for _, p in plates)} parts on {len(plates)} plates")
     # car_parts.3mf: the posts and the coupler alone, the same watertight meshes
-    small = [(n, v, t) for _, parts in all_parts for n, v, t in parts if n.startswith(("post_", "tt_coupler"))]
+    small = [(n, v, t) for _, parts in all_parts for n, v, t in parts if n.startswith(("post_", "tt_coupler", "servo_bracket"))]
     placed, size = pack(small)
-    write([("立柱與聯軸器 posts + coupler", placed)], OUT_PARTS)
+    write([("立柱、聯軸器與舵機側固定件 posts + coupler + servo brackets", placed)], OUT_PARTS)
     print(f"wrote {OUT_PARTS}: {len(placed)} parts, footprint {size[0]:.1f} x {size[1]:.1f} mm")

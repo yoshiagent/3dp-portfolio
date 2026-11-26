@@ -17,7 +17,8 @@ Layout (2026-11-25 redesign, "simple and easy to assemble"):
   ../../electric_differential: the differential follows the motor shaft, 16 mm left of the centre line
   (DIFF_X) and with its axle 19.7 above the plate (the plate's height is set so that this is the wheels' 40.8).
   The rear axles are then LEGO 8L (left) and 12L (right); the wheels stay where they were.
-* the steering module unchanged, pinned down into the arms and the nose.
+* the steering module unchanged, pinned down into the arms and the nose; since 2026-11-26 two identical side
+  brackets (servo_bracket) also pin the servo holder's sides to the arms.
 * upper level unchanged: the breadboard tray (13 x 9 x 2) on top, pocket up, the two-cell 18650 tray turned over
   under it, bottoms pinned together, on four identical posts standing on the chassis.
 * nothing on the rear axle line is printed: LEGO motorcycle tyres on their rims, cross axles, half bushes (the
@@ -111,6 +112,28 @@ STACK_PINS = [(x, STACK_YC + y) for x in (-40.0, 40.0) for y in (-32.0, 32.0)] +
 POSTS_Y = (STACK_YC + 28.0, STACK_YC - 28.0)  # -20 (front), -76 (rear)
 POST_X = (44.3, 51.7)  # |x|
 POST_TOP = TRAY_FACE - 0.6  # 65.8
+
+# --- servo side brackets: the MG90S holder pinned sideways to the arms (both sides, one part printed twice) ---
+# Holder (../../tt_motor_adapter/build_mg90s_side.py, turned 90 deg in the car): base back face at x = +19.7 with
+# 4 rows x 6 one-pin-deep holes, cover outer face at x = -19.7 with through holes at y = -24 (rows 11.9 .. 27.9) and
+# y = 16 (rows 11.9 .. 35.9); holder y -27.7 .. 19.7. Each bracket is a 6 x 1 x 2 block on an arm, 0.6 beside
+# the holder and 0.4 above the arm (like the steering frame plate): horizontal through holes at y = -24, -8, 0, 16
+# on the holder's two upper rows; in two notches cut from the top (y -20 .. -12 and 4 .. 12) a vertical hole down
+# through the lower unit, over the arm holes at y = -16 and 8, for a 3L pin (long end down, short end flush with
+# the top). Symmetric about y = -4, so the left one is the right one turned 180 deg.
+SB_X = (ARM[0], ARM[1])  # |x| 20.3 .. 27.7: on the arm, 0.6 beside the holder (|x| 19.7)
+SB_Y = (-27.7, 19.7)
+SB_Z = (RISER_TOP + 0.4, RISER_TOP + 0.4 + 15.4)  # 24.2 .. 39.6: two units, 0.6 under the tie rods (40.2)
+SB_MID = SB_Z[0] + 7.4  # 31.6: top of the lower unit, notch floor
+SB_ROWS = (27.9, 35.9)  # holder side-hole rows (tab underside 31.8: -3.9, 4.1)
+SB_HOLES_Y = (-24.0, -8.0, 0.0, 16.0)
+SB_NOTCHES = ((-20.0, -12.0), (4.0, 12.0))
+SB_PINS_Y = (-16.0, 8.0)  # vertical 3L pins into the arm holes at x = +-24
+SB_X_PIN = 24.0
+# pins used: right, into the base's back face: 2L at y = -24 and 16, both rows (4); left, the cover's own 2L pins
+# at y = -24 row 27.9 and y = 16 rows 27.9, 35.9 swapped for 3L pins whose ends come out through the cover (3)
+SB_PINS_RIGHT = [(y, z) for y in (-24.0, 16.0) for z in SB_ROWS]
+SB_PINS_LEFT = [(-24.0, 27.9), (16.0, 27.9), (16.0, 35.9)]
 
 
 def to_vehicle(shape: bd.Part) -> bd.Part:
@@ -259,6 +282,23 @@ def deck_post(yc: float, s: int = 1) -> bd.Part:
     x0, x1 = sorted((s * POST_X[0], s * POST_X[1]))
     body = box(x0, x1, yc - 7.7, yc + 7.7, Z1, POST_TOP)
     tools = [vhole(s * 48.0, yc + dy, Z1, POST_TOP) for dy in (-4.0, 4.0)]
+    return body - bd.Compound(tools)
+
+
+def servo_bracket(s: int = 1) -> bd.Part:
+    """Side bracket (s = 1 right, -1 left) pinning the MG90S holder to the arm: see SB_* above."""
+    x0, x1 = sorted((s * SB_X[0], s * SB_X[1]))
+    body = box(x0, x1, *SB_Y, *SB_Z)
+    # outer vertical edges rounded like the holder's corners
+    xo = s * SB_X[1]
+    edges = [e_ for e_ in body.edges().filter_by(bd.Axis.Z) if abs(e_.center().X - xo) < 0.01]
+    body = bd.fillet(edges, 3.7)
+    for ya, yb in SB_NOTCHES:
+        body -= box(x0 - 1, x1 + 1, ya, yb, SB_MID, SB_Z[1] + 1)
+    xi = s * SB_X[0]
+    tools = [hole((xi, y, z), (s, 0, 0), SB_X[1] - SB_X[0], cb_start=True, cb_end=True)
+             for y in SB_HOLES_Y for z in SB_ROWS]
+    tools += [vhole(s * SB_X_PIN, y, SB_Z[0], SB_MID) for y in SB_PINS_Y]
     return body - bd.Compound(tools)
 
 
