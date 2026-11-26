@@ -20,9 +20,16 @@ Technic holes, counterbored: vertical through the back row (y = -16) and the rig
 the left end (bottom one pin deep, top 4 mm, above and below the tab slot) and under the servo; horizontal
 one pin deep in the back face (4 rows x 6), both ends, and in the front face where the base is solid (left
 and right end blocks) for the pins that hold the cover.
+No three-way crossings (user's request 2026-11-26): where a back- or front-face hole and an end-face hole meet
+at a corner column (x = -24 / 16 with y = -16 / 8), the vertical hole there is left out; the side holes stay,
+they take the steering frame's bulkhead, the cover pins and the car's side brackets.
 Cover: 6 x 1 x 4 units (47.4 x 7.4 x 31.8), 0.6 in front of the base. A plug on its inner face fills the
 cavity's opening up to 0.2 from the servo (round cut-out for the gear housing), so the servo cannot slide out.
 Through holes across it line up with the base's front-face holes; a notch open at the bottom lets the cable out.
+Through holes also across the middle of the cover and its plug (x = -16 all four rows, x = -8 and 0 the three
+lower rows, x = 8 the third row: the cable notch and the gear housing cut-out take the others), so its outer face
+is a Technic grid like the base's back (user's request 2026-11-26). The vertical holes at its two ends (x = -24,
+16) are left out: they met the through holes and the end-face holes there.
 
 Servo sizes above the tabs come from the user's photo (gear housing 14.6 long, measured) with heights scaled
 from the picture; the rest follow the datasheet as in the top-loading set. All are in the Params sheet.
@@ -183,12 +190,13 @@ def build_base(stem):
         x=f"{P}cav_x1 - 0.5", y=P + "cav_y0", z=P + "cav_z0")
 
     # vertical holes: back row through (6), right end through (y = -8, 0, 8)
-    core.pattern(body, "VBack", vertical_hole(body, "VBackh", g(-3), g(-2), ZB, ZT), "X", 6, g(5))
-    core.pattern(body, "VEndR", vertical_hole(body, "VEndRh", g(2), g(-1), ZB, ZT), "Y", 3, g(2))
+    # (corner columns left out: no three-way crossings with the back / front and end-face holes)
+    core.pattern(body, "VBack", vertical_hole(body, "VBackh", g(-2), g(-2), ZB, ZT), "X", 4, g(3))
+    core.pattern(body, "VEndR", vertical_hole(body, "VEndRh", g(2), g(-1), ZB, ZT), "Y", 2, g(1))
     # left end (y = -8, 0, 8): the tab slot runs through there, so one pin deep from the bottom and 4 mm from
     # the top (1.2 mm above the slot)
     core.pattern(body, "VEndLB", vertical_hole(body, "VEndLBh", g(-3), g(-1), ZB, f"{ZB} + {P}pin_depth",
-                                               cb_top=False), "Y", 3, g(2))
+                                               cb_top=False), "Y", 2, g(1))
     core.pattern(body, "VEndLT", vertical_hole(body, "VEndLTh", g(-3), g(-1), f"{P}tab_z0 + {P}tab_h + 1.2", ZT,
                                                cb_bot=False), "Y", 3, g(2))
     # under the servo: y = 0 one pin deep (opens into the cavity), y = +-8 up to the cavity floor level
@@ -250,9 +258,19 @@ def build_cover(stem):
         core.pattern(body, f"Y{t}", feats, "Z", n, g(n - 1))
         core.pattern(body, f"Y{t}I", [cylinder(body, f"Y{t}hCbI", True, f"{P}cb_d / 2", cb_h, x, yi, zrow(0),
                                                rot_out)], "Z", n, g(n - 1))
-    # vertical through holes along the cover (x = 8 left out: cable notch)
-    core.pattern(body, "VCover", vertical_hole(body, "VCoverh", g(-3), g(2), ZB, ZT), "X", 4, g(3))
-    vertical_hole(body, "VCoverR", g(2), g(2), ZB, ZT)
+    # through holes across the middle of the cover and its plug (open on the servo side), outer counterbore only
+    mid_h = f"{P}set_w / 2 - {P}plug_y0 + 1"
+    for name, x, n, nx in (("MidA", g(-2), 4, 1), ("MidB", g(-1), 3, 2), ("MidC", g(1), 1, 1)):
+        z0 = zrow(2) if name == "MidC" else zrow(0)
+        feats = [cylinder(body, f"{name}h", True, f"{P}pin_d / 2", mid_h, x, yo, z0, rot_in),
+                 cylinder(body, f"{name}hCbO", True, f"{P}cb_d / 2", cb_h, x, yo, z0, rot_in)]
+        if n > 1 and nx > 1:
+            core.pattern(body, name, feats, "Z", n, g(n - 1), "X", nx, g(nx - 1))
+        elif n > 1:
+            core.pattern(body, name, feats, "Z", n, g(n - 1))
+    # vertical through holes along the cover: x = -16 .. 0 (x = 8: cable notch; x = -24, 16: no three-way
+    # crossings with the through holes and end-face holes there)
+    core.pattern(body, "VCover", vertical_hole(body, "VCoverh", g(-2), g(2), ZB, ZT), "X", 3, g(2))
     # end faces, 4 rows, one pin deep
     for t, s, x in (("L", -1, f"{X0} - 0.5"), ("R", 1, f"{X1} + 0.5")):
         core.pattern(body, f"E{t}", side_hole(body, f"E{t}h", (0, 1, 0), -90 * s, x, g(2), zrow(0)), "Z", 4, g(3))
