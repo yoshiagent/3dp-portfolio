@@ -95,7 +95,7 @@ HORN_PARAMS = [
     # LEGO cross hole, as on the TT coupler
     ("axle_d", "4.8", "LEGO 十字軸外徑 (mm)"),
     ("axle_arm", "1.8", "LEGO 十字軸臂寬 (mm)"),
-    ("lego_clear", "0.075", "十字孔每邊間隙：白色 PLA 試片第 1 孔最合適 (mm)"),
+    ("lego_clear", "0.15", "十字孔每邊間隙：0.15（原 0.075，實測 0.075～0.1 十字軸插不進，2026-11-26 改）(mm)"),
     ("axle_depth", "8", "十字孔深度 (mm)"),
     ("hole_d", "=axle_d + 2 * lego_clear", "十字孔外徑（自動計算）"),
     ("hole_w", "=axle_arm + 2 * lego_clear", "十字孔臂寬（自動計算）"),
