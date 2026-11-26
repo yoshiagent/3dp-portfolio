@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>加寬型麵包板 Technic 底座（兩片並排，可跨接 ESP32）｜3D 列印作品集</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<nav class="topnav"><div class="wrap">
+<a href="https://yoshiagent.github.io/MechanicalAI/">← MechanicalAI</a>
+<span class="sep">｜</span><a href="../index.html">3D 列印作品集</a>
+<span class="sep">｜</span><a href="../software.html">使用的設計軟體</a>
+</div></nav>
+<div class="wrap">
+<div class="crumb"><a href="../index.html">← 全部作品</a>　｜　<a href="../software.html">使用的設計軟體</a></div>
+<div class="head">
+<h1>加寬型麵包板 Technic 底座（兩片並排，可跨接 ESP32）</h1>
+<div class="en">Wide Breadboard Technic Tray (Two Boards Side by Side)</div>
+<div class="meta"><span class="badge k-own">自製設計</span><span>2026-11-26</span></div>
+</div>
+
+<p class="lead">兩片 400 孔半尺寸麵包板並排（其中一片拆掉外側電源條），中間可以跨插 ESP32 DevKit 這種寬板子；這個 Technic 框的槽寬 101 mm，剛好裝下兩片，上、下、四周都能用銷接到 LEGO Technic 結構上。</p>
+
+<div class="layout">
+<div class="gallery"><div class="main"><img id="mainimg" src="../img/breadboard-wide-technic/breadboard_wide_with_boards_preview.png" alt="加寬型麵包板 Technic 底座（兩片並排，可跨接 ESP32）"></div><p class="cap" id="cap">breadboard_wide_with_boards_preview</p><div class="strip"><button type="button" data-src="../img/breadboard-wide-technic/breadboard_wide_with_boards_preview.png" data-cap="breadboard_wide_with_boards_preview" aria-current="true" aria-label="圖片 1"><img src="../img/breadboard-wide-technic/breadboard_wide_with_boards_preview.png" alt="" loading="lazy"></button><button type="button" data-src="../img/breadboard-wide-technic/breadboard_wide_preview.png" data-cap="breadboard_wide_preview" aria-current="false" aria-label="圖片 2"><img src="../img/breadboard-wide-technic/breadboard_wide_preview.png" alt="" loading="lazy"></button><button type="button" data-src="../img/breadboard-wide-technic/breadboard_wide_top_preview.png" data-cap="breadboard_wide_top_preview" aria-current="false" aria-label="圖片 3"><img src="../img/breadboard-wide-technic/breadboard_wide_top_preview.png" alt="" loading="lazy"></button><button type="button" data-src="../img/breadboard-wide-technic/breadboard_wide_technic.png" data-cap="breadboard_wide_technic（FreeCAD 等角視圖）" aria-current="false" aria-label="圖片 4"><img src="../img/breadboard-wide-technic/breadboard_wide_technic.png" alt="" loading="lazy"></button></div></div>
+<div class="panel"><h2>重點規格</h2><dl class="specs"><dt>外形</dt><dd>103.4 × 119.4 × 15.8 mm</dd><dt>格數</dt><dd>13 × 15 × 2 Technic</dd><dt>槽</dt><dd>85.24 × 101 × 8.5 mm（寬度依使用者指定）</dd><dt>銷孔</dt><dd>195 垂直＋104 側面</dd><dt>牆厚</dt><dd>長邊 9.2 mm、短邊 9.08 mm</dd></dl>
+<div class="tools"><a class="badge tool" href="../software.html#freecad">FreeCAD PartDesign</a><a class="badge tool" href="../software.html#freecad">FreeCAD 腳本</a><a class="badge tool" href="../software.html#build123d">build123d</a></div></div>
+</div>
+
+<div class="secs"><section class="sec"><h2>為什麼要加寬</h2><ul><li>ESP32 DevKit 比一般模組寬，放在一片半尺寸麵包板上，兩排腳只剩各一排孔可以接線</li><li>做法：兩片麵包板並排，其中一片拆掉外側電源條，ESP32 跨在兩片中間，兩邊各有 5 排孔可用（使用者照片）</li><li>兩片合起來寬約 101 mm，所以槽寬直接定為 101 mm；長度和半尺寸版一樣 85 mm（兩端各留 0.12 mm 間隙），深 8.5 mm，麵包板頂面和框頂齊平</li></ul></section><section class="sec"><h2>Technic 孔位</h2><ul><li>框從 13 × 9 格加寬成 13 × 15 格（119.4 mm），長度、高度和半尺寸版相同，13 格方向的孔位對得上</li><li>外圈 52 個垂直孔上下貫穿（長邊各 13、短邊各 13）；底板 11 × 13 個貫穿孔，整個底面是完整的 13 × 15 格</li><li>四邊各兩排水平孔（中心上下 ±4 mm），與垂直孔直角交叉；上排都打通到槽內（只深一根銷會留 0.8 mm 的薄皮），下排是盲孔，在實心底板裡</li><li>所有孔都有 Ø6.2 × 0.8 沉頭</li></ul></section><section class="sec"><h2>建模與檢查</h2><ul><li>由半尺寸版的建模腳本改寫：格數 nx、ny、槽寬、槽長、間隙都在 Params 試算表，孔的陣列數量綁定格數</li><li>STEP 是單一有效實體，和兩片麵包板所佔空間沒有重疊</li><li>build123d 探測 711 點：槽邊在 ±42.62、±50.5 mm，195 個垂直孔沿軸向都是空的，上排側孔打通到槽內，下排側孔停在底板孔前 0.8 mm</li><li>3MF 網格封閉、沒有非流形邊；Bambu Studio 命令列切片成功，預設設定約 9.3 小時，開口朝上平放即可、不需支撐</li></ul></section><section class="sec"><h2>待實測</h2><ul><li>槽寬 101 mm 沒有另外留間隙：兩片麵包板拼起來的實際寬度若大於 101，改 Params 的 pocket_w 再重建</li><li>麵包板靠緊配和背膠固定，從底板孔往上推出</li></ul></section></div>
+<section class="panel"><h2>檔案下載</h2><div class="tablewrap"><table class="files"><thead><tr><th>預覽</th><th>類型</th><th>說明／下載</th><th>大小</th></tr></thead><tbody><tr><td class="pv"><a class="fthumb-link" href="../img/breadboard-wide-technic/breadboard_wide_technic.png" target="_blank" rel="noopener"><img class="fthumb" src="../img/breadboard-wide-technic/breadboard_wide_technic.png" alt="breadboard_wide_technic.FCStd 預覽" loading="lazy"></a></td><td><span class="badge t-fc">FCStd</span></td><td>FreeCAD 參數化模型<br><a class="fn" href="../files/breadboard-wide-technic/breadboard_wide_technic.FCStd" download>breadboard_wide_technic.FCStd</a></td><td class="sz">8.6 MB</td></tr><tr><td class="pv"><a class="fthumb-link" href="../img/breadboard-wide-technic/files/breadboard_wide_technic.3mf.jpg" target="_blank" rel="noopener"><img class="fthumb" src="../img/breadboard-wide-technic/files/breadboard_wide_technic.3mf.jpg" alt="breadboard_wide_technic.3mf 預覽" loading="lazy"></a></td><td><span class="badge t-mf">3MF</span></td><td>3MF（由最新 FCStd 匯出）<br><a class="fn" href="../files/breadboard-wide-technic/breadboard_wide_technic.3mf" download>breadboard_wide_technic.3mf</a></td><td class="sz">4.3 MB</td></tr><tr><td class="pv"><span class="fthumb-none" aria-hidden="true">PY</span></td><td><span class="badge t-src">PY</span></td><td>建模腳本<br><a class="fn" href="../files/breadboard-wide-technic/build_breadboard_wide_technic.py" download>build_breadboard_wide_technic.py</a></td><td class="sz">8 KB</td></tr><tr><td class="pv"><span class="fthumb-none" aria-hidden="true">PY</span></td><td><span class="badge t-src">PY</span></td><td>探測檢查<br><a class="fn" href="../files/breadboard-wide-technic/check_breadboard_wide.py" download>check_breadboard_wide.py</a></td><td class="sz">2 KB</td></tr><tr><td class="pv"><span class="fthumb-none" aria-hidden="true">PY</span></td><td><span class="badge t-src">PY</span></td><td>共用模組：馬達座核心幾何、參數表、匯出與 GUI 重存<br><a class="fn" href="../files/breadboard-wide-technic/tt_adapter_core.py" download>tt_adapter_core.py</a></td><td class="sz">10 KB</td></tr><tr><td class="pv"><span class="fthumb-none" aria-hidden="true">PY</span></td><td><span class="badge t-src">PY</span></td><td>在 FreeCAD 介面重存檔案，寫入縮圖與顯示狀態<br><a class="fn" href="../files/breadboard-wide-technic/gui_finish.py" download>gui_finish.py</a></td><td class="sz">2 KB</td></tr></tbody></table></div><p class="none">FCStd 用 FreeCAD 1.1 開啟（參數在 Params 試算表）；3MF 可直接拖進 Bambu Studio 或其他切片軟體。</p></section>
+<nav class="pager"><span></span><a href="ujoint-diff.html">較舊：萬向接頭教學模組（TT 馬達＋雙萬向接頭＋差速器） →</a></nav>
+</div>
+<footer><div class="wrap">
+<strong>資料來源</strong>
+<ul>
+<li>模型、參數與說明：本機專案資料夾 C:\CludeHome\3DP（FreeCAD、OpenSCAD、build123d 原始檔與 Bambu Studio 專案）</li>
+<li>FreeCAD 預覽圖由 FreeCAD 1.1 繪製；3MF 縮圖取自檔案內建的 Bambu Studio 列印盤預覽</li>
+<li>網站產生日期：2026-11-26</li>
+</ul></div></footer>
+<script>
+document.querySelectorAll('.strip button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.getElementById('mainimg').src = b.dataset.src;
+    document.getElementById('cap').textContent = b.dataset.cap;
+    document.querySelectorAll('.strip button').forEach(function (o) { o.setAttribute('aria-current', o === b); });
+  });
+});
+</script>
+</body>
+</html>
