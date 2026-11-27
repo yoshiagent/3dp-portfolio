@@ -16,13 +16,16 @@ the cavity is the servo's side profile swept from just behind the servo out thro
   - the round gear housing (Ø14.6, measured) in a round-ended slot through the top, so the housing and shaft
     stand out of the top
   - a groove in the shaft-end wall for the cable, which leaves the case low at that end
-Technic holes, counterbored: vertical through the back row (y = -16) and the right end (x = 16), blind ones at
-the left end (bottom one pin deep, top 4 mm, above and below the tab slot) and under the servo; horizontal
+Technic holes, counterbored: vertical through the back row (y = -16, x = -16 .. 8) and blind ones under the
+servo (none at the two ends since 2026-11-27, see below); horizontal
 one pin deep in the back face (4 rows x 6), both ends, and in the front face where the base is solid (left
 and right end blocks) for the pins that hold the cover.
 No three-way crossings (user's request 2026-11-26): where a back- or front-face hole and an end-face hole meet
 at a corner column (x = -24 / 16 with y = -16 / 8), the vertical hole there is left out; the side holes stay,
 they take the steering frame's bulkhead, the cover pins and the car's side brackets.
+Print the base back face down (2026-11-27): the servo cavity, tab slot and cable groove then run straight up. The
+vertical holes at the two ends (x = -24, 16) are left out too: lying down they cross the end-face holes as two
+horizontal holes, and Bambu Studio warned of floating regions at 0.16 mm layers.
 Cover: 6 x 1 x 4 units (47.4 x 7.4 x 31.8), 0.6 in front of the base. A plug on its inner face fills the
 cavity's opening up to 0.2 from the servo (round cut-out for the gear housing), so the servo cannot slide out.
 Through holes across it line up with the base's front-face holes; a notch open at the bottom lets the cable out.
@@ -189,16 +192,11 @@ def build_base(stem):
     box(body, "CableGroove", True, f"{P}cable_t + 0.5", f"{front} - {P}cav_y0", P + "cable_h",
         x=f"{P}cav_x1 - 0.5", y=P + "cav_y0", z=P + "cav_z0")
 
-    # vertical holes: back row through (6), right end through (y = -8, 0, 8)
-    # (corner columns left out: no three-way crossings with the back / front and end-face holes)
+    # vertical holes: back row through, x = -16 .. 8 (corner columns left out: no three-way crossings with the
+    # back and end-face holes). None at the two ends (x = -24, 16): printed back face down, a vertical hole there
+    # and the end-face holes are two crossing horizontal holes, whose crossings leave small hanging points that
+    # Bambu Studio reports as floating regions at 0.16 mm layers (2026-11-27)
     core.pattern(body, "VBack", vertical_hole(body, "VBackh", g(-2), g(-2), ZB, ZT), "X", 4, g(3))
-    core.pattern(body, "VEndR", vertical_hole(body, "VEndRh", g(2), g(-1), ZB, ZT), "Y", 2, g(1))
-    # left end (y = -8, 0, 8): the tab slot runs through there, so one pin deep from the bottom and 4 mm from
-    # the top (1.2 mm above the slot)
-    core.pattern(body, "VEndLB", vertical_hole(body, "VEndLBh", g(-3), g(-1), ZB, f"{ZB} + {P}pin_depth",
-                                               cb_top=False), "Y", 2, g(1))
-    core.pattern(body, "VEndLT", vertical_hole(body, "VEndLTh", g(-3), g(-1), f"{P}tab_z0 + {P}tab_h + 1.2", ZT,
-                                               cb_bot=False), "Y", 3, g(2))
     # under the servo: y = 0 one pin deep (opens into the cavity), y = +-8 up to the cavity floor level
     core.pattern(body, "VFloorMid", vertical_hole(body, "VFloorMidh", g(-2), "0", ZB, f"{ZB} + {P}pin_depth",
                                                   cb_top=False), "X", 3, g(2))

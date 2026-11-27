@@ -1,6 +1,6 @@
 """One print plate per holder version, each part turned to its print orientation (user's request 2026-11-27):
   3MF/mg90s_top_loading_plate.3mf    frame (as modelled, open top up), lid (top face down), horn adapter (top face down)
-  3MF/mg90s_side_loading_plate.3mf   base (as modelled, open slot up), cover (outer face down), horn adapter
+  3MF/mg90s_side_loading_plate.3mf   base (back face down), cover (outer face down), horn adapter
 Inputs are the closed STL meshes the FreeCAD builds write in ../../tt_motor_adapter/out (build_mg90s_technic.py,
 build_mg90s_side.py); they are only rotated and moved. Layout and 3MF writing reuse
 ../../mg90s_steering/src/print_plate.py.
@@ -8,7 +8,8 @@ Why these orientations:
   frame   floor down: the servo pocket opens upward, the cable slot is a notch from the bottom (a short bridge)
   lid     top down: the tab / case recesses underneath end up on top, no support
   horn    top down: the cross-horn recess and screw-head pocket underneath end up on top, no support
-  base    as modelled: the side opening and the gear-housing slot are open upward
+  base    back face down: the servo cavity, tab slot and cable groove run straight up and open at the top (as
+          modelled their roofs hung over the cavity: Bambu Studio warned of floating regions)
   cover   outer face down: the plug faces up
 Run from mg90s_technic/:  python src/print_plates.py
 """
@@ -28,11 +29,11 @@ _spec = importlib.util.spec_from_file_location("steer_plate", ROOT / "mg90s_stee
 sp = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(sp)
 
-KEEP, FLIP, FRONT = sp.KEEP, sp.FLIP, sp.FRONT
+KEEP, FLIP, FRONT, BACK = sp.KEEP, sp.FLIP, sp.FRONT, sp.BACK
 PLATES = {
     "mg90s_top_loading_plate": [("mg90s_technic_frame", KEEP), ("mg90s_technic_lid", FLIP),
                                 ("mg90s_horn_adapter", FLIP)],
-    "mg90s_side_loading_plate": [("mg90s_side_base", KEEP), ("mg90s_side_cover", FRONT),
+    "mg90s_side_loading_plate": [("mg90s_side_base", BACK), ("mg90s_side_cover", FRONT),
                                  ("mg90s_horn_adapter", FLIP)],
 }
 

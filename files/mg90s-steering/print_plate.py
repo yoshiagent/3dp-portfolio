@@ -12,7 +12,9 @@ Each part is turned so a large flat face lies on the bed:
   tie rod  as modelled (x2)
   crank    top face down: the horn recess and the 3.8 relief end up on top, no support
   horn     the double-arm servo horn (../../mg90s_arm), plate down as modelled
-  base     as modelled (open slot up)
+  base     back face down (2026-11-27): the servo cavity, tab slot and cable groove run straight up, open at
+           the top; as modelled (open slot up) their roofs hung over the cavity and Bambu Studio warned of
+           floating regions
   cover    outer face down
 Rebuild the FCStd/STL first when a part changes, then:  python src/print_plate.py
 """
@@ -31,6 +33,7 @@ OUT = HERE.parent / "3MF" / "steering_plate.3mf"
 KEEP = np.eye(3)
 FLIP = np.diag([1.0, -1.0, -1.0])                          # about x 180 deg: +z face down
 FRONT = np.array([[1.0, 0, 0], [0, 0, 1.0], [0, -1.0, 0]])  # about x -90 deg: +y face down
+BACK = np.array([[1.0, 0, 0], [0, 0, -1.0], [0, 1.0, 0]])   # about x +90 deg: -y face down
 
 PARTS = [  # (name, stl, rotation, copies)
     ("steer_frame", STEER / "steer_frame.stl", FLIP, 1),
@@ -39,7 +42,7 @@ PARTS = [  # (name, stl, rotation, copies)
     ("steer_tierod", STEER / "steer_tierod.stl", KEEP, 2),
     ("steer_crank", STEER / "steer_crank.stl", FLIP, 1),
     ("servo_horn_double", HERE.parents[1] / "mg90s_arm" / "out" / "mg90s_arm_double.stl", KEEP, 1),
-    ("mg90s_side_base", SERVO / "mg90s_side_base.stl", KEEP, 1),
+    ("mg90s_side_base", SERVO / "mg90s_side_base.stl", BACK, 1),
     ("mg90s_side_cover", SERVO / "mg90s_side_cover.stl", FRONT, 1),
 ]
 
